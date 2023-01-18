@@ -68,6 +68,8 @@ public class BoardController {
         return "/board/list";
     }
 
+    //...
+
     /**
      * 전체 글 List<Board> 를 페이징 하여 모델에 담아 /list 뷰 호출
      * 쿼리파라미터로 currentPage 를 받아 Criteria 에 맵핑한다. (setter 사용, 생성자 (아마) X )

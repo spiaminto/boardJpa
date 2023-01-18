@@ -1,0 +1,27 @@
+.navbar>form {
+    padding: 0;
+}
+
+#loginMessage {
+    margin-right: 20px;
+}
+
+#header {
+    font-size: 1.5rem;
+}
+
+#navRightBox::after {
+    content: ""; display: block; clear: both;
+}
+
+#navRightBox>li {
+    float: right;
+}
+
+.loginBtBox {
+    padding-left: 0;
+}
+
+body {
+    padding-top: 65px;
+}

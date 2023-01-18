@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hello.board.domain.repository.mybatis.CommentMapper">
+
+    <select id="findByCommentId" resultType="Comment">
+        select * from comment where commentId = #{commentId}
+    </select>
+
+    <select id="findByBoardId" resultType="Comment">
+        select * from comment where boardId = #{boardId}
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="commentId">
+        insert into comment(boardId, writer, content, regDate, group_id, group_order, group_depth, target)
+        values (#{boardId}, #{writer}, #{content}, #{regDate}, #{groupId}, #{groupOrder}, #{groupDepth}, #{target})
+    </insert>
+
+    <update id="setGroupId">
+        update comment
+        set group_id = #{groupId}
+        where commentId = #{commentId}
+    </update>
+
+    <update id="update">
+        update comment
+        set content = #{updateParam.content},
+            regDate = #{updateParam.regDate}
+        where commentId = #{commentId}
+    </update>
+
+    <delete id="delete">
+        delete from comment where commentId = #{commentId}
+    </delete>
+
+    <delete id="deleteByBoardId">
+        delete from comment where boardId = #{boardId}
+    </delete>
+
+    <delete id="deleteReply">
+        delete from comment where group_id = #{commentId} and group_depth = 1
+    </delete>
+
+</mapper>

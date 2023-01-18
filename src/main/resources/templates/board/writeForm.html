@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> 글쓰기 </title>
+    <style>
+        #form label { display: block; }
+
+        #form p {
+            margin-bottom: 20px;
+        }
+
+        #form p:last-child {
+            margin-bottom: 0;
+        }
+
+        #form input[type=text], #form textarea {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            font: 1rem sans-serif;
+        }
+        #form textarea {
+            line-height: 1.5;
+            height: 12em;
+        }
+        /* 에러 발생시 추가할 클래스 */
+        .field-error {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        #inputImageWrapper {
+            border-style: solid;
+            border-radius: 0.2rem;
+            border-width: thin;
+
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        #container textarea {
+            display: none;
+        }
+
+        #container .ck-label {
+            display: none;
+        }
+
+        #container .ck-content {
+            min-height: 500px;
+        }
+
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+          crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
+    <script src="http://code.jquery.com/jquery.min.js"></script>
+    <script src="/static/js/ckeditor5/build/ckeditor.js" th:src="@{/js/ckeditor5/build/ckeditor.js}"></script>
+    <script>
+        $(document).ready(function () {
+
+            // CKeditor
+            ClassicEditor
+                .create( document.querySelector( '#content' ), {
+                    ckfinder: {
+                        uploadUrl: "/image/upload"
+                    },
+                    licenseKey: '',
+                } )
+                .then( editor => {
+                    window.editor = editor;
+
+                } )
+                .catch( error => {
+                    console.error( 'CKeditor 에러' );
+                    console.warn( 'Build id: c8lmmc8yntlx-90lv8lh8innk' );
+                    console.error( error );
+                } );
+
+            // 파일 미리보기 이벤트리스너
+            $("#imageFiles").on("change",handleImgFileSelect);
+
+            // 파일 미리보기 메서드
+            // https://greatps1215.tistory.com/5 참고. 딱히 깊게 이해하진 않음.
+            function handleImgFileSelect(event) {
+
+                console.log("handleImgFileSelect()")
+
+                // 이미지 배열 및 wrapper 초기화
+                let sel_files = [];
+                $("#inputImageWrapper").empty();
+
+                // 아마 이벤트타겟 (type=file 의 input 요소인 #imageFiles) 의 files 를 읽어와 잘라서? 배열로 선언하는듯
+                let files = event.target.files;
+                let filesArr = Array.prototype.slice.call(files);
+
+                // foreach ( File file : filesArr ) 인듯
+                // 파일마다 확장자검사 -> 선택배열저장 -> 리더 로드 후 img 태그 삽입 -> img 태그에 값 전달 까지 사이클인듯
+                filesArr.forEach(function (file) {
+
+                    console.log("filesArr.foreach");
+
+                    // 확장자 검사
+                    if(!file.type.match("image.*")) {
+                        alert("확장자는 이미지 확장자만 가능합니다.");
+                        return;
+                    }
+
+                    // 파일 선택 (정상 업로드라 간주하고, 내가 사용하겠다는 의미)
+                    sel_files.push(file);
+
+                    let reader = new FileReader();
+
+                    // FileReader.onload 이벤트 리스너
+                    reader.onload = function (event) {
+
+                        console.log("reader.onload tag append")
+
+                        // 참고에서는 여기서 event.target.result 를 바로 html 담아서 붙여서 append 하던데
+                        // 값이 들어있는 상태에서 넣는건지, 없는상태에서 넣고 아래의 readAsDataURL 에서 넣는지 불명. 후자 긴 할듯
+                        let html = "<img class='input-image' src='" + event.target.result +
+                            "' data-filename='" + file.name + "' width='150'>";
+
+                        $("#inputImageWrapper").append(html);
+                    }
+
+                    // FileReader 가 file 을 읽어 FileReader.result 에 값을 담는다.
+                    reader.readAsDataURL(file);
+
+                })// foreach file
+            }// handleImgFileSelect
+
+            // 이미지 업로드 초기화
+            $("#imageFilesDelete").on("click", function () {
+                // 파일초기화
+                $("#imageFiles").val('');
+
+                // 미리보기 초기화
+                $("#inputImageWrapper img").remove();
+                $("#inputImageWrapper").append("<span>이미지 미리보기</span>");
+            })
+
+            // submit 할때 이미지 uuid 추출 후 submit
+            $("#submitBt").on("click", function (event) {
+                let imageUrl = "";
+
+                // <img> 에서 src 추출
+                //"http://localhost:8080/images/request/da191b23-ef17-4059-b004-c4c78e125903.jpg"
+                //
+                $(".ck-content img").each(function (index, item) {
+
+                    let splittedUrl = $(this).attr("src").split("est/");
+
+                    imageUrl += splittedUrl[1];
+                    imageUrl += ",";
+                })
+                console.log("imageUrl = " + imageUrl)
+                $("#uploadImageUrl").val(imageUrl);
+            })
+
+        })
+    </script>
+</head>
+<body>
+<div id="container" class="container">
+
+    <nav th:replace="fragment/fragment.html :: nav-fragment">
+    </nav>
+    <!-- 사용자의 입력을 받는 form, action="${action}" 의 url 로 입력을 전달 -->
+    <!-- 입력값은 @ModelAttribute 에 의해 name 속성값과 같은 필드에 바인딩 되어 컨트롤러에 전달됨 -->
+    <!-- id 속성: javascript 에서다룸. 서버로 전달x
+         name 속성: request.getParameterName() , 서버로 전달ㅇ -->
+    <form th:action action="read.html" method="POST" id="form"
+          th:object="${board}" enctype="multipart/form-data">
+
+        <!-- 글로벌 오류가 있을때 (#fields 유틸리티 객체 사용) 에러메시지 루프로 출력 -->
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">
+                글로벌 오류 메시지
+            </p>
+        </div>
+
+        <!-- th:errorclass: 해당필드에 에러가 발생하면 설정된 클래스 추가 -->
+        <!-- th:errors: 해당 필드에 에러가 발생하면 에러 메시지 내용으로 설정 -->
+        <p><label for="title">제목 </label>
+            <!-- input 태그의 value 는 기본값, textarea 태그는 value 없음. -->
+            <input class="form-control" type="text" id="title" name="title" th:field="*{title}" th:errorclass="field-error">
+            <div class="field-error" th:errors="*{title}"> title 오류</div>
+        </p>
+        <p><label for="writer">작성자 </label>
+            <!-- th:field, th:value 동시사용 세션에서 writer 받으려고. <-적용안되서 걍 field 빼버림 어차피 name 있으니까-->
+            <input type="text" class="form-control" id="writer" name="writer" th:value="${session.loginMember.getUsername}" readonly>
+            <div class="field-error" th:errors="*{writer}"> writer 오류</div>
+        </p>
+        <p>
+            <div class="input-group">
+                <input type="file" multiple="multiple" class="form-control" aria-describedby="inputGroupFileAddon" id="imageFiles" name="imageFiles">
+                <button class="btn btn-outline-secondary" type="button" id="imageFilesDelete">모두삭제</button>
+            </div>
+        </p>
+        <p>
+            <div id="inputImageWrapper">
+                <span> 이미지 미리보기 </span>
+            </div>
+
+            <label for="content">내용 </label>
+            <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="field-error"></textarea>
+            <div class="field-error" th:errors="*{content}"> content 오류</div>
+        </p>
+
+        <!-- onsubmit 실제로 업로드할 이미지 요청 url 에서 uuid 뽑아서 값으로 설정 -->
+        <input type="hidden" name="imageUrl" value="" id="uploadImageUrl">
+
+        <p><input type="submit" id="submitBt" name="submit" value="등록" class="btn btn-primary"></p>
+    </form>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+</body>
+</html>

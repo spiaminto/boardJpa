@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> 조회 </title>
+    <style>
+
+        #wrapper {
+            padding: 30px;
+        }
+
+        #info {
+            list-style-type: none;
+            padding: 0;
+            height: 40px;
+            min-width: 850px;
+        }
+
+        #info::after {
+            content: "";
+            clear: both;
+            display: block;
+        }
+
+        #info > li {
+            float: left;
+            width: 22%;
+            line-height: 40px;
+        }
+
+        #info > li:first-child {
+            width: 12%;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown button {
+            position: absolute;
+            right: 0;
+        }
+
+        #imageContainer {
+            margin-bottom: 30px;
+        }
+
+        #imageContainer::after {
+            content: ""; display: block; clear: both;
+        }
+
+        #imageWrapper {
+            float: left;
+        }
+
+        #commentContainer {
+            padding: 35px;
+        }
+
+        #commentContainer .comment-username {
+            height: 33px;
+            border-top-left-radius: 0.375rem;
+            border-top-right-radius: 0.375rem;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            margin-left: 0px;
+        }
+
+        #commentContainer .other-comment-reply .comment-username {
+            border-top-left-radius: 0;
+        }
+
+        #commentContainer .comment-delete {
+            display: block;
+            position: absolute;
+            right: 10px;
+            top: 6px;
+            text-decoration: none;
+            text-indent: 5px;
+        }
+
+        #commentContainer .comment-delete:hover {
+            cursor: pointer;
+        }
+
+        #commentContainer .comment-content {
+            display: block;
+            border-top-right-radius: 0;
+            border-top-left-radius: 0;
+            background-color: white;
+        }
+
+        #commentContainer .btn {
+            border-top-right-radius: 0;
+            margin-left: 1px;
+        }
+
+        #commentContainer .comment-update {
+            border-bottom-right-radius: 0.375rem;
+        }
+
+        #commentHeader {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-indent: 0.5em;
+        }
+
+       #commentContainer .other-comment {
+            margin-bottom: 20px;
+           position: relative;
+        }
+
+        #commentContainer .comment-update-submit {
+            display: none;
+        }
+
+        .empty-container .other-comment-empty {
+            display: none;
+        }
+
+        .other-comment-reply {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+        }
+
+        #commentContainer .other-comment-reply .comment-content {
+            position: relative;
+        }
+
+        #commentContainer .comment-reply-for {
+            border-bottom-left-radius: 0;
+            color: blue;
+            height: 33px;
+        }
+
+        .is-reply {
+            display: none;
+        }
+
+        /* 부트스트랩 기본 스타일 수정 (other-commet 어긋남 수정) */
+        #container .input-group>:not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+            margin-left: 0;
+        }
+
+        /* ckeditor 읽기 테두리 제거 */
+        #container .ck-content {
+            border-style: none;
+        }
+
+        #container textarea {
+            display: none;
+        }
+
+
+    </style>
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+          crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
+    <script src="/static/js/ckeditor5/build/ckeditor.js" th:src="@{/js/ckeditor5/build/ckeditor.js}"></script>
+    <script>
+        $(function () {
+
+            // CKeditor readonly
+            ClassicEditor
+                .create( document.querySelector( '#article' ))
+
+                .then( editor => {
+                window.editor = editor;
+                // editor.enableReadOnlyMode('my feature Id')
+                editor.enableReadOnlyMode('1');
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            } )
+                .catch( error => {
+                console.error( 'ckeditor 에러' );
+                console.error( error );
+            } );
+
+            // 답글 로드 (reply 속성 적용 및 위치변경)
+            $(".other-comment").each(function (index, item) {
+                // 없으면 length = 0 배열, 있으면 있는갯수만큼 length 있는 배열 나옴
+                let isReply = $(item).children(".comment-reply-for").length;
+
+                let afterTargetId = $(item).find(".comment-groupId").val();
+                // console.log("afterTarget " + afterTargetId)
+
+                // 답글이면
+                if (isReply) {
+                    // afterTarget id = 답글을 붙일 groupId
+                    console.log("isreply, afterTarget id " + afterTargetId)
+
+                    // 답글 클래스 변경
+                    $(item).addClass("other-comment-reply").removeClass("other-comment");
+
+                    // data-group 속성 값이 답글 붙일 groupId 와 같은 요소 중 첫번째 (모댓글)
+                    //      .nextUntil(.other-comment) => 다음 other-comment 까지 .last() 중 마지막
+                    //      이때, 자기자신 (모댓글) 은 선택되지 않으므로 첫번째 답글은 length=0 인 제이쿼리객체배열(?) 나오는듯
+                    let targetPosition = $(".comment[data-group='" + afterTargetId + "']").first().nextUntil(".other-comment").last();
+
+                    // jquery 객체배열 인듯?
+                    console.log(targetPosition)
+
+                    // 첫번째 답글 -> 모댓글 다음에 부착
+                    if (targetPosition.length == 0) {
+                        console.log("position = null")
+                        $(".comment[data-group='" + afterTargetId + "']").first().after($(item));
+                        return;
+                    }
+
+                    // 두번째 이후 부터 답글 -> 찾은 위치에 부착
+                    console.log("targetPosition id = " + targetPosition.attr("id"))
+                    targetPosition.after($(item));
+                }
+            })
+
+            // 게시글 삭제
+            $(".delete").on("click", function (event) {
+                let currentPage = $("#pageInfo").children().first().val();
+                let boardId = $("#info").children().first().data("boardid");
+
+                // confirm: Yes-True No-False
+                if (confirm("정말 삭제하시겠습니까?")) {
+                    location.replace("/board/delete/" + boardId + "?currentPage=" + currentPage);
+                }
+                return false;
+            });
+
+            // 검색중 이벤트 변경
+            $(".searching-nav>button").on("click", function (event) {
+                event.preventDefault();
+
+                // 이동할 유형 (list, update, delete)
+                let action = $(this).attr("data-action");
+
+                // pathVariable 붙이려고 선언
+                let boardId = $("#info>li:first-child").attr("data-boardId");
+
+                // url 생성
+                let url = "/board/" + action;
+
+                // /list 아니면 pathVariable 붙임
+                if (action != "list") url += "/" + boardId
+
+                // input hidden에 담아 submit
+                $("#pageInfo").attr("action", url).submit();
+            })
+
+            // 댓글 등록
+            $(".comment-submit").on("click", function (event) {
+                event.preventDefault();
+                let submitContent = $(this).prev().val();
+
+                if (isContentEmpty(submitContent)) {
+                    alert("내용을 입력해 주세요");
+                    return;
+                }
+
+                // 1 == reply
+                let isreply = $(this).data("isreply");
+
+                // 쿼리스트링 형식으로 폼 데이터 변환
+                // application/x-www-form-urlencoded => @ModelAttribute 로 받음
+                let params = $(this).parent().parent().serialize();
+                let paramsArray = $("#myCommentForm").serializeArray();
+
+                console.log("params: " + params);
+
+                $.ajax({
+                    type: "post",
+                    async: false,
+                    url: "/comment/write",
+                    data: params,
+                    success: function (resp) {
+
+                        // 답글이면 리로드
+                        if (isreply) {
+                            alert("답글이 등록되었습니다.")
+                            location.reload();
+                            return;
+                        }
+
+                        // 빈 댓글 폼에 입력해서 컨테이너에 붙임
+                        // selector 로 찾아서 .end 로 끝내고 다시찾기 vs .next() 등으로 이동하기
+                        let inputList = resp.inputList;
+                        $(".other-comment-empty input").each(function (index, item) {
+                            $(item).val(inputList[index]);
+                        })
+                        // clone([이벤트복사여부, bool])
+                        $(".other-comment-empty").clone(true)
+                            .attr("id", "comment" + resp.commentId)
+                            .children(".comment-reply-for").css("display", "none").end()
+                            .children(".comment-username").text(resp.writer).end()
+                            .children(".comment-delete").attr("data-id", resp.commentId).end()
+                            .find(".comment-content").attr("placeholder", resp.content).end()
+                            .find(".comment-update").attr("data-id", resp.commentId).end()
+                            .removeClass("other-comment-empty").addClass("other-comment")
+                            .css("display", "block").appendTo($("#otherCommentContainer"));
+
+                        // 내 댓글창 입력초기화
+                        $("#myComment .comment-content").val("");
+
+                        alert("댓글이 등록되었습니다.");
+                    },//ajax 에러확인
+                    error: function (request, status, error) {
+                        console.log("code: " + request.status)
+                        console.log("message: " + request.responseText)
+                        console.log("error: " + error);
+                    }
+                })
+            })
+
+            // 댓글과 답글 수정 검사 및 수정폼 변경
+            $(".comment-update").on("click", function (event) {
+                let myWriter = $("#myComment .myWriter").val();
+
+                // 타임리프로 other-comment 마다 #commentN (N=state.count) 로 id 부여
+                let commentId = $(this).data("id");
+                // 해당 id 로 탐색
+                let writer = $("#comment" + commentId + " .comment-writer").val();
+
+                console.log("writer = " + writer + " mywriter = " + myWriter);
+
+                // 로그인 확인
+                if (myWriter == null) { alert("로그인 해 주세요"); return false; }
+
+                // 작성자 확인
+                if (writer != myWriter) { alert("수정하려는 댓글의 작성자가 아닙니다."); return false;}
+
+                // length > 1 == writing (true)
+                let isWriting = $(".comment .bg-primary").length;
+                console.log("isWriting" + isWriting);
+
+                // 작성중인지 확인
+                if (isWriting) {
+                    alert("다른 작업을 완료 해 주세요")
+                    return false;
+                }
+
+                let content = $("#comment" + commentId + " .comment-content").attr("placeholder");
+                $("#comment" + commentId + " .comment-content").val(content);
+
+                $(this).prev().attr({ disabled: false, required: true });
+                $("#comment" + commentId + " .comment-username").addClass("bg-primary text-white").off("click");
+
+                // delete 버튼 제거
+                // $(this).parent().prev().css("display", "none");
+
+                // 버튼 등록으로 바꿈
+                $(this).css("display", "none").next().css("display", "block");
+
+            })
+
+            // 댓글 수정
+            $(".comment-update-submit").on("click", function (event) {
+
+                let commentId = $(event.target).prev().data("id");
+                let content = $("#comment" + commentId + " textarea").val();
+
+                // 1 보다 크면 reply
+                let isReply = $(this).parent().siblings(".is-reply").length;
+
+                if (isContentEmpty(content)) {
+                    alert("내용을 입력해 주세요.");
+                    return false;
+                }
+
+                console.log("commentId = " + commentId + "content = " + content)
+
+                $.ajax({
+                    type: "post",
+                    async: false,
+                    url: "/comment/update/" + commentId,
+                    data: {content: content},
+                    success: function (resp) {
+
+                        // 답글이면
+                        if (isReply) {
+                            alert("답글이 수정되었습니다.");
+                            location.reload();
+                            return false;
+                        }
+
+                        $("#comment" + resp.commentId)
+                            // 일반 댓글로 변경
+                            .children(".comment-username").removeClass("bg-primary text-white")
+                            .on("click", makeReply).end()
+                            // 삭제버튼 복구
+                            .children(".comment-delete").css("display", "block").end()
+                            // (업데이트)등록 버튼 제거
+                            .find(".comment-update-submit").css("display", "none").end()
+                            // 수정버튼 복구
+                            .find(".comment-update").css("display", "block").end()
+                            // value -> placeholder, disabled
+                            .find(".comment-content").val("").attr({ placeholder: resp.content,
+                            disabled: true})
+                        alert("댓글이 수정되었습니다.")
+                    },
+                    //ajax 에러확인
+                    error: function (request, status, error) {
+                        console.log("code: " + request.status)
+                        console.log("message: " + request.responseText)
+                        console.log("error: " + error);
+                    }
+                })
+            })
+
+            // 댓글 삭제 검사 및 삭제
+            $(".comment-delete").on("click", function (event) {
+                console.log("event delete");
+                event.preventDefault();
+                let targetWriter = $(this).prev().text();
+                let myWriter = $("#myComment .myWriter").val();
+                let commentId = $(this).data("id");
+
+                if (myWriter == null) {
+                    alert("로그인 해 주세요"); return;
+                }
+
+                // 답글 작성 취소
+                if ($(this).siblings(".myWriter").length > 0) {
+                    alert("답글 취소")
+                    $(this).parent().parent().remove();
+                    return false;
+                }
+
+                // .comment-update-submit 버튼의 display 가 block 이면 수정중
+                let isUpdate = $(this).parent().find(".comment-update-submit").css("display");
+                console.log("isUpdate" + isUpdate)
+                // 답글 수정 취소
+                if (isUpdate == "block") {
+                    alert("수정을 취소합니다.")
+                    location.reload();
+                    return false;
+                }
+
+                if (myWriter != targetWriter) {
+                    alert("삭제하려는 댓글의 작성자가 아닙니다."); return;
+                }
+
+                if (!confirm("정말 삭제하시겠습니까?")) {
+                    return;
+                }
+
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: "/comment/delete/" + commentId,
+                    success: function (resp) {
+                        // $("#comment" + commentId).remove();
+                        alert("댓글이 삭제되었습니다.");
+                        location.reload();
+                    },
+                    error: function (request, status, error) {
+                        console.log("code: " + request.status)
+                        console.log("message: " + request.responseText)
+                        console.log("error: " + error);
+                    }
+                })
+            })
+
+            // 답글 폼 생성
+            $(".other-comment>.comment-username, .other-comment-empty>.comment-username").each(function (index, item) {
+                $(item).on("click", makeReply)
+            })
+
+            function makeReply (event) {
+                // event.stopPropagation();
+
+                let isWriting = $(this).parent().siblings("#myCommentReply").length;
+                // 다른 답글을 작성중이면 이벤트 막기
+                if (isWriting != 0) {
+                    alert("다른 작업을 완료해주세요")
+                    return false;
+                }
+
+                // click 한 username 의 형제 .comment-delete 에서 commentId 획득
+                let groupId = $(this).siblings(".comment-delete").data("id");
+                // click 한 username 의 부모 .other-comment 의 형제중 reply 갯수( 다음 other-comment 직전까지) 획득
+                let order = $(this).parent().nextUntil(".other-comment").length + 1;
+                let target = $(this).text();
+
+                // #myComment 복사해서 추가
+                $("#myComment").clone(true)
+                    .prop("id", "myCommentReply")
+                    .children("#myCommentForm").prop("id", "myCommentReplyForm")
+                    .children(".comment-groupId").val(groupId).end()
+                    .children(".comment-order").val(order).end()
+                    .children(".comment-depth").val("1").end()
+                    .children(".comment-target").val(target).end()
+                    .find(".comment-submit").attr("data-isreply", "1").end()
+                    // 다시 #mycommentForm 으로
+                    .end()
+                    .addClass("other-comment-reply")
+                    .find(".myWriter").before(
+                        $(".other-comment-empty>.comment-reply-for").clone(true)
+                            .text("@" + $(this).text())).end()
+                    .find(".comment-username").after($(".other-comment-empty>.comment-delete").clone(true)).end()
+                    .insertAfter($(this).parent());
+            };
+
+            // 댓글 내용 비었는지 확인
+            function isContentEmpty(content) {
+                return (content == "" || content == null) ? true : false;
+            }
+
+        });
+    </script>
+</head>
+<body>
+<div id="container" class="container-lg">
+
+    <nav th:replace="fragment/fragment.html :: nav-fragment">
+    </nav>
+
+    <div id="wrapper">
+
+        <h2 th:text="${board.title}"> Title </h2>
+
+        <hr>
+
+        <ul id="info">
+            <li th:data-boardId="${board.id}">
+                <span>번호: </span>
+                <span th:text="${board.id}">번호</span>
+            </li>
+            <li>
+                <span>작성자: </span>
+                <span th:text="${board.writer}">작성자</span>
+            </li>
+            <li>
+                <span>작성: </span>
+                <span th:text="${#temporals.format(board.regedate, 'yyyy-MM-dd HH:mm')}">작성시간</span>
+            </li>
+            <li>
+                <span>수정:</span>
+                <span th:text="${#temporals.format(board.updateDate, 'yyyy-MM-dd HH:mm')}" >수정시간</span>
+            </li>
+            <li th:if="${!imageList.isEmpty()}">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        첨부 파일
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li th:each="image : ${imageList}">
+                            <a th:text="${image.getUploadImageName()}" class="dropdown-item" href="#">ImageName</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+        <hr>
+
+        <!-- 이미지 -->
+        <!--
+        <div id="imageContainer" th:if="${imageList.size() > 0}">
+            <div id="imageWrapper">
+                <img th:each="image : ${imageList}" th:src="|/images/${image.getStoreImageName()}|"
+                     width="400">
+            </div>
+        </div>
+        -->
+
+        <!-- 글 내용 (ckeditor readonly) -->
+        <textarea th:text="${board.content}" id="article">Content</textarea>
+        <hr>
+
+        <!-- 검색중 -->
+        <div class="btn-group searching-nav" role="group"  th:if="${criteria.option != null}">
+            <button type="button" class="btn btn-primary" th:data-action="list">List</button>
+            <button type="button" class="btn btn-primary" th:data-action="edit">Update</button>
+            <button type="button" class="btn btn-primary delete" th:data-action="delete">Delete</button>
+        </div>
+
+        <!-- 검색 안함 -->
+        <div class="btn-group" role="group" th:if="${criteria.option == null}">
+            <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
+                    th:onclick="|location.href='@{/board/list(currentPage=${criteria.currentPage})}'|">List
+            </button>
+            <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
+                    th:onclick="|location.href='@{/board/edit/{boardId}(boardId=${board.id}, currentPage=${criteria.currentPage})}'|">
+                Update
+            </button>
+            <!-- 삭제 확인을 위해 onclick 비활성화 -->
+            <!-- th:onclick="|location.href='@{/board/delete/{boardId}(boardId=${board.id}, currentPage=${criteria.currentPage})}'|"-->
+            <button type="button" class="btn btn-primary delete">
+                Delete
+            </button>
+        </div>
+    </div>
+
+    <!-- 댓글 -->
+    <div id="commentContainer">
+        <div id="commentHeader" th:text="'💬 ' + ${commentList.size()} + '개의 댓글'">
+            💬 00개의 댓글
+        </div>
+        <div id="otherCommentContainer">
+            <!-- other-comment 와 other-comment-reply 를 묶기위해 comment 클래스 임시로 넣음 -->
+            <div class="other-comment input-group comment" th:each="comment, commentState : ${commentList}" th:id="'comment'+ ${comment.getCommentId()}"
+                th:data-group="${comment.getGroupId()}">
+                <!-- 나중에 jquery 에서 얘가 있으면 .parent().addClass(other-comment-reply).removeClass...-->
+                <span th:if="${comment.getTarget() != null && comment.getTarget() != ''}" class="input-group-text comment-reply-for"
+                      th:text="'@' + ${comment.getTarget()}">@상대방ID</span>
+                <!-- th placeholder comment.username -->
+                <input type="hidden" class="comment-writer form-control" th:value="${comment.writer}" name="writer">
+                <!-- th text comment.username -->
+                <span class="input-group-text comment-username flex-fill" th:text="${comment.writer}">writer</span>
+                <a class="comment-delete" th:href="@{/comment/delete/{commentId}(commentId=${comment.getCommentId()})}"
+                    th:data-id="${comment.getCommentId()}">✖</a>
+                <div class="input-group">
+                    <textarea class="comment-content form-control form-control-sm" name="content" th:placeholder="${comment.content}" disabled maxlength="50"></textarea>
+                    <button class="btn btn-outline-secondary comment-update" type="button" th:data-id="${comment.commentId}"
+                            >수정</button>
+                    <button class="btn btn-outline-secondary comment-update-submit" type="button">등록</button>
+                </div>
+                <input type="hidden" class="comment-boardId" name="boardId" value="0" th:value="${boardId}">
+                <input type="hidden" class="comment-groupId" name="groupId" value="0" th:value="${comment.groupId}">
+                <input type="hidden" class="comment-order" name="groupOrder" value="0" th:value="${comment.groupOrder}">
+                <input type="hidden" class="comment-depth" name="groupDepth" value="0" th:value="${comment.groupDepth}">
+                <div class="is-reply" th:if="${comment.groupDepth > 0}"></div>
+            </div>
+        </div>
+        <div id="myComment" th:if="${session.loginMember != null}">
+            <form id="myCommentForm" class="input-group" th:action="@{/comment/write}" method="post">
+                <input type="hidden" class="myWriter form-control" value="myWriter" name="writer" th:value="${session.loginMember.getUsername()}">
+                <span class="input-group-text comment-username bg-primary text-white flex-fill" th:text="${session.loginMember.getUsername()}">username</span>
+                <div class="input-group">
+                    <textarea class="comment-content form-control form-control-sm" name="content" placeholder="댓글을 입력하세요" required maxlength="50"></textarea>
+                    <button class="btn btn-outline-secondary comment-submit" type="submit">등록</button>
+                </div>
+                <input type="hidden" class="comment-boardId" name="boardId" value="0" th:value="${boardId}">
+                <input type="hidden" class="comment-groupId" name="groupId" value="0">
+                <input type="hidden" class="comment-order" name="groupOrder" value="0">
+                <input type="hidden" class="comment-depth" name="groupDepth" value="0">
+                <input type="hidden" class="comment-target" name="target" value="">
+            </form>
+        </div>
+    </div>
+
+    <div class="empty-container">
+        <div class="other-comment-empty input-group">
+            <span class="input-group-text comment-reply-for">@상대방ID</span>
+            <input type="hidden" class="comment-writer form-control" name="writer">
+            <span class="input-group-text flex-fill comment-username">writer</span>
+            <a class="comment-delete">✖</a>
+            <div class="input-group">
+                <textarea class="comment-content form-control form-control-sm" name="content" disabled maxlength="50"></textarea>
+                <button class="btn btn-outline-secondary comment-update" type="button">수정</button>
+                <button class="btn btn-outline-secondary comment-update-submit" type="button">등록</button>
+            </div>
+            <input type="hidden" name="boardId" value="0" th:value="${boardId}">
+            <input type="hidden" class="comment-groupId" name="groupId" value="0">
+            <input type="hidden" class="comment-order" name="groupOrder" value="0">
+            <input type="hidden" class="comment-depth" name="groupDepth" value="0">
+        </div>
+    </div>
+
+
+
+    <!-- 검색 정보 -->
+    <form id="pageInfo" method="get">
+        <input type="hidden" th:name="currentPage" th:value="${criteria.currentPage}">
+        <input type="hidden" th:name="option" th:value="${criteria.option}">
+        <input type="hidden" th:name="keyword" th:value="${criteria.keyword}">
+    </form>
+
+    <!-- message, 컨트롤러에서 rttr 로 넘겨받는 commentMessage -->
+    <div style="display: none" id="message">
+        <div style="display: none" th:if="${commentMessage}" th:data-message="${commentMessage}"></div>
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+</body>
+</html>

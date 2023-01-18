@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+          crossorigin="anonymous">
+</head>
+<body class="pt-7">
+
+<nav th:fragment="nav-fragment" class="navbar navbar-expand-md navbar-dark bg-primary bg-gradient fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand text-light" href="/board/list" aria-current="page" id="header">게시판</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <!--msg 를 그냥 사용가능. 이유는 모르겟. rttr.addflashAttr() 로 전송됨-->
+                    <a href="/board/list" class="nav-link" th:text="${msg}">카테고리1</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/board/list" class="nav-link" >카테고리2</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/board/list" class="nav-link">카테고리3</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/board/list" class="nav-link">카테고리4</a>
+                </li>
+            </ul>
+            <div class="d-flex justify-content-end">
+                <ul class="navbar-nav me-auto justify-content-end" id="navRightBox">
+                    <li class="nav-item" th:if="${session.loginMember == null}">
+                        <form class="container-fluid loginBtBox">
+                            <button class="btn btn-sm btn-light me-2" type="button"
+                                    onclick="location.href='loginForm.html'"
+                                    th:onclick="|location.href='@{/login}'|">로그인</button>
+                            <button class="btn btn-sm btn-light" type="button"
+                                    onclick="location.href='addForm.html'"
+                                    th:onclick="|location.href='@{/member/add}'|">회원가입</button>
+                        </form>
+                    </li>
+                    <li id="loginMessage" class="nav-item" th:if="${session.loginMember != null}">
+                            <span class="navbar-text" th:text="|${session.loginMember.getUsername()}님 로그인 되었습니다.|">
+                                login message
+                            </span>
+                    </li>
+                    <li class="nav-item" th:if="${session.loginMember != null}">
+                        <form class="container-fluid loginBtBox">
+                            <button class="btn btn-sm btn-light me-2" type="button"
+                                    th:onclick="|location.href='@{/member/edit}'|" id="memberEditBt">회원정보수정</button>
+                            <button class="btn btn-sm btn-light" type="button"
+                                    onclick="location.href='list.html'" id="logoutBt"
+                                    th:onclick="|location.href='@{/logout}'|">로그아웃</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hello.board.domain.repository.mybatis.MemberMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into member(loginId, username, password)
+        VALUES (#{loginId}, #{username}, #{password})
+    </insert>
+
+    <update id="update">
+        update member
+        set loginId=#{updateParam.loginId},
+            username=#{updateParam.username},
+            password=#{updateParam.password}
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from member where id = #{id}
+    </delete>
+
+    <select id="findById" resultType="Member">
+        select id, loginId, username, password from member
+        where id = #{id}
+    </select>
+
+    <select id="findByLoginId" resultType="Member">
+        select id, loginId, username, password from member
+        where loginId = #{loginId}
+    </select>
+
+    <!--굳이 password 까지 찾을 필요 있을까?-->
+    <select id="findByUsername" resultType="Member">
+        select loginId, username, password from member
+        where username = #{username}
+    </select>
+
+    <select id="findAll" resultType="Member">
+        select * from member
+    </select>
+
+</mapper>

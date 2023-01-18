@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+          crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
+    <title>회원 수정</title>
+    <style>
+        h2 {
+            text-align: center;
+            margin: 30px auto;
+        }
+
+        form {
+            width: 560px;
+            margin: 0 auto;
+        }
+
+        .input-wrapper > * {
+            float: left;
+        }
+
+        .input-wrapper::after {
+            display: block;
+            content: "";
+            clear: both;
+        }
+
+        .input-wrapper > input {
+            width: 83%;
+        }
+
+        .input-wrapper {
+            margin: 10px auto 30px;
+        }
+
+        .input-wrapper > button {
+            margin-left: 5px;
+        }
+
+        #submitBt {
+            margin: 0 auto;
+        }
+    </style>
+    <script src="http://code.jquery.com/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+
+
+            let loginIdFlag = true;
+            let usernameFlag = true;
+
+            // 변경 체크를 위한 초기값
+            let loginId = $("#loginId").val();
+            let username = $("#username").val();
+
+            $("#duplicateLoginIdCheckBt").on("click", function () {
+                loginId = $("#loginId").val();
+
+                if (loginId == "" || loginId.length > 8) {
+                    alert("유효한 아이디를 입력해 주세요.");
+                    return false;
+                }
+
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: "/member/duplicateCheck",
+                    data: {loginId: loginId},
+                    success: function (data) {
+                        if (data == true) {
+                            alert("이미 사용중인 로그인id 입니다.");
+                            $("#loginId").removeClass("is-valid");
+                            loginIdFlag = false;
+                        } else {
+                            alert("사용 가능한 로그인id 입니다.");
+                            $("#loginId").addClass("is-valid");
+                            loginIdFlag = true;
+                        }
+                    }
+                })
+            })
+
+            $("#duplicateUsernameCheckBt").on("click", function () {
+                username = $("#username").val();
+
+                if (username == "" || username.length > 8) {
+                    alert("유효한 닉네임을 입력해 주세요.");
+                    return false;
+                }
+
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: "/member/duplicateCheck",
+                    data: {username: username},
+                    success: function (data) {
+                        if (data == true) {
+                            alert("이미 사용중인 닉네임 입니다.")
+                            $("#username").removeClass("is-valid");
+                            usernameFlag = false;
+                        } else {
+                            alert("사용 가능한 닉네임 입니다.")
+                            $("#username").addClass("is-valid");
+                            usernameFlag = true;
+                        }
+                    }
+                })
+            })
+
+            $("#form").on("submit", function (event) {
+                event.preventDefault();
+
+                console.log("$(loginId) " + $("#loginId").val() + " loginId " + loginId)
+                console.log("$(username) " + $("#username").val() + " username " + username)
+                console.log("idflag = " + loginIdFlag + " nameflag = " + usernameFlag)
+
+                let password = $("#password").val();
+
+                // 비밀번호 체크
+                if (password.length < 4 || password.length > 12) {
+                    $("#password").addClass("is-invalid");
+                    return false;
+                }
+
+                // 값 변경 확인
+                if ($("#loginId").val() != loginId) loginIdFlag = false;
+                if ($("#username").val() != username) usernameFlag = false;
+
+                if (loginIdFlag == true && usernameFlag == true) {
+                    this.submit();
+                } else {
+                    alert((loginIdFlag ? "닉네임 " : "로그인ID ") + "중복 체크 해주세요");
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+<div id="container" class="container">
+
+    <nav th:replace="fragment/fragment.html :: nav-fragment">
+    </nav>
+
+    <h2> 회원 수정 </h2>
+
+    <!-- 로그인ID 와 닉네임은 중복체크를 위해 클라이언트 단에서 유효성 검사를 하긴 함
+          -> 새로고침 날아감 때문에 패스워드도 그냥 유효성 검사 함 -->
+    <form th:action action="/home" method="POST" th:object="${member}" id="form" class="form">
+
+        <label for="loginId" class="col">로그인 ID </label>
+        <div class="input-wrapper">
+            <input type="text" th:field="*{loginId}" id="loginId" th:errorclass="is-invalid"
+                   placeholder="최대 8자 까지 허용합니다." class="form-control col-6">
+            <button id="duplicateLoginIdCheckBt" type="button" class="btn btn-secondary col">
+                중복확인
+            </button>
+            <div class="valid-feedback"> 사용 가능한 로그인 ID 입니다.</div>
+            <div class="invalid-feedback"> 로그인 ID 를 입력해 주세요 (최대 8 자)</div>
+        </div>
+
+
+        <label for="password">비밀번호 </label>
+        <div class="input-wrapper">
+            <input type="password" id="password" th:field="*{password}" th:errorclass="is-invalid"
+                   placeholder="4 ~ 12자리 까지 허용합니다." class="form-control">
+            <div class="invalid-feedback"> 비밀번호를 입력해 주세요 (4 ~ 12 자)</div>
+        </div>
+
+
+        <label for="username">닉네임 </label>
+        <div class="input-wrapper">
+            <input type="text" th:field="*{username}" id="username" th:errorclass="is-invalid"
+                   placeholder="최대 8자 까지 허용합니다." class="form-control">
+            <button id="duplicateUsernameCheckBt" type="button" class="btn btn-secondary">
+                중복확인
+            </button>
+            <div class="valid-feedback"> 사용 가능한 닉네임 입니다.</div>
+            <div class="invalid-feedback"> 닉네임을 입력해 주세요 (최대 8 자)</div>
+        </div>
+
+
+        <div class="d-flex justify-content-center">
+            <button id="submitBt" type="submit" class="btn btn-primary"> 회원 수정</button>
+        </div>
+
+    </form>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+</body>
+</html>

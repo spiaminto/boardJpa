@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hello.board.domain.repository.mybatis.BoardMapper">
+
+    <!-- 넘어온 프로퍼티 #{attr} -->
+
+    <!--countTotalBoard-->
+    <select id="countTotalBoard" resultType="Integer">
+        select count(*) from board
+        <where>
+            <if test="keyword != null and keyword != ''">
+                ${option} like concat('%',#{keyword},'%')
+            </if>
+        </where>
+    </select>
+
+    <!-- updateViewCount -->
+    <update id="updateViewCount">
+        update board
+        set viewCount = viewCount + 1
+        where id = #{id}
+    </update>
+
+    <!-- findById -->
+    <select id="findById" resultType="Board">
+        select id,title, content, writer, regedate, updateDate, viewCount, memberId from board
+        where id = #{id}
+    </select>
+
+    <!-- findAll 제목으로 검색용 -->
+    <!-- concat(string1, string2 ...) 문자열 합치기 -->
+    <select id="findAll" resultType="Board">
+        select id, title, content, writer, regedate, updateDate, viewCount from board
+        where title like concat('%', #{keyword}, '%')
+    </select>
+
+    <!-- 페이징 처리된 select -->
+    <!-- resultType = "hashmap" parameterType = "hashmap" 으로 List<Map<String, Object>> 로 받던데 이유 모르겟음-->
+    <!-- 로그 확인 결과 starPageNum 멤버가 없음에도 getStarPageNum() 메서드의 영향인지 파라미터가 정상적으로 넘어감; -->
+    <select id="findPagedBoard" resultType="Board">
+        select id, title, content, writer, regedate, updateDate, viewCount from board
+        <!-- where 의 if 가 true 면 where 생성, ${option} 으로 문자열 아닌 컬럼명으로 인식 -->
+        <where>
+            <if test="keyword != null and keyword != ''">
+                ${option} like concat('%',#{keyword},'%')
+            </if>
+        </where>
+        order by id desc
+        limit #{startRowNum}, #{boardPerPage}
+    </select>
+
+    <!-- findByWriter -->
+    <select id="findByWriter" resultType="Board">
+        select id, title, content, writer, regedate, updateDate, viewCount from board
+        where writer = #{writer}
+        order by id desc
+    </select>
+
+    <!-- save, 자동생성(auto increment) key 사용 -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into board (title, content, writer, regedate, updateDate, memberId)
+        values (#{title}, #{content}, #{writer}, #{regedate}, #{updateDate}, #{memberId})
+    </insert>
+
+    <!-- update -->
+    <update id="update">
+        update board
+        set title=#{updateParam.title},
+            writer=#{updateParam.writer},
+            content=#{updateParam.content},
+            updateDate=#{updateParam.updateDate}
+        where id = #{id}
+    </update>
+
+    <!-- delete -->
+    <delete id="delete">
+        delete from board where id = #{id}
+    </delete>
+
+
+</mapper>
+

@@ -9,4 +9,8 @@ third commit
     readnonAjax.html 삭제
     이미지 업로드 관련 컨트롤러, 뷰 코드 삭제 (ckeditor 이미지 업로드로 대체), 이미지 관련 변수이름 정리
     
+commit 4
+    imageStore 변수이름 수정
+    memoryrepository 삭제, testdatainit 삭제
+    
 

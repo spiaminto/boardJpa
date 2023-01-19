@@ -1,0 +1,12 @@
+first commit
+    첫번째 업로드. 특이사항 x
+    
+second commit
+    시험용 세컨 커밋. 특이사항 x
+
+third commit
+    controller /list 삭제
+    readnonAjax.html 삭제
+    이미지 업로드 관련 컨트롤러, 뷰 코드 삭제 (ckeditor 이미지 업로드로 대체), 이미지 관련 변수이름 정
+    
+

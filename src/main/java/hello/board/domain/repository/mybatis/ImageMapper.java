@@ -22,7 +22,7 @@ public interface ImageMapper {
     // 그래야 수정할때도 uuid 로 거를수 있음
     // (수정할때는 원본이미지, 수정이미지 모두 boardId 가 부여된 상태라 boardId == 0 으로 거를수가 없음)
 //    int syncImage(@Param("boardId") Long boardId, @Param("storeImageName") String storeImageName);
-    int syncImage(Long boardId);
+    int setBoardId(Long boardId);
 
     int deleteImageByStoreImageName(@Param("boardId") Long boardId, @Param("storeImageName") String storeImageName);
 

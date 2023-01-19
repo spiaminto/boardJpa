@@ -31,15 +31,6 @@
             color: #dc3545;
         }
 
-        #inputImageWrapper {
-            border-style: solid;
-            border-radius: 0.2rem;
-            border-width: thin;
-
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-
         #container textarea {
             display: none;
         }
@@ -80,68 +71,6 @@
                     console.error( error );
                 } );
 
-            // 파일 미리보기 이벤트리스너
-            $("#imageFiles").on("change",handleImgFileSelect);
-
-            // 파일 미리보기 메서드
-            // https://greatps1215.tistory.com/5 참고. 딱히 깊게 이해하진 않음.
-            function handleImgFileSelect(event) {
-
-                console.log("handleImgFileSelect()")
-
-                // 이미지 배열 및 wrapper 초기화
-                let sel_files = [];
-                $("#inputImageWrapper").empty();
-
-                // 아마 이벤트타겟 (type=file 의 input 요소인 #imageFiles) 의 files 를 읽어와 잘라서? 배열로 선언하는듯
-                let files = event.target.files;
-                let filesArr = Array.prototype.slice.call(files);
-
-                // foreach ( File file : filesArr ) 인듯
-                // 파일마다 확장자검사 -> 선택배열저장 -> 리더 로드 후 img 태그 삽입 -> img 태그에 값 전달 까지 사이클인듯
-                filesArr.forEach(function (file) {
-
-                    console.log("filesArr.foreach");
-
-                    // 확장자 검사
-                    if(!file.type.match("image.*")) {
-                        alert("확장자는 이미지 확장자만 가능합니다.");
-                        return;
-                    }
-
-                    // 파일 선택 (정상 업로드라 간주하고, 내가 사용하겠다는 의미)
-                    sel_files.push(file);
-
-                    let reader = new FileReader();
-
-                    // FileReader.onload 이벤트 리스너
-                    reader.onload = function (event) {
-
-                        console.log("reader.onload tag append")
-
-                        // 참고에서는 여기서 event.target.result 를 바로 html 담아서 붙여서 append 하던데
-                        // 값이 들어있는 상태에서 넣는건지, 없는상태에서 넣고 아래의 readAsDataURL 에서 넣는지 불명. 후자 긴 할듯
-                        let html = "<img class='input-image' src='" + event.target.result +
-                            "' data-filename='" + file.name + "' width='150'>";
-
-                        $("#inputImageWrapper").append(html);
-                    }
-
-                    // FileReader 가 file 을 읽어 FileReader.result 에 값을 담는다.
-                    reader.readAsDataURL(file);
-
-                })// foreach file
-            }// handleImgFileSelect
-
-            // 이미지 업로드 초기화
-            $("#imageFilesDelete").on("click", function () {
-                // 파일초기화
-                $("#imageFiles").val('');
-
-                // 미리보기 초기화
-                $("#inputImageWrapper img").remove();
-                $("#inputImageWrapper").append("<span>이미지 미리보기</span>");
-            })
 
             // submit 할때 이미지 uuid 추출 후 submit
             $("#submitBt").on("click", function (event) {
@@ -149,7 +78,6 @@
 
                 // <img> 에서 src 추출
                 //"http://localhost:8080/images/request/da191b23-ef17-4059-b004-c4c78e125903.jpg"
-                //
                 $(".ck-content img").each(function (index, item) {
 
                     let splittedUrl = $(this).attr("src").split("est/");
@@ -196,23 +124,13 @@
             <div class="field-error" th:errors="*{writer}"> writer 오류</div>
         </p>
         <p>
-            <div class="input-group">
-                <input type="file" multiple="multiple" class="form-control" aria-describedby="inputGroupFileAddon" id="imageFiles" name="imageFiles">
-                <button class="btn btn-outline-secondary" type="button" id="imageFilesDelete">모두삭제</button>
-            </div>
-        </p>
-        <p>
-            <div id="inputImageWrapper">
-                <span> 이미지 미리보기 </span>
-            </div>
-
             <label for="content">내용 </label>
             <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="field-error"></textarea>
             <div class="field-error" th:errors="*{content}"> content 오류</div>
         </p>
 
         <!-- onsubmit 실제로 업로드할 이미지 요청 url 에서 uuid 뽑아서 값으로 설정 -->
-        <input type="hidden" name="imageUrl" value="" id="uploadImageUrl">
+        <input type="hidden" name="imageName" value="" id="uploadImageUrl">
 
         <p><input type="submit" id="submitBt" name="submit" value="등록" class="btn btn-primary"></p>
     </form>

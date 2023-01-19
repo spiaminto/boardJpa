@@ -25,7 +25,7 @@ public class BoardSaveForm {
 //    private List<MultipartFile> imageFiles;
 
     // DB 에 진짜로 저장할 이미지url
-    private String imageUrl;
+    private String imageName;
 
     public BoardSaveForm(String title, String content, String writer) {
         this.title = title;

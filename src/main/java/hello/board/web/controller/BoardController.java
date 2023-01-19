@@ -44,33 +44,6 @@ public class BoardController {
     private final ImageStore imageStore;
 
     /**
-     * 전체 글 List 을 Model 에 담아 /list 뷰 호출
-     * @param model
-     * @return
-     */
-//    @GetMapping(value = {"/list", "/"})
-    public String list(@SessionAttribute(value = "loginMember", required = false) Member loginMember,
-                       Model model) {
-        // 글 가져오기
-//        List<Board> list = boardRepository.findAll();
-//        model.addAttribute("list", list);
-
-        // session 에 loginMember 없음
-        if (loginMember == null) {
-            log.info("list, none login");
-            return "/board/list";
-        }
-
-        // session 에 loginMember 있음
-        model.addAttribute("member", loginMember);
-
-        log.info("list, login");
-        return "/board/list";
-    }
-
-    //...
-
-    /**
      * 전체 글 List<Board> 를 페이징 하여 모델에 담아 /list 뷰 호출
      * 쿼리파라미터로 currentPage 를 받아 Criteria 에 맵핑한다. (setter 사용, 생성자 (아마) X )
      * beanvalidation 이 아닌 jquery 로 검증했음
@@ -120,18 +93,10 @@ public class BoardController {
         Board findBoard = boardRepository.findById(boardId);
         boardRepository.updateViewCount(boardId);
 
-        List<Image> imageList = imageRepository.findByBoardId(boardId);
-
         List<Comment> commentList = commentRepository.findByBoardId(boardId);
 
         model.addAttribute(findBoard);
-        model.addAttribute("imageList", imageList);
         model.addAttribute("commentList", commentList);
-
-        for (Image image : imageList) {
-            log.info("image = {}", image.toString());
-            log.info("imageReq = {}", image.getStoreImageName());
-        }
 
         return "/board/read";
     }
@@ -161,10 +126,10 @@ public class BoardController {
         // 검증 오류 발견
         if (bindingResult.hasErrors()) {
             log.info("/write POST bindingResult.hasErrors");
-            // 넘어온 board 는 @ModelAttribute 에 의해 자동으로 Model 에 재추가
             return "/board/writeForm";
         }
 
+        // 현재 사용자 확인
         HttpSession session = request.getSession(false);
         Member loginMember = (Member) session.getAttribute("loginMember");
 
@@ -173,19 +138,14 @@ public class BoardController {
         board.setMemberId(loginMember.getId());
         Board saveBoard = boardRepository.save(board);
         
-        // 첨부파일 처리
-        //List<Image> imageList = imageStore.storeImages(form.getImageFiles());
-
-        // image 저장
-        //List<Long> saveImageIdList = imageRepository.saveImageList(imageList);
-
-        String[] splittedImageUrl = form.getImageUrl().split(",");
-        for (String url :
-                splittedImageUrl) {
-            log.info("url = "+ url);
+        // 폼을 통해 실제로 들어온 이미지 확인
+        String[] splittedImageName = form.getImageName().split(",");
+        for (String imageName : splittedImageName) {
+            log.info("imageName input by form = "+ imageName);
         }
 
-        imageRepository.syncImage(saveBoard.getId(), splittedImageUrl);
+        // 이미지 DB 저장(동기화)
+        imageRepository.syncImage(saveBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                 "/board/read/" + saveBoard.getId(), "게시글이 등록되었습니다.", request.getQueryString()
@@ -213,7 +173,6 @@ public class BoardController {
         // 현재 로그인한 사람, 수정하려는 글의 작성자 비교
         if (isSameWriter(request, findBoard)) {
             model.addAttribute("board",findBoard);
-            model.addAttribute("imageList", imageList);
             log.info("/edit GET ok");
             return "/board/editForm";
         }
@@ -243,47 +202,20 @@ public class BoardController {
             return "/board/editForm";
         }
 
-        log.info("is modified = {}", form.getIsImageModified());
-
-        
-
-        // 첨부 이미지 처리
-        // 이미지 변경 true
-        /*
-        if (form.getIsImageModified().equals("true")) {
-
-            List<Image> findList = imageRepository.findByBoardId(boardId);
-
-            // 기존 이미지 삭제
-            if (!findList.isEmpty()) {
-                imageRepository.deleteImage(boardId);
-                log.info("/edit POST image 삭제 완료");
-            }
-
-            // 새 이미지 저장
-            //List<Image> images = imageStore.storeImages(form.getImageFiles());
-            //List<Long> saveImageIdList = imageRepository.saveImageList(images);
-
-        // 이미지 변경 false
-        } else {
-            // 이미지 DB 갱신 X
-        }
-
-         */
-
         // Board 업데이트
         Board updateParam = new Board(
                 form.getTitle(), form.getWriter(), form.getContent(), form.getRegedate());
        
         Board updateBoard = boardRepository.update(boardId, updateParam);
 
-        String[] splittedImageUrl = form.getImageUrl().split(",");
-        for (String url :
-                splittedImageUrl) {
-            log.info("url = "+ url);
+        // 들어온 이미지 확인
+        String[] splittedImageName = form.getImageName().split(",");
+        for (String imageName : splittedImageName) {
+            log.info("url = "+ imageName);
         }
 
-        imageRepository.syncImage(updateBoard.getId(), splittedImageUrl);
+        // 이미지 동기화
+        imageRepository.syncImage(updateBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                 "board/read/" + updateBoard.getId(), "게시글이 수정되었습니다.", request.getQueryString()));
@@ -310,8 +242,11 @@ public class BoardController {
 
         boardRepository.delete(boardId);
 
-        // delete cascade
+        // 댓글 삭제 delete cascade
         commentRepository.deleteByBoardId(boardId);
+
+        // 이미지 삭제
+        imageRepository.deleteImage(boardId);
 
         log.info("/delete 삭제성공 {}", boardId);
 

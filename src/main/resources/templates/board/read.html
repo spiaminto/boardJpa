@@ -43,18 +43,6 @@
             right: 0;
         }
 
-        #imageContainer {
-            margin-bottom: 30px;
-        }
-
-        #imageContainer::after {
-            content: ""; display: block; clear: both;
-        }
-
-        #imageWrapper {
-            float: left;
-        }
-
         #commentContainer {
             padding: 35px;
         }
@@ -468,6 +456,7 @@
                 $(item).on("click", makeReply)
             })
 
+            // 답글 콜백함수
             function makeReply (event) {
                 // event.stopPropagation();
 
@@ -540,30 +529,8 @@
                 <span>수정:</span>
                 <span th:text="${#temporals.format(board.updateDate, 'yyyy-MM-dd HH:mm')}" >수정시간</span>
             </li>
-            <li th:if="${!imageList.isEmpty()}">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        첨부 파일
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li th:each="image : ${imageList}">
-                            <a th:text="${image.getUploadImageName()}" class="dropdown-item" href="#">ImageName</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
         </ul>
         <hr>
-
-        <!-- 이미지 -->
-        <!--
-        <div id="imageContainer" th:if="${imageList.size() > 0}">
-            <div id="imageWrapper">
-                <img th:each="image : ${imageList}" th:src="|/images/${image.getStoreImageName()}|"
-                     width="400">
-            </div>
-        </div>
-        -->
 
         <!-- 글 내용 (ckeditor readonly) -->
         <textarea th:text="${board.content}" id="article">Content</textarea>
@@ -641,6 +608,7 @@
         </div>
     </div>
 
+    <!-- 빈 댓글 -->
     <div class="empty-container">
         <div class="other-comment-empty input-group">
             <span class="input-group-text comment-reply-for">@상대방ID</span>
@@ -658,8 +626,6 @@
             <input type="hidden" class="comment-depth" name="groupDepth" value="0">
         </div>
     </div>
-
-
 
     <!-- 검색 정보 -->
     <form id="pageInfo" method="get">

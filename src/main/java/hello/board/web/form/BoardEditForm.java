@@ -28,7 +28,7 @@ public class BoardEditForm {
     //private List<MultipartFile> imageFiles;
 
     // DB 에 진짜로 저장할 이미지url
-    private String imageUrl;
+    private String imageName;
 
 
     public BoardEditForm(String title, String content, String writer, List<MultipartFile> imageFiles) {

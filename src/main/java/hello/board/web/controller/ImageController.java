@@ -51,12 +51,4 @@ public class ImageController {
 
         return result;
     }
-
-    // 이미지 다운로드 메소드 (보안성 낮음)
-    @GetMapping("/images/{filename}")
-    public Resource downloadImage(@PathVariable String filename) throws MalformedURLException {
-        // Spring 의 Resource 인터페이스 (구현체 UrlResource) 를 이용해 파일을 컴퓨터에서 찾아 반환
-        return new UrlResource("file:" + imageStore.getStorePath(filename));
-    }
-
 }

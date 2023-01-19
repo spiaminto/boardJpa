@@ -38,6 +38,17 @@ public class MybatisImageRepository implements ImageRepository {
 
     @Override
     public int deleteImage(long boardId) {
+
+        // 로컬에서 삭제
+        List<File> fileList = new ArrayList<>();
+        for (Image image :
+                imageMapper.findByBoardId(boardId)) {
+            fileList.add(new File(image.getImageAddress()));
+        }
+        int count = deleteFile(fileList);
+        log.info("로컬에서 삭제된 이미지 = " + count);
+
+        // DB에서 삭제
         return imageMapper.deleteImage(boardId);
     }
 
@@ -74,10 +85,7 @@ public class MybatisImageRepository implements ImageRepository {
         int count = 0;
 
         // boardId = 0 인 db 이미지에 boardId 부여
-        for (String storeImageName : uploadedImageName) {
-            // 동기화
-            count += imageMapper.syncImage(boardId);
-        }
+        count += imageMapper.setBoardId(boardId);
         log.info("======= 동기화된 이미지 파일 갯수 = " + count);
 
         // DB 에 등록된 이미지
@@ -88,7 +96,8 @@ public class MybatisImageRepository implements ImageRepository {
         // 실제로 업로드된 이미지 선별
         for (String storeImageName :
                 uploadedImageName) {
-            uploadedImageList.add(imageList.stream().filter(image -> image.getStoreImageName().equals(storeImageName)).findFirst().get());
+            // .get() 대신 .orelse(null) => 없으면 null
+            uploadedImageList.add(imageList.stream().filter(image -> image.getStoreImageName().equals(storeImageName)).findFirst().orElse(null));
         }
         // 제거될 이미지리스트 = DB 에 등록된 이미지에서 실제로 등록된 이미지 제거
         imageList.removeAll(uploadedImageList);

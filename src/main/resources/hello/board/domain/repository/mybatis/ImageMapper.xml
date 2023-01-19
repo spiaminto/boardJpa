@@ -26,7 +26,7 @@
         delete from image where boardId=#{boardId} and store_image_name = #{storeImageName}
     </delete>
 
-    <update id="syncImage">
+    <update id="setBoardId">
         update image
         set boardId = #{boardId}
         where boardId = 0

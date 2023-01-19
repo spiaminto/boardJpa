@@ -29,56 +29,8 @@
             color: #dc3545;
         }
 
-        #inputImageWrapper {
-            border-style: solid;
-            border-radius: 0.2rem;
-            border-width: thin;
-
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-
-        #imageFiles {
-            border-bottom-right-radius: 0;
-            border-top-right-radius: 0;
-        }
-
-        #fileInputWrapper {
-            display: flex;
-            flex-grow: 1;
-        }
-
-        #selectFile {
-            background-color: #e9ecef;
-            border-right: none;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-
-        #selectFile, #selectFileName {
-            border-style: solid;
-            border-color: #ced4da;
-            border-width: thin;
-        }
-
-        #selectFileName {
-            height: 100%;
-            flex-grow: 1;
-        }
-
         #selectFileName>span {
             line-height: 39px;
-        }
-
-        #fileInputBtWrapper {
-            width: 95px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .input-group, #fileInputWrapper {
-            height: 39px;
         }
 
         #container .ck-label {
@@ -119,122 +71,6 @@
              * 애초에 th:action 이 요청 url + 쿼리 파라미터 까지 전부 다 action 으로 넣어주는듯.
              * 파라미터 신경 쓸 필요 없음.
              */
-
-            // 초기 이미지 불러들이기
-            let imageFilesArrLength = $("#inputImageWrapper>img").get().length
-            let imageName = $("#inputImageWrapper>img:first").attr("data-filename");
-            console.log(imageName);
-
-            if (imageFilesArrLength != 0) {
-                setSelectFileName(imageFilesArrLength, imageName);
-            } else {
-                $("#inputImageWrapper span").html("이미지 미리보기");
-                $("#selectFileName span").html("&nbsp;선택된 파일 없음");
-            }
-
-
-            // length 는 1 ~ n (0은 미리거름), name 은 파일이름
-            // length 0 이면 name 을 읽을수가 없어서 오류남.
-            function setSelectFileName(length, name) {
-                let $selectFileName = $("#selectFileName");
-                let html = "<span>&nbsp;";
-
-                if (length == 1) {
-                    html += name;
-                } else {
-                    html += length + " 파일";
-                }
-
-                html += "</span>"
-                $selectFileName.empty().append(html);
-            }
-
-            // (이미지)파일 업로드 이벤트리스너
-            $("#imageFiles").on("change",handleImgFileSelect);
-
-            // 파일 미리보기 + 파일업로드 이름바꾸기 + 이미지 변경여부 확인 메서드 (분리해야?)
-            // https://greatps1215.tistory.com/5 참고. 딱히 깊게 이해하진 않음.
-            function handleImgFileSelect(event) {
-
-                console.log("handleImgFileSelect()")
-
-                // 이미지 변경여부 true
-                $("#isImageModified").val("true");
-                console.log($("#isImageModified").val());
-                console.log($("#isImageModified").attr("value"));
-
-                // 이미지 배열 및 wrapper 초기화
-                let sel_files = [];
-                // span 이 있어야 되는데 뺴는 구조로 나중에 개선해볼것
-                $("#inputImageWrapper").empty().append("<span></span>");
-
-                // 아마 이벤트타겟 (type=file 의 input 요소인 #imageFiles) 의 files 를 읽어와 잘라서? 배열로 선언하는듯
-                let files = event.target.files;
-                let filesArr = Array.prototype.slice.call(files);
-
-                console.log("length = " + filesArr.length);
-
-                // 파일첨부 -> 취소 했을경우
-                if (filesArr.length == 0) {
-                    $("#inputImageWrapper span").html("이미지 미리보기");
-                    $("#selectFileName span").html("&nbsp;선택된 파일 없음");
-                    return;
-                }
-
-                console.log("name = " + filesArr[0].name);
-
-                setSelectFileName(filesArr.length, filesArr[0].name);
-
-                // foreach ( File file : filesArr ) 인듯
-                // 파일마다 확장자검사 -> 선택배열저장 -> 리더 로드 후 img 태그 삽입 -> img 태그에 값 전달 까지 사이클인듯
-                filesArr.forEach(function (file) {
-
-                    console.log("filesArr.foreach");
-
-                    // 확장자 검사
-                    if(!file.type.match("image.*")) {
-                        alert("확장자는 이미지 확장자만 가능합니다.");
-                        return;
-                    }
-
-                    // 파일 선택 (정상 업로드라 간주하고, 내가 사용하겠다는 의미)
-                    sel_files.push(file);
-
-                    let reader = new FileReader();
-
-                    // FileReader.onload 이벤트 리스너
-                    reader.onload = function (event) {
-
-                        console.log("reader.onload tag append")
-
-                        // 참고에서는 여기서 event.target.result 를 바로 html 담아서 붙여서 append 하던데
-                        // 값이 들어있는 상태에서 넣는건지, 없는상태에서 넣고 아래의 readAsDataURL 에서 넣는지 불명. 후자 긴 할듯
-                        let html = "<img class='input-image' src='" + event.target.result +
-                            "' data-filename='" + file.name + "' width='150'>";
-
-                        $("#inputImageWrapper span").html("").parent().append(html);
-
-                    }
-
-                    // FileReader 가 file 을 읽어 FileReader.result 에 값을 담는다.
-                    reader.readAsDataURL(file);
-
-                })// foreach file
-            }// handleImgFileSelect
-
-            // 이미지 업로드 초기화
-            $("#imageFilesDelete").on("click", function () {
-                // 파일초기화
-                $("#imageFiles").val('');
-                // 파일 이름 노출 초기화
-                $("#selectFileName span").html("&nbsp;선택된 파일 없음");
-                // 이미지 변경여부 true
-                $("#isImageModified").val("true");
-
-                // 미리보기 초기화
-                $("#inputImageWrapper img").remove();
-                $("#inputImageWrapper span").html("이미지 미리보기");
-            })
 
             // submit 할때 이미지 uuid 추출 후 submit
             $("#editBt").on("click", function (event) {
@@ -290,46 +126,22 @@
             <input class="form-control" type="text" id="writer" name="writer" th:value="${session.loginMember.getUsername}" readonly>
         <div class="invalid-feedback" th:errors="*{writer}"> writer 오류</div>
         </p>
-        <p>
-        <div class="input-group">
-            <div id="fileInputWrapper">
-                <div id="fileInputBtWrapper">
-                    <input class="form-control" type="file" multiple="multiple" aria-describedby="inputGroupFileAddon" id="imageFiles" name="imageFiles">
-                </div>
-<!--                <button id="selectFile" class="btn btn-light" onclick="document.getElementById('imageFiles').click();">파일 선택</button>-->
-                <p id="selectFileName"><span>&nbsp;선택된 파일 없음</span></p>
-            </div>
-            <button class="btn btn-outline-secondary" type="button" id="imageFilesDelete">모두삭제</button>
-        </div>
-        </p>
-        <p>
-        <div id="inputImageWrapper">
-            <span></span>
-            <img th:each="image : ${imageList}" th:src="|/images/${image.getStoreImageName()}|"
-             width="150" th:data-filename="${image.getUploadImageName()}">
-        </div>
-
-        <label for="content">내용 </label>
-        <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="field-error"></textarea>
-        <div class="invalid-feedback" th:errors="*{content}"> content 오류</div>
+        <p><label for="content">내용 </label>
+            <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="field-error"></textarea>
+            <div class="invalid-feedback" th:errors="*{content}"> content 오류</div>
         </p>
         <p>
             <input id="editBt" type="submit" name="submit" value="수정" class="btn btn-primary">
         </p>
 
-        <!-- 이미지 변경여부 확인 -->
-        <input type="hidden" id="isImageModified" th:name="isImageModified" th:value="false" value="false">
-
         <!-- onsubmit 실제로 업로드할 이미지 요청 url 에서 uuid 뽑아서 값으로 설정 -->
-        <input type="hidden" name="imageUrl" value="" id="uploadImageUrl">
+        <input type="hidden" name="imageName" value="" id="uploadImageUrl">
 
         <!-- pageInfo -->
         <input class="page_info" type="hidden" th:name="currentPage" th:value="${criteria.currentPage}" name="currentPage" value="1">
         <input class="page_info" type="hidden" th:name="option" th:value="${criteria.option}" name="option" value="option">
         <input class="page_info" type="hidden" th:name="keyword" th:value="${criteria.keyword}" name="keyword" value="keyword">
     </form>
-
-
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"

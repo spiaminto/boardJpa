@@ -1,7 +1,6 @@
 package hello.board.domain.service;
 
 import hello.board.domain.member.Member;
-import hello.board.domain.member.MemberMemoryRepository;
 import hello.board.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

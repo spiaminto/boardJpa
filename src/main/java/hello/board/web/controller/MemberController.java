@@ -1,7 +1,6 @@
 package hello.board.web.controller;
 
 import hello.board.domain.member.Member;
-import hello.board.domain.member.MemberMemoryRepository;
 import hello.board.domain.repository.MemberRepository;
 import hello.board.domain.repository.ResultDTO;
 import hello.board.web.RedirectDTO;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.sql.SQLIntegrityConstraintViolationException;
 
 @Controller
 @Slf4j

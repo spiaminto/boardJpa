@@ -57,9 +57,6 @@ public class MybatisMemberRepository implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByUsername(String username) {return memberMapper.findByUsername(username);}
-
-    @Override
     public List<Member> findAll() {
         return memberMapper.findAll();
     }

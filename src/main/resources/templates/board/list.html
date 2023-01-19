@@ -13,11 +13,6 @@
             margin-top: 50px;
         }
 
-    /*====================================================== */
-        #header {
-            font-size: 1.5rem;
-        }
-
         #noneContent {
             margin: 0 auto;
             text-align: center;
@@ -76,19 +71,16 @@
 
             // 검색중일때 .page-link.onclick, option 은 검색하면 criteria.option 으로 자동으로 들어감
             $(".page-link").on("click", function (event) {
-                console.log("@Event pagination.onclick")
 
                 let option = $("#pageInfo>input[name = 'option']").val();
 
                 if (option == null || option == "") {
                     // option 없음 = 원래이벤트
-                    console.log("option none, href = ", event.target.href);
                     location.href = event.target.href;
                     return false;
                 }
 
                 $("#pageInfo>input:first-child").attr("value", $(this).attr("data-pagenum"));
-                console.log("option true");
                 $("#pageInfo").submit();
                 return false;
             })
@@ -205,7 +197,7 @@
                     <option value="content">내용</option>
                 </select>
                 <input type="text" th:field="*{keyword}" name="keyword"/>
-                <button class="btn btn-primary btn-sm">Search</button>
+                <button class="btn btn-primary btn-sm">검색</button>
             </form>
         </div>
     </div>

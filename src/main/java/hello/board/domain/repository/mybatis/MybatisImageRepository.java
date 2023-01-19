@@ -46,7 +46,7 @@ public class MybatisImageRepository implements ImageRepository {
             fileList.add(new File(image.getImageAddress()));
         }
         int count = deleteFile(fileList);
-        log.info("로컬에서 삭제된 이미지 = " + count);
+        log.info("로컬에서 삭제된 이미지 개수 = " + count);
 
         // DB에서 삭제
         return imageMapper.deleteImage(boardId);
@@ -86,7 +86,7 @@ public class MybatisImageRepository implements ImageRepository {
 
         // boardId = 0 인 db 이미지에 boardId 부여
         count += imageMapper.setBoardId(boardId);
-        log.info("======= 동기화된 이미지 파일 갯수 = " + count);
+        log.info("동기화된 이미지 파일 갯수 = " + count);
 
         // DB 에 등록된 이미지
         List<Image> imageList = imageMapper.findByBoardId(boardId);
@@ -99,25 +99,22 @@ public class MybatisImageRepository implements ImageRepository {
             // .get() 대신 .orelse(null) => 없으면 null
             uploadedImageList.add(imageList.stream().filter(image -> image.getStoreImageName().equals(storeImageName)).findFirst().orElse(null));
         }
-        // 제거될 이미지리스트 = DB 에 등록된 이미지에서 실제로 등록된 이미지 제거
+        // 제거될 이미지리스트
         imageList.removeAll(uploadedImageList);
 
         // 제거할 imageList 로 제거할 로컬파일 리스트 생성 및 DB 에서 제거
         // 이중포문 두번쓰기 싫어서 이렇게 햇지만 로컬에서 삭제후 DB 에서 삭제가 더 나을지도?
         count = 0;
-        int DBcount = 0;
         List<File> localFileList = new ArrayList<>();
         for (Image image : imageList) {
 
             // 로컬 파일 리스트 생성
             localFileList.add(new File(image.getImageAddress()));
-            count++;
 
             // DB에서 제거
-            DBcount += imageMapper.deleteImageByStoreImageName(boardId, image.getStoreImageName());
+            count += imageMapper.deleteImageByStoreImageName(boardId, image.getStoreImageName());
         }
-        log.info("삭제된 DB 파일 갯수 = " + DBcount);
-        log.info("삭제될 로컬 파일 갯수 = " + count);
+        log.info("삭제된 DB 파일 갯수 = {}", count);
 
         // 로컬 파일 삭제
         count = deleteFile(localFileList);
@@ -127,7 +124,7 @@ public class MybatisImageRepository implements ImageRepository {
     // 로컬 파일 삭제
     public int deleteFile(List<File> fileList) {
         int count = 0;
-        boolean isDeleted = false;
+        boolean isDeleted;
 
         for (File file : fileList) {
             isDeleted = file.delete();

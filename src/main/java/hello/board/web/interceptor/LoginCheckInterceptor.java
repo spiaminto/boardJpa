@@ -20,36 +20,41 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         // 요청 URI 확인
         String requestURI = request.getRequestURI();
-        // 요청 파라미터 확인
-        String currentPage = request.getParameter("currentPage");
-        // 쿼리스트링
+        // 요청파라미터 (쿼리스트링) 확인
         String queryString =request.getQueryString();
 
         log.info("인증 체크 인터셉터 실행 {}", requestURI);
 
         HttpSession session = request.getSession();
-        
-        if (session == null || session.getAttribute("loginMember") == null) {
-            log.info("미인증 사용자 요청");
 
+        // 미인증 사용자 요청, 들어온 uri + queryString 해서 sendRedirect()
+        if (session == null || session.getAttribute("loginMember") == null) {
             session.setAttribute("isValidRequest", "false");
 
             // 쿼리 파라미터 없음
             if (queryString == null) {
                 response.sendRedirect("/login?redirectURL=" + requestURI);
+                log.info("미인증 사용자 처리 완료, URI = {}", requestURI);
+                
+                // 인터셉터 종료
                 return false;
             }
 
-            // 접속 하려 한 주소를 파라미터로 붙여 redirect (로그인 시 해당 페이지로 재이동을 위해)
-            // 검색 옵션 존재
+            // 쿼리 파라미터 있음
+            //  검색 옵션 있음 (option, keyword, currntPage)
             if (queryString.contains("option")) {
+                
+                // & 기준으로 url 이 구성되므로, 붙일 파라미터는 & 가 아닌 다른문자로치환
                 queryString = queryString.replace("&", ".");
                 log.info("replace = {}", queryString);
+
                 response.sendRedirect("/login?redirectURL=" + requestURI + "?" + queryString);
-            // 검색 옵션 없음 (currentPage 1개)
+            //   검색 옵션 없음 (currentPage 1개)
             } else {
                 response.sendRedirect("/login?redirectURL=" + requestURI + "?" + queryString);
             }
+
+            log.info("미인증 사용자 처리 완료, URI = {}, QueryString ={}", requestURI, queryString);
 
             // 인터셉터 체인 종료
             return false;

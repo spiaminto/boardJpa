@@ -19,17 +19,7 @@ public class BoardSaveForm {
     private String content;
     private String writer;
 
-    // ckEditor 사용하면서 필요없어짐
-    // MultipartFile 로 enctype=multipart/form-data 지정된 form 의 첨부파일 자동 바인딩
-    // List<MultipartFile> 사용하면 multiple="multiple" 옵션 설정된 파일들 받음
-//    private List<MultipartFile> imageFiles;
-
     // DB 에 진짜로 저장할 이미지url
     private String imageName;
 
-    public BoardSaveForm(String title, String content, String writer) {
-        this.title = title;
-        this.content = content;
-        this.writer = writer;
-    }
 }

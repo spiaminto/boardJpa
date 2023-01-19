@@ -14,12 +14,9 @@ public class LogInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         String requestURI = request.getRequestURI();
-        Enumeration<String> parameterNames = request.getParameterNames();
         String queryString = request.getQueryString();
 
-
-        log.info(" REQUEST URI={}", requestURI);
-        log.info(" REQUEST QueryString={}", queryString);
+        log.info(" REQUEST URI={}, QueryString={}", requestURI, queryString);
 
         // 다음 인터셉터 진행
         return true;

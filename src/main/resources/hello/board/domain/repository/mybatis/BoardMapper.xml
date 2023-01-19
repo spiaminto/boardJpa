@@ -30,10 +30,10 @@
 
     <!-- findAll 제목으로 검색용 -->
     <!-- concat(string1, string2 ...) 문자열 합치기 -->
-    <select id="findAll" resultType="Board">
-        select id, title, content, writer, regedate, updateDate, viewCount from board
-        where title like concat('%', #{keyword}, '%')
-    </select>
+<!--    <select id="findAll" resultType="Board">-->
+<!--        select id, title, content, writer, regedate, updateDate, viewCount from board-->
+<!--        where title like concat('%', #{keyword}, '%')-->
+<!--    </select>-->
 
     <!-- 페이징 처리된 select -->
     <!-- resultType = "hashmap" parameterType = "hashmap" 으로 List<Map<String, Object>> 로 받던데 이유 모르겟음-->
@@ -50,12 +50,12 @@
         limit #{startRowNum}, #{boardPerPage}
     </select>
 
-    <!-- findByWriter -->
-    <select id="findByWriter" resultType="Board">
-        select id, title, content, writer, regedate, updateDate, viewCount from board
-        where writer = #{writer}
-        order by id desc
-    </select>
+<!--    &lt;!&ndash; findByWriter &ndash;&gt;-->
+<!--    <select id="findByWriter" resultType="Board">-->
+<!--        select id, title, content, writer, regedate, updateDate, viewCount from board-->
+<!--        where writer = #{writer}-->
+<!--        order by id desc-->
+<!--    </select>-->
 
     <!-- save, 자동생성(auto increment) key 사용 -->
     <insert id="save" useGeneratedKeys="true" keyProperty="id">

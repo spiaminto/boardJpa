@@ -3,7 +3,6 @@ package hello.board.domain.repository.mybatis;
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.repository.BoardRepository;
-import hello.board.domain.repository.BoardSerachCond;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.UncategorizedSQLException;
@@ -38,19 +37,10 @@ public class MybatisBoardRepository implements BoardRepository {
         return boardMapper.findById(id);
     }
 
-    @Override
-    public List<Board> findAll(BoardSerachCond cond) {
-        return boardMapper.findAll(cond);
-    }
-
+    // 검색 + 페이징
     @Override
     public List<Board> findPagedBoard(Criteria criteria) {
         return boardMapper.findPagedBoard(criteria);
-    }
-
-    @Override
-    public List<Board> findByWriter(String writer) {
-        return boardMapper.findByWriter(writer);
     }
 
     @Override
@@ -72,7 +62,7 @@ public class MybatisBoardRepository implements BoardRepository {
 
     // 필요시 반환
     @Override
-    public void delete(Long id) throws RuntimeException {
-        int row = boardMapper.delete(id);
+    public int delete(Long id) throws RuntimeException {
+        return boardMapper.delete(id);
     }
 }

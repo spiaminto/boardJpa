@@ -2,7 +2,6 @@ package hello.board.domain.repository.mybatis;
 
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
-import hello.board.domain.repository.BoardSerachCond;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,12 +18,12 @@ public interface BoardMapper {
     Board findById(Long id);
 
     // 검색용으로 사용
-    List<Board> findAll(BoardSerachCond cond);
+//    List<Board> findAll(BoardSerachCond cond);
 
-    // 페이징 된 board 찾기
+    // 검색 + 페이징 된 board 찾기
     List<Board> findPagedBoard(Criteria criteria);
 
-    List<Board> findByWriter(String writer);
+//    List<Board> findByWriter(String writer);
 
     int save(Board board);
 

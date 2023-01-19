@@ -179,10 +179,8 @@
 
                 // 답글이면
                 if (isReply) {
-                    // afterTarget id = 답글을 붙일 groupId
-                    console.log("isreply, afterTarget id " + afterTargetId)
 
-                    // 답글 클래스 변경
+                    // 답글 클래스로 변경
                     $(item).addClass("other-comment-reply").removeClass("other-comment");
 
                     // data-group 속성 값이 답글 붙일 groupId 와 같은 요소 중 첫번째 (모댓글)
@@ -195,13 +193,11 @@
 
                     // 첫번째 답글 -> 모댓글 다음에 부착
                     if (targetPosition.length == 0) {
-                        console.log("position = null")
                         $(".comment[data-group='" + afterTargetId + "']").first().after($(item));
                         return;
                     }
 
                     // 두번째 이후 부터 답글 -> 찾은 위치에 부착
-                    console.log("targetPosition id = " + targetPosition.attr("id"))
                     targetPosition.after($(item));
                 }
             })
@@ -321,7 +317,6 @@
 
                 // length > 1 == writing (true)
                 let isWriting = $(".comment .bg-primary").length;
-                console.log("isWriting" + isWriting);
 
                 // 작성중인지 확인
                 if (isWriting) {
@@ -356,8 +351,6 @@
                     alert("내용을 입력해 주세요.");
                     return false;
                 }
-
-                console.log("commentId = " + commentId + "content = " + content)
 
                 $.ajax({
                     type: "post",
@@ -399,7 +392,6 @@
 
             // 댓글 삭제 검사 및 삭제
             $(".comment-delete").on("click", function (event) {
-                console.log("event delete");
                 event.preventDefault();
                 let targetWriter = $(this).prev().text();
                 let myWriter = $("#myComment .myWriter").val();
@@ -546,16 +538,16 @@
         <!-- 검색 안함 -->
         <div class="btn-group" role="group" th:if="${criteria.option == null}">
             <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
-                    th:onclick="|location.href='@{/board/list(currentPage=${criteria.currentPage})}'|">List
+                    th:onclick="|location.href='@{/board/list(currentPage=${criteria.currentPage})}'|">목록
             </button>
             <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
                     th:onclick="|location.href='@{/board/edit/{boardId}(boardId=${board.id}, currentPage=${criteria.currentPage})}'|">
-                Update
+                수정
             </button>
             <!-- 삭제 확인을 위해 onclick 비활성화 -->
             <!-- th:onclick="|location.href='@{/board/delete/{boardId}(boardId=${board.id}, currentPage=${criteria.currentPage})}'|"-->
             <button type="button" class="btn btn-primary delete">
-                Delete
+                삭제
             </button>
         </div>
     </div>

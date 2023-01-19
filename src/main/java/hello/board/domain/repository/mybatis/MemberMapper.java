@@ -20,6 +20,7 @@ public interface MemberMapper {
 
     Optional<Member> findByLoginId(String loginId);
 
+    // 중복유저 체크할떄 사용
     Optional<Member> findByUsername(String username);
 
     List<Member> findAll();

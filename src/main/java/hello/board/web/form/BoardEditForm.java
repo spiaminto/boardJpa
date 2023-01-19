@@ -25,16 +25,8 @@ public class BoardEditForm {
     private LocalDateTime regedate;
 
     private String isImageModified = "false";
-    //private List<MultipartFile> imageFiles;
 
     // DB 에 진짜로 저장할 이미지url
     private String imageName;
 
-
-    public BoardEditForm(String title, String content, String writer, List<MultipartFile> imageFiles) {
-        this.title = title;
-        this.content = content;
-        this.writer = writer;
-//        this.imageFiles = imageFiles;
-    }
 }

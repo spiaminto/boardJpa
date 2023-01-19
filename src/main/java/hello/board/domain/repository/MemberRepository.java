@@ -17,8 +17,6 @@ public interface MemberRepository {
 
     Optional<Member> findByLoginId(String loginId);
 
-    Optional<Member> findByUsername(String username);
-
     List<Member> findAll();
 
     boolean duplicateCheck(String option, String param);

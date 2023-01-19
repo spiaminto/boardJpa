@@ -39,9 +39,6 @@ public class BoardController {
     private final ImageRepository imageRepository;
 
     private final CommentRepository commentRepository;
-    
-    // 사진 업로드 처리
-    private final ImageStore imageStore;
 
     /**
      * 전체 글 List<Board> 를 페이징 하여 모델에 담아 /list 뷰 호출
@@ -67,16 +64,11 @@ public class BoardController {
         model.addAttribute("boardList", pagedBoard);
         
 
-        // session 에 loginMember 없음
-        if (loginMember == null) {
-            log.info("/board/list, none login");
-            return "/board/list";
-        }
-
         // session 에 loginMember 있음
-        model.addAttribute("member", loginMember);
-
-        log.info("/board/list, login");
+        if (loginMember != null) {
+            model.addAttribute("member", loginMember);
+        }
+        
         return "/board/list";
     }
 
@@ -122,7 +114,7 @@ public class BoardController {
     @PostMapping("/write")
     public String writeBoard(@Validated @ModelAttribute("board") BoardSaveForm form,
                         BindingResult bindingResult, HttpServletRequest request,
-                        RedirectAttributes redirectAttributes) throws IOException {
+                        RedirectAttributes redirectAttributes) {
         // 검증 오류 발견
         if (bindingResult.hasErrors()) {
             log.info("/write POST bindingResult.hasErrors");
@@ -141,7 +133,7 @@ public class BoardController {
         // 폼을 통해 실제로 들어온 이미지 확인
         String[] splittedImageName = form.getImageName().split(",");
         for (String imageName : splittedImageName) {
-            log.info("imageName input by form = "+ imageName);
+            log.info("/write imageName input by form = "+ imageName);
         }
 
         // 이미지 DB 저장(동기화)
@@ -168,16 +160,13 @@ public class BoardController {
                            RedirectAttributes redirectAttributes,
                            @ModelAttribute Criteria criteria) {
         Board findBoard = boardRepository.findById(boardId);
-        List<Image> imageList = imageRepository.findByBoardId(boardId);
 
         // 현재 로그인한 사람, 수정하려는 글의 작성자 비교
         if (isSameWriter(request, findBoard)) {
             model.addAttribute("board",findBoard);
-            log.info("/edit GET ok");
             return "/board/editForm";
         }
 
-        log.info("/edit GET fail");
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                 "/board/read/" + boardId, "수정하려는 글과 작성자가 다릅니다.", request.getQueryString()
         ));
@@ -195,7 +184,7 @@ public class BoardController {
     public String editBoard(@PathVariable Long boardId,@Validated @ModelAttribute("board") BoardEditForm form,
                        BindingResult bindingResult, HttpServletRequest request,
                        @ModelAttribute Criteria criteria,
-                       RedirectAttributes redirectAttributes) throws IOException {
+                       RedirectAttributes redirectAttributes) {
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
             log.info("/edit POST bindingResult.hasErrors = {}", bindingResult);
@@ -211,7 +200,7 @@ public class BoardController {
         // 들어온 이미지 확인
         String[] splittedImageName = form.getImageName().split(",");
         for (String imageName : splittedImageName) {
-            log.info("url = "+ imageName);
+            log.info("/edit imageName input by form = "+ imageName);
         }
 
         // 이미지 동기화
@@ -240,15 +229,14 @@ public class BoardController {
             return "redirect:/alert";
         }
 
-        boardRepository.delete(boardId);
+        int result = boardRepository.delete(boardId);
+        if (result == 1) {log.info("boardRepository.delete({}) 성공", boardId);}
 
         // 댓글 삭제 delete cascade
         commentRepository.deleteByBoardId(boardId);
 
         // 이미지 삭제
         imageRepository.deleteImage(boardId);
-
-        log.info("/delete 삭제성공 {}", boardId);
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                 "/board/list", "글이 삭제 되었습니다.", request.getQueryString()

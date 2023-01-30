@@ -15,8 +15,9 @@ public class LogInterceptor implements HandlerInterceptor {
 
         String requestURI = request.getRequestURI();
         String queryString = request.getQueryString();
+        String method = request.getMethod();
 
-        log.info(" REQUEST URI={}, QueryString={}", requestURI, queryString);
+        log.info("{} {}?{}", method, requestURI, queryString);
 
         // 다음 인터셉터 진행
         return true;

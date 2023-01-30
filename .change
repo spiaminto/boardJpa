@@ -18,5 +18,10 @@ commit 5
     boardrepo, memberrepo 및 관련 사용되지 않는 코드 제거, boardSerchCond 제거.
     comment controller 사용하지 않는 반환속성 제거.
     board 와 관련폼 사용하지 않는 생성자 제거.
+
+commit 6
+    스프링 시큐리티 및 일반 로그인 적용, 로그인체크 인터셉터 비활성화
+    일반 session 에 로그인정보를 더이상 저장하지 않음, 비밀번호 암호화됨 등
+    list 요소 크기 조정
     
 

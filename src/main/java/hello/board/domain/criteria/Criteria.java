@@ -32,7 +32,7 @@ public class Criteria {
     // 요청 파라미터가 없을때 (최초접속)
     public Criteria() {
         this.currentPage = 1;
-        this.boardPerPage = 7;
+        this.boardPerPage = 12;
     }
 
     // test 사용

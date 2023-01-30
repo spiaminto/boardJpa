@@ -6,17 +6,19 @@ import hello.board.web.form.LoginForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Iterator;
 
 @Slf4j
 @Controller
@@ -26,14 +28,38 @@ public class LoginController {
     // 로그인 로직을 실행할 loginService
     private final LoginService loginService;
 
-    // /login GET
+    // /login GET, 사용자가 login 버튼 누름
     @GetMapping("/login")
     public String login(@ModelAttribute("loginForm") LoginForm loginForm) {
         return "/login/loginForm";
     }
 
+    // spring security 에서 잡은 로그인(임시)
+    @RequestMapping("/loginForm")
+    public String loginForm(@ModelAttribute("loginForm") LoginForm loginForm,
+                            @RequestParam(value = "error", required = false) String error,
+                            HttpServletRequest request, Model model) {
+        log.info("SpringSecurity 에서 로그인 요청 catch");
+        
+        // 포워딩을 통해 들어옴
+        String loginId = (String) request.getAttribute("loginId");
+        String errorMessage = (String) request.getAttribute("errorMessage");
+
+        // 로그인 에러 처리
+        if ("true".equals(error)) {
+            model.addAttribute("error", error);
+            model.addAttribute("loginId", loginId);
+            model.addAttribute("springSecurityErrorMessage", errorMessage);
+        } else {
+            model.addAttribute("isCatched", "true");
+        }
+
+        return "/login/loginForm";
+    }
+
     // /login POST
     // redirectURL: 인터셉터에서 로그인 처리 실패후 전달되는 요청URL, 로그인 후 해당 URL 로 리다이렉트한다.
+    /*
     @PostMapping("/login")
     public String login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult,
                         HttpServletRequest request,
@@ -79,6 +105,8 @@ public class LoginController {
         log.info("/login output redirectURL = {}", redirectURL);
         return "redirect:" + redirectURL;
     }
+
+     */
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {

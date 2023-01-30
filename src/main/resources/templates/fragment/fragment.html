@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!--타임리프 및 스프링 시큐리티 확장 네임스페이스 사용-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,7 +13,7 @@
 <body class="pt-7">
 
 <nav th:fragment="nav-fragment" class="navbar navbar-expand-md navbar-dark bg-primary bg-gradient fixed-top">
-    <div class="container-fluid">
+    <div class="container-fluid" id="navBarContainer">
         <a class="navbar-brand text-light" href="/board/list" aria-current="page" id="header">게시판</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -34,7 +36,7 @@
             </ul>
             <div class="d-flex justify-content-end">
                 <ul class="navbar-nav me-auto justify-content-end" id="navRightBox">
-                    <li class="nav-item" th:if="${session.loginMember == null}">
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
                         <form class="container-fluid loginBtBox">
                             <button class="btn btn-sm btn-light me-2" type="button"
                                     onclick="location.href='loginForm.html'"
@@ -44,12 +46,12 @@
                                     th:onclick="|location.href='@{/member/add}'|">회원가입</button>
                         </form>
                     </li>
-                    <li id="loginMessage" class="nav-item" th:if="${session.loginMember != null}">
-                            <span class="navbar-text" th:text="|${session.loginMember.getUsername()}님 로그인 되었습니다.|">
+                    <li id="loginMessage" class="nav-item" sec:authorize="isAuthenticated()">
+                            <span class="navbar-text" th:text="|${#authentication.name}님 로그인 되었습니다.|">
                                 login message
                             </span>
                     </li>
-                    <li class="nav-item" th:if="${session.loginMember != null}">
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
                         <form class="container-fluid loginBtBox">
                             <button class="btn btn-sm btn-light me-2" type="button"
                                     th:onclick="|location.href='@{/member/edit}'|" id="memberEditBt">회원정보수정</button>

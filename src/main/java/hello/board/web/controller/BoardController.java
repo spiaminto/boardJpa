@@ -10,11 +10,13 @@ import hello.board.domain.repository.BoardRepository;
 import hello.board.domain.repository.CommentRepository;
 import hello.board.domain.repository.ImageRepository;
 import hello.board.web.RedirectDTO;
+import hello.board.web.auth.PrincipalDetails;
 import hello.board.web.file.ImageStore;
 import hello.board.web.form.BoardEditForm;
 import hello.board.web.form.BoardSaveForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -46,7 +48,7 @@ public class BoardController {
      * beanvalidation 이 아닌 jquery 로 검증했음
      */
     @GetMapping(value = {"/list", "/"})
-    public String pagedList(@SessionAttribute(value = "loginMember", required = false) Member loginMember,
+    public String pagedList(@AuthenticationPrincipal PrincipalDetails principalDetails,
                             Model model,
                             @ModelAttribute("criteria") Criteria criteria) {
 
@@ -62,12 +64,13 @@ public class BoardController {
         // 페이지메이커, 글 목록 모델에 넣기
         model.addAttribute("pageMaker", pageMaker);
         model.addAttribute("boardList", pagedBoard);
-        
 
-        // session 에 loginMember 있음
-        if (loginMember != null) {
-            model.addAttribute("member", loginMember);
+        // 로그인 중인 사용자 있음
+        /*
+        if (principalDetails != null) {
+            model.addAttribute("member", principalDetails.getMember());
         }
+        */
         
         return "/board/list";
     }
@@ -112,7 +115,8 @@ public class BoardController {
      * @return
      */
     @PostMapping("/write")
-    public String writeBoard(@Validated @ModelAttribute("board") BoardSaveForm form,
+    public String writeBoard(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                        @Validated @ModelAttribute("board") BoardSaveForm form,
                         BindingResult bindingResult, HttpServletRequest request,
                         RedirectAttributes redirectAttributes) {
         // 검증 오류 발견
@@ -122,8 +126,7 @@ public class BoardController {
         }
 
         // 현재 사용자 확인
-        HttpSession session = request.getSession(false);
-        Member loginMember = (Member) session.getAttribute("loginMember");
+        Member loginMember = principalDetails.getMember();
 
         // board 저장
         Board board = new Board(form.getTitle(), form.getWriter(), form.getContent());
@@ -158,11 +161,12 @@ public class BoardController {
     @GetMapping("/edit/{boardId}")
     public String editForm(@PathVariable Long boardId, HttpServletRequest request, Model model,
                            RedirectAttributes redirectAttributes,
+                           @AuthenticationPrincipal PrincipalDetails principalDetails,
                            @ModelAttribute Criteria criteria) {
         Board findBoard = boardRepository.findById(boardId);
 
         // 현재 로그인한 사람, 수정하려는 글의 작성자 비교
-        if (isSameWriter(request, findBoard)) {
+        if (isSameWriter(principalDetails, findBoard)) {
             model.addAttribute("board",findBoard);
             return "/board/editForm";
         }
@@ -218,11 +222,14 @@ public class BoardController {
      * @return
      */
     @GetMapping("/delete/{boardId}")
-    public String delete(@PathVariable Long boardId, HttpServletRequest request,
-                         RedirectAttributes redirectAttributes, @RequestParam(required = false) String currentPage) {
+    public String delete(@PathVariable Long boardId,
+                         @AuthenticationPrincipal PrincipalDetails principalDetails,
+                         HttpServletRequest request,
+                         RedirectAttributes redirectAttributes,
+                         @RequestParam(required = false) String currentPage) {
         Board findBoard = boardRepository.findById(boardId);
 
-        if (!isSameWriter(request, findBoard)) {
+        if (!isSameWriter(principalDetails, findBoard)) {
             redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                     "/board/read/" + boardId, "삭제하려는 글과 작성자가 다릅니다.", request.getQueryString()
             ));
@@ -246,13 +253,12 @@ public class BoardController {
 
     /**
      * 글의 작성자와 세션에 등록된 현재사용자가 같은지 확인
-     * @param request
+     * @param principalDetails
      * @param findBoard
      * @return
      */
-    public boolean isSameWriter(HttpServletRequest request, Board findBoard) {
-        HttpSession session = request.getSession();
-        Member loginMember = (Member) (session.getAttribute("loginMember"));
+    public boolean isSameWriter(PrincipalDetails principalDetails, Board findBoard) {
+        Member loginMember = principalDetails.getMember();
         return findBoard.getMemberId().equals(loginMember.getId());
     }
 

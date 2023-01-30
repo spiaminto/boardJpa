@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!--타임리프 및 스프링 시큐리티 확장 네임스페이스 사용-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -120,7 +122,7 @@
         </p>
         <p><label for="writer">작성자 </label>
             <!-- th:field, th:value 동시사용 세션에서 writer 받으려고. <-적용안되서 걍 field 빼버림 어차피 name 있으니까-->
-            <input type="text" class="form-control" id="writer" name="writer" th:value="${session.loginMember.getUsername}" readonly>
+            <input type="text" class="form-control" id="writer" name="writer" th:value="${#authentication.name}" readonly>
             <div class="field-error" th:errors="*{writer}"> writer 오류</div>
         </p>
         <p>

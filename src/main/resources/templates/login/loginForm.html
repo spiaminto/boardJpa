@@ -1,5 +1,7 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<!--타임리프 및 스프링 시큐리티 확장 네임스페이스 사용-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,19 +34,21 @@
     <!-- javascript 에서 thymeleaf 변수 접근하는 script -->
     <script th:inline="javascript">
         /*<![CDATA[*/
-        // 메시지 alert 설정 =======================================
-        const message = [[${msg}]];
-        const redirectURL = [[${param.redirectURL}]];
 
-        // HttpSession != sessionStorage
+        // model.setAttribute("isCatched", "true")
+        const isCatched = [[${isCatched}]];
+        // queryString
+        const redirectURL = [[${param.redirectURL}]];
+        const message = [[${msg}]];
 
         const isValidRequest = [[${session.isValidRequest}]];
         /*]]>*/
 
-        console.log("message = " + message + " redirectURL = " + redirectURL + " isValidRequest = " + isValidRequest);
+        console.log("message = " + message + " redirectURL = " + redirectURL
+            + " isValidRequest = " + isValidRequest + "isCatched = " + isCatched);
 
-        // 미인증 사용자 요청인지 확인
-        if (isValidRequest == "false") {
+        // Spring security 에 의해 catch 된 login 요청인지 확인
+        if (isCatched == "true") {
             alert("로그인이 필요합니다.");
         }
 
@@ -59,7 +63,7 @@
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
 
-    <form action="item.html" th:action th:object="${loginForm}" method="post" class="form">
+    <form action="item.html" th:action="@{/loginProc}" th:object="${loginForm}" method="post" class="form">
 
         <h2>로그인</h2>
 
@@ -68,7 +72,7 @@
                th:text="${err}">전체 오류 메시지</p>
         </div>
         <div class="form-floating mb-3">
-            <input type="text" id="loginId" th:field="*{loginId}"
+            <input type="text" id="loginId" th:field="*{loginId}" th:value="${loginId}"
                    th:errorclass="is-invalid" class="form-control" placeholder="로그인 ID">
             <label for="loginId">로그인 ID</label>
             <div class="invalid-feedback"> 로그인 ID 를 입력해 주세요(최대 8자)</div>
@@ -80,6 +84,9 @@
                    th:errorclass="is-invalid" class="form-control" placeholder="비밀번호">
             <label for="password">비밀번호</label>
             <div class="invalid-feedback"> 비밀번호를 입력해 주세요(최소 4 ~ 최대 12자)</div>
+        </div>
+        <div th:if="${springSecurityErrorMessage != null}">
+            <p class="field-error" th:text="${springSecurityErrorMessage}">로그인 오류 메시지</p>
         </div>
 
         <div class="d-flex justify-content-around">

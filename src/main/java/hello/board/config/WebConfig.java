@@ -1,4 +1,4 @@
-package hello.board;
+package hello.board.config;
 
 import hello.board.web.interceptor.LogInterceptor;
 import hello.board.web.interceptor.LoginCheckInterceptor;
@@ -26,6 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        /*
         registry.addInterceptor(new LoginCheckInterceptor())
                 .order(2)
                 .addPathPatterns("/**")
@@ -40,10 +41,12 @@ public class WebConfig implements WebMvcConfigurer {
                         "/reset.css", "/favicon.ico",
                         "https://maxcdn.bootstrapcdn.com/**");
 
+         */
+
         registry.addInterceptor(new LogInterceptor())
                 .order(1)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/static/**",
+                .excludePathPatterns("/static/**", "/css/**",
                         "https://maxcdn.bootstrapcdn.com/**");
     }
 

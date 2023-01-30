@@ -55,7 +55,7 @@ public class CommentController {
     }
 
     @ResponseBody
-    @PostMapping("/update/{commentId}")
+    @PostMapping("/edit/{commentId}")
     public Map<String, Object> updateComment(@RequestParam("content") String content,
                                  @PathVariable("commentId") Long commentId) {
         Comment updateParam = new Comment();

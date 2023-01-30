@@ -2,6 +2,16 @@
     padding: 0;
 }
 
+@media (min-width: 960px) {
+    #navBarContainer {
+        padding: 0 30px;
+    }
+}
+
+#navBarContainer {
+    max-width: 1200px;
+}
+
 #loginMessage {
     margin-right: 20px;
 }

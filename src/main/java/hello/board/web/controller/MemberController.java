@@ -4,10 +4,13 @@ import hello.board.domain.member.Member;
 import hello.board.domain.repository.MemberRepository;
 import hello.board.domain.repository.ResultDTO;
 import hello.board.web.RedirectDTO;
+import hello.board.web.auth.PrincipalDetails;
 import hello.board.web.form.MemberEditForm;
 import hello.board.web.form.MemberSaveForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.security.Principal;
 
 @Controller
 @Slf4j
@@ -25,6 +29,8 @@ import javax.servlet.http.HttpSession;
 public class MemberController {
 
     private final MemberRepository memberRepository;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 회원가입 /add
     @GetMapping("/add")
@@ -42,8 +48,10 @@ public class MemberController {
             return "/member/addForm";
         }
 
+        String encodedPassword = bCryptPasswordEncoder.encode(form.getPassword());
+
         Member member = new Member(
-                form.getLoginId(), form.getUsername(), form.getPassword()
+                form.getLoginId(), form.getUsername(), encodedPassword
         );
 
         ResultDTO result = memberRepository.save(member);
@@ -60,17 +68,17 @@ public class MemberController {
     }
 
     @GetMapping("/edit")
-    public String editForm(HttpServletRequest request, Model model) {
-        HttpSession session = request.getSession(false);
-        Member currentMember = (Member) session.getAttribute("loginMember");
-        model.addAttribute("member", currentMember);
+    public String editForm(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                           Model model) {
+        model.addAttribute("member", principalDetails.getMember());
         return "/member/editForm";
     }
 
     @PostMapping("/edit")
     public String editMember(@Validated @ModelAttribute("member") MemberEditForm memberEditForm,
                              BindingResult bindingResult, Model model,
-                             HttpServletRequest request, RedirectAttributes redirectAttributes
+                             @AuthenticationPrincipal PrincipalDetails principalDetails,
+                             RedirectAttributes redirectAttributes
                              ) {
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
@@ -78,14 +86,15 @@ public class MemberController {
             return "/member/editForm";
         }
 
-        HttpSession session = request.getSession(false);
-        Member currentMember = (Member) session.getAttribute("loginMember");
+        Member currentMember = principalDetails.getMember();
         String beforeLoginId = currentMember.getLoginId();
         String beforePassword = currentMember.getPassword();
 
+        String encodedPassword = bCryptPasswordEncoder.encode(memberEditForm.getPassword());
+
         // Member 업데이트
         Member updateParam = new Member(
-                memberEditForm.getLoginId(), memberEditForm.getUsername(), memberEditForm.getPassword()
+                memberEditForm.getLoginId(), memberEditForm.getUsername(), encodedPassword
         );
 
         log.info("currentMember.getId = {}", currentMember.getId());
@@ -93,15 +102,13 @@ public class MemberController {
 
         // 로그인 정보도 수정
         if (!beforeLoginId.equals(memberEditForm.getLoginId())
-                || !beforePassword.equals(memberEditForm.getPassword())) {
+                || !bCryptPasswordEncoder.matches(memberEditForm.getPassword(), beforePassword)
+        ) {
             log.info("/edit POST 로그인 정보수정");
-
-            // 세션삭제
-            session.invalidate();
 
             // alert
             model.addAttribute("redirectDTO", new RedirectDTO(
-                    "/login", "로그인 정보가 변경되었습니다. 재로그인해 주세요."));
+                    "/logout", "로그인 정보가 변경되었습니다. 재로그인해 주세요."));
             return "/alert";
         }
 
@@ -113,9 +120,6 @@ public class MemberController {
         model.addAttribute("redirectDTO", new RedirectDTO(
                 "/board/list", "멤버 정보가 변경되었습니다."
         ));
-
-        // 세션갱신
-        session.setAttribute("loginMember", updatedMember);
 
         return "/alert";
     }

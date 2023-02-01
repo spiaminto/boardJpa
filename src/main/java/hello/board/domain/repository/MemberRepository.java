@@ -11,6 +11,10 @@ public interface MemberRepository {
 
     Member update(Long id, Member updateParam);
 
+    int updateEmail(String providerId, String email);
+
+    int updateUsername(String providerId, String username);
+
     void delete(Long id);
 
     Member findById(Long id);
@@ -20,5 +24,7 @@ public interface MemberRepository {
     List<Member> findAll();
 
     boolean duplicateCheck(String option, String param);
+
+    Optional<Member> findByProviderAndProviderId(String provider, String providerId);
 
 }

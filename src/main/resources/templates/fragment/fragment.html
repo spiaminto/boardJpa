@@ -54,7 +54,7 @@
                     <li class="nav-item" sec:authorize="isAuthenticated()">
                         <form class="container-fluid loginBtBox">
                             <button class="btn btn-sm btn-light me-2" type="button"
-                                    th:onclick="|location.href='@{/member/edit}'|" id="memberEditBt">회원정보수정</button>
+                                    th:onclick="|location.href='@{/member/info}'|" id="memberEditBt">회원정보</button>
                             <button class="btn btn-sm btn-light" type="button"
                                     onclick="location.href='list.html'" id="logoutBt"
                                     th:onclick="|location.href='@{/logout}'|">로그아웃</button>

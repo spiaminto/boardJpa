@@ -7,6 +7,7 @@ import hello.board.web.RedirectDTO;
 import hello.board.web.auth.PrincipalDetails;
 import hello.board.web.form.MemberEditForm;
 import hello.board.web.form.MemberSaveForm;
+import hello.board.web.form.OAuth2MemberEditForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,10 +18,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.security.Principal;
 
 @Controller
 @Slf4j
@@ -51,8 +48,10 @@ public class MemberController {
         String encodedPassword = bCryptPasswordEncoder.encode(form.getPassword());
 
         Member member = new Member(
-                form.getLoginId(), form.getUsername(), encodedPassword
+                form.getLoginId(), form.getUsername(), encodedPassword, form.getEmail()
         );
+
+        member.setRole("ROLE_USER");
 
         ResultDTO result = memberRepository.save(member);
 
@@ -67,23 +66,28 @@ public class MemberController {
         return "redirect:/alert";
     }
 
-    @GetMapping("/edit")
-    public String editForm(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    @GetMapping("/info")
+    public String infoForm(@AuthenticationPrincipal PrincipalDetails principalDetails,
                            Model model) {
         model.addAttribute("member", principalDetails.getMember());
-        return "/member/editForm";
+
+        // OAuth2 로그인 유저인 경우
+        if (principalDetails.getMember().getProvider() != null) {
+            model.addAttribute("isOauth2", "true");
+        }
+
+        return "/member/infoForm";
     }
 
     @PostMapping("/edit")
     public String editMember(@Validated @ModelAttribute("member") MemberEditForm memberEditForm,
                              BindingResult bindingResult, Model model,
-                             @AuthenticationPrincipal PrincipalDetails principalDetails,
-                             RedirectAttributes redirectAttributes
+                             @AuthenticationPrincipal PrincipalDetails principalDetails
                              ) {
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
             log.info("/edit POST bindingResult.hasError");
-            return "/member/editForm";
+            return "/member/infoForm";
         }
 
         Member currentMember = principalDetails.getMember();
@@ -94,13 +98,13 @@ public class MemberController {
 
         // Member 업데이트
         Member updateParam = new Member(
-                memberEditForm.getLoginId(), memberEditForm.getUsername(), encodedPassword
+                memberEditForm.getLoginId(), memberEditForm.getUsername(), encodedPassword, memberEditForm.getEmail()
         );
 
         log.info("currentMember.getId = {}", currentMember.getId());
         Member updatedMember = memberRepository.update(currentMember.getId(), updateParam);
 
-        // 로그인 정보도 수정
+        // 로그인 정보도 수정 -> 강제 로그아웃
         if (!beforeLoginId.equals(memberEditForm.getLoginId())
                 || !bCryptPasswordEncoder.matches(memberEditForm.getPassword(), beforePassword)
         ) {
@@ -112,15 +116,39 @@ public class MemberController {
             return "/alert";
         }
 
-        // 이름만 수정
-        // session 내부의 "loginMember" 는 위에서 update 하면 자동으로 반영됨. (객체 하나로 자동관리되는듯?)
-        // session.setAttribute("loginMember", updatedMember);
+        // 시큐리티 세션 갱신 (보안상? 맞는진? 모르겠음)
+        principalDetails.editMember(updatedMember.getUsername());
 
         //alert
         model.addAttribute("redirectDTO", new RedirectDTO(
                 "/board/list", "멤버 정보가 변경되었습니다."
         ));
 
+        return "/alert";
+    }
+
+    @PostMapping("/edit/OAuth2")
+    public String editOAuth2Member(@Validated @ModelAttribute("member")OAuth2MemberEditForm oAuth2MemberEditForm,
+                                   @AuthenticationPrincipal PrincipalDetails principalDetails,
+                                   BindingResult bindingResult, Model model) {
+
+        if (bindingResult.hasErrors()) {
+            log.info("/edit POST bindingResult.hasError");
+            return "/member/infoForm";
+        }
+
+        String username = oAuth2MemberEditForm.getUsername();
+        String providerId = oAuth2MemberEditForm.getProviderId();
+
+        memberRepository.updateUsername(providerId, username);
+
+        // 시큐리티 세션 갱신 (보안상? 맞는진? 모르겠음)
+        principalDetails.editMember(username);
+
+        //alert
+        model.addAttribute("redirectDTO", new RedirectDTO(
+                "/board/list", "멤버 정보가 변경되었습니다."
+        ));
         return "/alert";
     }
 

@@ -23,25 +23,26 @@ public class Member {
     // oauth provider 구분, google
     private String provider;
 
-    // google Pk
+    // google Pk (최대 255자의 대소문자 구분 ASCII 문자 길이)
     private String providerId;
 
     //security 를 위해 임시생성
     private String role;
 
-    // save
-    public Member(String loginId, String username, String password) {
+    // save, normal Edit
+    public Member(String loginId, String username, String password, String email) {
         this.loginId = loginId;
         this.username = username;
         this.password = password;
+        this.email = email;
     }
 
     // security 위해 만든 임시 생성자, 강사는 @Builder 통한 Builder패턴 사용
-    public Member(String provider, String providerId, String username, String password, String email, String role) {
+    public Member(String provider, String providerId, String forOauth2UserLoginId, String forOauth2UserUsername, String password, String email, String role) {
         this.provider = provider;
         this.providerId = providerId;
-        this.loginId = username;
-        this.username = username;
+        this.loginId = forOauth2UserLoginId;
+        this.username = forOauth2UserUsername;
         this.password = password;
         this.email = email;
         this.role = role;

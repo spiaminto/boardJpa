@@ -2,19 +2,32 @@ package hello.board.web.auth;
 
 import hello.board.domain.member.Member;
 import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 
 @Data
-public class PrincipalDetails implements UserDetails {
+@Slf4j
+@RequiredArgsConstructor
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private final Member member;
+    
+    // OAuth2User.getAttributes() 로 받은 정보
+    private final Map<String, Object> attributes;
 
     public PrincipalDetails(Member member) {
         this.member = member;
+        this.attributes = null;
     }
 
     // 권한 리턴
@@ -42,6 +55,28 @@ public class PrincipalDetails implements UserDetails {
         return member.getUsername();
     }
 
+    // 유저네임 변경
+    private void setUsername(String username) { member.setUsername(username); }
+
+    // 유저 정보 변경 등의 이유로 PrincipalDetails 의 Member 를 갱신해야할때
+    public void editMember(String username) { setUsername(username); }
+
+    public String getEmail() {
+        return member.getEmail();
+    }
+
+    // OAuth2User, user PK
+    @Override
+    public String getName() {
+        return member.getId() + "";
+    }
+
+    // OAuth2User
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -61,4 +96,5 @@ public class PrincipalDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

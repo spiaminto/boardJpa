@@ -14,6 +14,10 @@ public interface MemberMapper {
 
     void update(@Param("id") Long id, @Param("updateParam") Member updateParam);
 
+    int updateEmail(@Param("providerId") String providerId, @Param("email") String email);
+
+    int updateUsername(@Param("providerId") String providerId, @Param("username") String username);
+
     void delete(Long id);
 
     Member findById(Long id);
@@ -22,6 +26,8 @@ public interface MemberMapper {
 
     // 중복유저 체크할떄 사용
     Optional<Member> findByUsername(String username);
+
+    Optional<Member> findByProviderAndProviderId(@Param("provider")String provider, @Param("providerId") String providerId);
 
     List<Member> findAll();
 

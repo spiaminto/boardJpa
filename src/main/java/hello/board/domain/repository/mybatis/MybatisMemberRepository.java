@@ -42,6 +42,16 @@ public class MybatisMemberRepository implements MemberRepository {
     }
 
     @Override
+    public int updateEmail(String providerId, String email) {
+        return memberMapper.updateEmail(providerId, email);
+    }
+
+    @Override
+    public int updateUsername(String providerId, String username) {
+        return memberMapper.updateUsername(providerId, username);
+    }
+
+    @Override
     public void delete(Long id) {
         memberMapper.delete(id);
     }
@@ -59,6 +69,11 @@ public class MybatisMemberRepository implements MemberRepository {
     @Override
     public List<Member> findAll() {
         return memberMapper.findAll();
+    }
+
+    @Override
+    public Optional<Member> findByProviderAndProviderId(String provider, String providerId) {
+        return memberMapper.findByProviderAndProviderId(provider, providerId);
     }
 
     @Override

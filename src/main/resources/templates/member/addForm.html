@@ -60,7 +60,7 @@
             $("#duplicateLoginIdCheckBt").on("click", function () {
                 loginId = $("#loginId").val();
 
-                if (loginId == "" || loginId.length > 8) {
+                if (loginId == "" || loginId.length > 16) {
                     alert("유효한 아이디를 입력해 주세요.");
                     return false;
                 }
@@ -87,7 +87,7 @@
             $("#duplicateUsernameCheckBt").on("click", function () {
                 username = $("#username").val();
 
-                if (username == "" || username.length > 8) {
+                if (username == "" || username.length > 16) {
                     alert("유효한 닉네임을 입력해 주세요.");
                     return false;
                 }
@@ -121,7 +121,7 @@
                 let password = $("#password").val();
 
                 // 비밀번호 체크
-                if (password.length < 4 || password.length > 12) {
+                if (password.length < 4 || password.length > 16) {
                     $("#password").addClass("is-invalid");
                     return false;
                 }
@@ -154,32 +154,39 @@
         <label for="loginId" class="col">로그인 ID </label>
         <div class="input-wrapper">
             <input type="text" th:field="*{loginId}" id="loginId" th:errorclass="is-invalid"
-                   placeholder="최대 8자 까지 허용합니다." class="form-control col-6">
+                   placeholder="최대 16자 까지 허용합니다." class="form-control col-6">
             <button id="duplicateLoginIdCheckBt" type="button" class="btn btn-secondary col">
                 중복확인
             </button>
             <div class="valid-feedback"> 사용 가능한 로그인 ID 입니다.</div>
-            <div class="invalid-feedback"> 로그인 ID 를 입력해 주세요 (최대 8 자)</div>
+            <div class="invalid-feedback"> 로그인 ID 를 입력해 주세요 (최대 16 자)</div>
         </div>
 
 
         <label for="password">비밀번호 </label>
         <div class="input-wrapper">
             <input type="password" id="password" th:field="*{password}" th:errorclass="is-invalid"
-                   placeholder="4 ~ 12자리 까지 허용합니다." class="form-control">
-            <div class="invalid-feedback"> 비밀번호를 입력해 주세요 (4 ~ 12 자)</div>
+                   placeholder="4 ~ 16자리 까지 허용합니다." class="form-control">
+            <div class="invalid-feedback"> 비밀번호를 입력해 주세요 (4 ~ 16 자)</div>
         </div>
 
 
         <label for="username">닉네임 </label>
         <div class="input-wrapper">
             <input type="text" th:field="*{username}" id="username" th:errorclass="is-invalid"
-                   placeholder="최대 8자 까지 허용합니다." class="form-control">
+                   placeholder="최대 16자 까지 허용합니다." class="form-control">
             <button id="duplicateUsernameCheckBt" type="button" class="btn btn-secondary">
                 중복확인
             </button>
             <div class="valid-feedback"> 사용 가능한 닉네임 입니다.</div>
-            <div class="invalid-feedback"> 닉네임을 입력해 주세요 (최대 8 자)</div>
+            <div class="invalid-feedback"> 닉네임을 입력해 주세요 (최대 16 자)</div>
+        </div>
+
+        <label for="email">이메일 </label>
+        <div class="input-wrapper">
+            <input type="text" id="email" th:field="*{email}" th:errorclass="is-invalid"
+                   placeholder="최대 30자 까지 허용합니다." class="form-control">
+            <div class="invalid-feedback"> 유효한 이메일을 입력해 주세요 </div>
         </div>
 
 

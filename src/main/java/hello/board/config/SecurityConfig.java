@@ -2,23 +2,18 @@ package hello.board.config;
 
 import hello.board.web.auth.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 @Configuration
-@EnableWebSecurity  // 스프링 시큐리티 필터를 스프링 필터체인에 등록
+@EnableWebSecurity // 스프링 시큐리티 필터를 스프링 필터체인에 등록
+//@EnableWebSecurity(debug = true)
 @EnableGlobalMethodSecurity(securedEnabled = true)  // @Secured 어노테이션 사용 및 활성화
 @RequiredArgsConstructor
 // 스프링 시큐리티 필터
@@ -57,10 +52,10 @@ public class SecurityConfig {
 
                 // input name = loginId
                 .usernameParameter("loginId")
-                
+
                 // GET /login, loginForm 불러오는 요청 커스텀
                 .loginPage("/loginForm")
-                
+
                 // POST /login, 로그인 처리부 요청 커스텀. 해당url 로그인 요청은 UserDetailsService 로 처리
                 .loginProcessingUrl("/loginProc")
 
@@ -92,12 +87,6 @@ public class SecurityConfig {
                 .userService(principalOauth2UserService);
 
         return http.build();
-    }
-
-    // logout 후 login할 때 정상동작을 위함
-    @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
     }
 
 }

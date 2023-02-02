@@ -7,12 +7,17 @@
           rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
           crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/global.css}" href="/static/css/global.css">
     <title>회원 등록</title>
     <style>
 
+        #container {
+            padding: 30px;
+        }
+
         h2 {
             text-align: center;
-            margin: 30px auto;
+            margin: 0 auto;
         }
 
         form {
@@ -139,7 +144,7 @@
         })
     </script>
 </head>
-<body>
+<body id="body">
 <div id="container" class="container">
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">

@@ -8,10 +8,6 @@
     <title> 글쓰기 </title>
     <style>
 
-        #container {
-            max-width: 940px;
-        }
-
         #form label { display: block; }
 
         #form p {
@@ -50,11 +46,16 @@
             min-height: 500px;
         }
 
+        #submitBtWrapper {
+            text-align: right;
+        }
+
     </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
           rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
           crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/global.css}" href="/static/css/global.css">
     <script src="http://code.jquery.com/jquery.min.js"></script>
     <script src="/static/js/ckeditor5/build/ckeditor.js" th:src="@{/js/ckeditor5/build/ckeditor.js}"></script>
     <script>
@@ -99,7 +100,7 @@
         })
     </script>
 </head>
-<body>
+<body id="body">
 <div id="container" class="container">
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">
@@ -139,7 +140,7 @@
         <!-- onsubmit 실제로 업로드할 이미지 요청 url 에서 uuid 뽑아서 값으로 설정 -->
         <input type="hidden" name="imageName" value="" id="uploadImageUrl">
 
-        <p><input type="submit" id="submitBt" name="submit" value="등록" class="btn btn-primary"></p>
+        <p id="submitBtWrapper"><input type="submit" id="submitBt" name="submit" value="등록" class="btn btn-primary"></p>
     </form>
 
 </div>

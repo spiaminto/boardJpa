@@ -8,15 +8,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
           rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
           crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}" href="/static/css/nav-css.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/global.css}" href="/static/css/global.css">
     <title>글 수정</title>
     <style>
 
-        #container {
-            max-width: 940px;
-        }
-
         #form label { display: block; }
+
         #form input[type=text], #form textarea {
             display: block;
             width: 100%;
@@ -45,6 +43,10 @@
 
         #container .ck-content {
             min-height: 500px;
+        }
+
+        #editBtWrapper {
+            text-align: right;
         }
 
 
@@ -99,7 +101,7 @@
         })
     </script>
 </head>
-<body>
+<body id="body">
 <div id="container" class="container">
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">
@@ -136,7 +138,7 @@
             <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="field-error"></textarea>
             <div class="invalid-feedback" th:errors="*{content}"> content 오류</div>
         </p>
-        <p>
+        <p id="editBtWrapper">
             <input id="editBt" type="submit" name="submit" value="수정" class="btn btn-primary">
         </p>
 

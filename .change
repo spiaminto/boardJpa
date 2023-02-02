@@ -29,6 +29,10 @@ commit7
     member 테이블, board 테이블 제약조건 수정 (loginId, useranme, password, writer)
     member add 와 edit 관련 기능들 수정 (email 추가 등)
 
+commit8
+    네이버, 카카오 로그인 적용
+    디자인 수정 (배경색, 소셜 로그인 버튼 등)
+
 
     
 

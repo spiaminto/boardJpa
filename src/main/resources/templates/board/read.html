@@ -8,12 +8,9 @@
     <title> 조회 </title>
     <style>
 
-        #container {
-            max-width: 940px;
-        }
-
         #wrapper {
             padding: 30px;
+            background-color: white;
         }
 
         #info {
@@ -154,6 +151,7 @@
           rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
           crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/global.css}" href="/static/css/global.css">
     <script src="/static/js/ckeditor5/build/ckeditor.js" th:src="@{/js/ckeditor5/build/ckeditor.js}"></script>
     <script>
         $(function () {
@@ -497,7 +495,7 @@
         });
     </script>
 </head>
-<body>
+<body id="body">
 <div id="container" class="container">
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">

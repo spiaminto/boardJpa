@@ -3,13 +3,12 @@ package hello.board.web.auth.oauth;
 import hello.board.domain.member.Member;
 import hello.board.domain.repository.MemberRepository;
 import hello.board.web.auth.PrincipalDetails;
-import hello.board.web.auth.oauth.provider.FaceBookUserInfo;
+import hello.board.web.auth.oauth.provider.KakaoUserInfo;
 import hello.board.web.auth.oauth.provider.GoogleUserInfo;
 import hello.board.web.auth.oauth.provider.NaverUserInfo;
 import hello.board.web.auth.oauth.provider.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -22,7 +21,6 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@Component
 @RequiredArgsConstructor
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
@@ -50,9 +48,9 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             log.info("구글 로그인 요청");
             oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
 
-        } else if (userRequest.getClientRegistration().getRegistrationId().equals("facebook")) {
-            log.info("페북 로그인 요청");
-            oAuth2UserInfo = new FaceBookUserInfo(oAuth2User.getAttributes());
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
+            log.info("카카오 로그인 요청");
+            oAuth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
 
         } else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")){
             log.info("네이버 로그인 요청");

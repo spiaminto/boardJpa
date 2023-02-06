@@ -183,17 +183,17 @@
     <div class="container">
         <ul class="pagination col justify-content-center" id="paginationContainer">
             <li class="page-item" th:if="${pageMaker.isPrevBt}">
-                <a th:href="@{|/board/list?currentPage=${(pageMaker.startPageNum)-1}|}"
+                <a th:href="@{|/board/list${pageMaker.getCategoryCode()}?currentPage=${(pageMaker.startPageNum)-1}|}"
                    th:data-pageNum="${(pageMaker.startPageNum)-1}" class="page-link">&laquo;</a>
             </li>
             <!-- ${#numbers.sequence(from,to,[step])} 단순반복 numbers 유틸리티 클래스 배열 생성후 사용 -->
             <!--    <li th:each="num : ${#numbers.sequence(${pageMaker.startPageNum},${pageMaker.endPageNum})}">-->
             <li class="page-item page-item-number" th:each="num : ${#numbers.sequence(pageMaker.startPageNum, pageMaker.endPageNum)}">
-                <a th:href="@{/board/list(currentPage=${num})}" th:text="${num}" th:data-pagenum="${num}"
+                <a th:href="@{|/board/list${pageMaker.getCategoryCode()}?currentPage=${num}|}" th:text="${num}" th:data-pagenum="${num}"
                    class="page-link page-link-number"> 페이지번호 </a>
             </li>
             <li class="page-item" th:if="${pageMaker.isNextBt()}">
-                <a th:href="@{|/board/list?currentPage=${pageMaker.endPageNum+1}|}"
+                <a th:href="@{|/board/list${pageMaker.getCategoryCode()}?currentPage=${pageMaker.endPageNum+1}|}"
                    th:data-pageNum="${pageMaker.endPageNum+1}" class="page-link">&raquo;</a>
             </li>
         </ul>
@@ -210,7 +210,7 @@
             <!-- th:action 태그는 javascript 를 통해 submit 할떄 적용되지 않는 것으로 보임 -->
             <!-- method = get 이므로 form 데이터가 queryString 에 붙어나감 -->
             <form id="searchForm" action="/board/list" method="get"
-                  th:action="@{/board/list}" th:object="${criteria}">
+                  th:action="@{|/board/list${pageMaker.getCategoryCode()}|}" th:object="${criteria}">
                 <input type="hidden" name="currentPage" value="1">
                 <select th:field="*{option}" name="option">
                     <option value="">전체보기</option>

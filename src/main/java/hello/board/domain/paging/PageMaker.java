@@ -26,6 +26,8 @@ public class PageMaker{
     // 현재페이지, 페이지별 글갯수
     private Criteria criteria;
 
+    private String categoryCode;
+
     // 현재페이지 (프론트용)
     private int currentPage;
 
@@ -52,11 +54,19 @@ public class PageMaker{
         this.criteria = criteria;
         this.totalBoardCount = totalBoardCount;
         this.currentPage = criteria.getCurrentPage();
+        this.categoryCode = criteria.getCategoryCode();
 
         calcPage();
     }
 
     public void calcPage() {
+
+        // 페이지네이션 url 의 카테고리 설정
+        if (categoryCode.equals("all")) {
+            categoryCode = "";
+        } else {
+            categoryCode = "/" + categoryCode;
+        }
 
         // 현패1 엔패5 / 현패3 엔패5 / 현패17 엔페20
         // (double) displayPageNum 으로 나누므로 소숫점 까지 나옴 -> 을 올림 후 계산

@@ -37,6 +37,7 @@ public class Criteria {
         this.currentPage = 1;
         this.boardPerPage = 12;
         this.category = Category.ALL;
+        this.categoryCode = Category.ALL.getCode();
     }
 
     // test 사용
@@ -64,6 +65,7 @@ public class Criteria {
 
     public void setCategoryCode(String categoryCode) {
         if (categoryCode != null) {
+            this.categoryCode = categoryCode;
             this.category = Category.of(categoryCode);
         }
     }

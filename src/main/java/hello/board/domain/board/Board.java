@@ -1,8 +1,10 @@
 package hello.board.domain.board;
 
+import hello.board.domain.enums.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,20 +24,29 @@ public class Board {
     private long viewCount;
 
     private Long memberId;
+    private Category category;
 
-    // save
-    public Board(String title, String writer, String content) {
+    // save(write)
+    public Board(String title, String writer, String content, Category category) {
         this.title = title;
         this.writer = writer;
         this.content = content;
+        this.category = category;
     }
 
-    // update
-    public Board(String title, String writer, String content, LocalDateTime updateDate) {
+    // update(edit)
+    public Board(String title, String writer, String content, LocalDateTime updateDate, Category category) {
         this.title = title;
         this.writer = writer;
         this.content = content;
         this.updateDate = updateDate;
+        this.category = category;
     }
+
+    public boolean isToday(LocalDateTime input) {
+        return input.toLocalDate().equals(LocalDate.now());
+    }
+
+
 
 }

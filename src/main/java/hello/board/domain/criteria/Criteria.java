@@ -1,5 +1,6 @@
 package hello.board.domain.criteria;
 
+import hello.board.domain.enums.Category;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,8 @@ public class Criteria {
     // 페이지 당 글 갯수
     private int boardPerPage;
 
+    private String categoryCode;
+    private Category category;
 
     // 검색 열 조건
     private String option;
@@ -33,12 +36,15 @@ public class Criteria {
     public Criteria() {
         this.currentPage = 1;
         this.boardPerPage = 12;
+        this.category = Category.ALL;
     }
 
     // test 사용
-    public Criteria(int currentPage, int boardPerPage) {
+    public Criteria(int currentPage, int boardPerPage, String option, String keyword) {
         this.currentPage = currentPage;
         this.boardPerPage = boardPerPage;
+        this.option = option;
+        this.keyword = keyword;
     }
 
     // Limit 문의 시작행은 0(행) 부터 시작
@@ -56,5 +62,10 @@ public class Criteria {
         }
     }
 
+    public void setCategoryCode(String categoryCode) {
+        if (categoryCode != null) {
+            this.category = Category.of(categoryCode);
+        }
+    }
 
 }

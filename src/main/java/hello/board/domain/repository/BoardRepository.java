@@ -17,6 +17,8 @@ public interface BoardRepository {
     // 페이징 된 보드
     List<Board> findPagedBoard(Criteria criteria);
 
+    List<Board> findPagedAndCategorizedBoard(Criteria criteria);
+
     Board save(Board board);
 
     Board update(Long id, Board updateParam);

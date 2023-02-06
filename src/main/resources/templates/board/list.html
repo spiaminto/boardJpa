@@ -130,10 +130,10 @@
         <table id="listTable" class="table">
             <colgroup>
                 <col width="7%">
-                <col width="40%">
-                <col width="10%">
-                <col width="18%">
-                <col width="18%">
+                <col width="41%">
+                <col width="15%">
+                <col width="15%">
+                <col width="15%">
                 <col width="7%">
             </colgroup>
 
@@ -165,8 +165,13 @@
                        th:text="${item.title}">title</a>
                 </td>
                 <td th:text="${item.writer}">writer</td>
-                <td th:text="${#temporals.format(item.regedate, 'yyMMdd HH:mm')}">regdate</td>
-                <td th:text="${#temporals.format(item.updateDate, 'yyMMdd HH:mm')}">updateDate</td>
+
+                <td th:if="${item.isToday(item.regedate)}" th:text="${#temporals.format(item.regedate, 'HH:mm')}">regdate</td>
+                <td th:if="${!item.isToday(item.regedate)}" th:text="${#temporals.format(item.regedate, 'yy-MM-dd')}">regdate</td>
+
+                <td th:if="${item.isToday(item.updateDate)}" th:text="${#temporals.format(item.updateDate, 'HH:mm')}">updateDAte</td>
+                <td th:if="${!item.isToday(item.updateDate)}" th:text="${#temporals.format(item.updateDate, 'yy-MM-dd')}">updateDate</td>
+
                 <td th:text="${item.viewCount}"> 조회수</td>
             </tr>
             </tbody>

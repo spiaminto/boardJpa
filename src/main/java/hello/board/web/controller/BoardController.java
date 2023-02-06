@@ -3,15 +3,14 @@ package hello.board.web.controller;
 import hello.board.domain.board.Board;
 import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
+import hello.board.domain.enums.Category;
 import hello.board.domain.member.Member;
-import hello.board.domain.image.Image;
 import hello.board.domain.paging.PageMaker;
 import hello.board.domain.repository.BoardRepository;
 import hello.board.domain.repository.CommentRepository;
 import hello.board.domain.repository.ImageRepository;
 import hello.board.web.RedirectDTO;
 import hello.board.web.auth.PrincipalDetails;
-import hello.board.web.file.ImageStore;
 import hello.board.web.form.BoardEditForm;
 import hello.board.web.form.BoardSaveForm;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -47,10 +44,12 @@ public class BoardController {
      * 쿼리파라미터로 currentPage 를 받아 Criteria 에 맵핑한다. (setter 사용, 생성자 (아마) X )
      * beanvalidation 이 아닌 jquery 로 검증했음
      */
-    @GetMapping(value = {"/list", "/"})
+    @GetMapping(value = {"/list/{categoryCode}", "/list", "/"})
     public String pagedList(@AuthenticationPrincipal PrincipalDetails principalDetails,
                             Model model,
                             @ModelAttribute("criteria") Criteria criteria) {
+
+        log.info(criteria.getCurrentPage() +  criteria.getKeyword() + criteria.getOption() + criteria.getCategory());
 
         // 글 가져오기
         List<Board> pagedBoard = boardRepository.findPagedBoard(criteria);
@@ -119,9 +118,13 @@ public class BoardController {
                         @Validated @ModelAttribute("board") BoardSaveForm form,
                         BindingResult bindingResult, HttpServletRequest request,
                         RedirectAttributes redirectAttributes) {
+
+        if (form.getCategory() == null) {
+            bindingResult.rejectValue("category", "NotBlank.board.category");
+        }
         // 검증 오류 발견
         if (bindingResult.hasErrors()) {
-            log.info("/write POST bindingResult.hasErrors");
+            log.info("/write POST bindingResult.hasErrors {}");
             return "/board/writeForm";
         }
 
@@ -129,7 +132,7 @@ public class BoardController {
         Member loginMember = principalDetails.getMember();
 
         // board 저장
-        Board board = new Board(form.getTitle(), form.getWriter(), form.getContent());
+        Board board = new Board(form.getTitle(), form.getWriter(), form.getContent(), form.getCategory());
         board.setMemberId(loginMember.getId());
         Board saveBoard = boardRepository.save(board);
         
@@ -189,15 +192,22 @@ public class BoardController {
                        BindingResult bindingResult, HttpServletRequest request,
                        @ModelAttribute Criteria criteria,
                        RedirectAttributes redirectAttributes) {
+
+        if (form.getCategory() == null) {
+            bindingResult.rejectValue("category", "NotBlank.board.category");
+        }
+
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
             log.info("/edit POST bindingResult.hasErrors = {}", bindingResult);
             return "/board/editForm";
         }
 
+        log.info("board.categoryString = {}, criteria.categoryString = {}", form.getCategory(), criteria.getCategoryCode());
+
         // Board 업데이트
         Board updateParam = new Board(
-                form.getTitle(), form.getWriter(), form.getContent(), form.getRegedate());
+                form.getTitle(), form.getWriter(), form.getContent(), form.getRegedate(), form.getCategory());
        
         Board updateBoard = boardRepository.update(boardId, updateParam);
 

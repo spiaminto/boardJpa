@@ -1,5 +1,6 @@
 package hello.board.web.form;
 
+import hello.board.domain.enums.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,9 +25,10 @@ public class BoardEditForm {
 
     private LocalDateTime regedate;
 
-    private String isImageModified = "false";
-
     // DB 에 진짜로 저장할 이미지url
     private String imageName;
+
+    // Criteria.category 와 동시에 바인딩되는듯
+    private Category category;
 
 }

@@ -21,7 +21,7 @@ public class MemberMapperTest {
     @Autowired
     MemberMapper memberMapper;
 
-    Member member = new Member("testLog","testName", "1111");
+    Member member = new Member("testLog","testName", "1111", "email@email.com");
 
     @Test
     public void saveTest() {
@@ -33,7 +33,7 @@ public class MemberMapperTest {
     @Test
     public void updateTest() {
         memberMapper.save(member);
-        Member updateParam =  new Member("updateLo", "updateNa", "2222");
+        Member updateParam =  new Member("updateLo", "updateNa", "2222", "email@email.com");
         memberMapper.update(member.getId(), updateParam);
         Member findMember = memberMapper.findById(member.getId());
         assertThat(findMember.getLoginId().equals(updateParam.getLoginId()));

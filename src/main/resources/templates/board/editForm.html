@@ -17,9 +17,24 @@
 
         #form input[type=text], #form textarea {
             display: block;
-            width: 100%;
             box-sizing: border-box;
             font: 1rem sans-serif;
+        }
+
+        #form #categorySelect {
+            min-width: 80px;
+        }
+
+        .input-wrapper {
+            margin-top: 20px;
+        }
+
+        #form #title {
+            width: 70%;
+        }
+
+        .title-feedback {
+            text-indent: 22%;
         }
 
         #form textarea {
@@ -46,6 +61,7 @@
         }
 
         #editBtWrapper {
+            margin-top: 30px;
             text-align: right;
         }
 
@@ -122,22 +138,37 @@
             </p>
         </div>
 
-        <!-- th:errorclass: 해당필드에 에러가 발생하면 설정된 클래스 추가 -->
-        <!-- th:errors: 해당 필드에 에러가 발생하면 에러 메시지 내용으로 설정 -->
-        <p><label for="title">제목 </label>
+        <div class="input-group input-wrapper">
+            <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="Default select example" required>
+                <option value="" hidden>카테고리</option>
+                <option value="FREE">자유</option>
+                <option value="ISSUE">이슈</option>
+                <option value="ECONOMY">경제</option>
+                <option value="CS">문의</option>
+                <!--                if 관리자 -->
+                <option value="NOTICE">공지</option>
+            </select>
+            <!-- th:errorclass: 해당필드에 에러가 발생하면 설정된 클래스 추가 -->
+            <!-- th:errors: 해당 필드에 에러가 발생하면 에러 메시지 내용으로 설정 -->
+            <span class="input-group-text">제목 </span>
             <!-- input 태그의 value 는 기본값, textarea 태그는 value 없음. -->
-            <input class="form-control" type="text" id="title" name="title" th:field="*{title}" th:errorclass="field-error">
-        <div class="invalid-feedback" th:errors="*{title}"> title 오류</div>
-        </p>
-        <p><label for="writer">작성자 </label>
+            <input class="form-control" type="text" id="title" name="title" th:field="*{title}" th:errorclass="is-invalid">
+            <div class="invalid-feedback title-feedback" th:errors="*{title}"> title 오류</div>
+            <div class="invalid-feedback" th:errors="*{category}"> category 오류</div>
+        </div>
+
+        <div class="input-group input-wrapper">
+            <span class="input-group-text">작성자</span>
             <!-- th:field, th:value 동시사용 세션에서 writer 받으려고. <-적용안되서 걍 field 빼버림 어차피 name 있으니까-->
-            <input class="form-control" type="text" id="writer" name="writer" th:value="${#authentication.name}" readonly>
-        <div class="invalid-feedback" th:errors="*{writer}"> writer 오류</div>
-        </p>
-        <p><label for="content">내용 </label>
-            <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="field-error"></textarea>
+            <input type="text" class="form-control" id="writer" name="writer" th:value="${#authentication.name}" readonly>
+            <div class="invalid-feedback" th:errors="*{writer}"> writer 오류</div>
+        </div>
+
+        <div class="input-wrapper">
+            <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="is-invalid"></textarea>
             <div class="invalid-feedback" th:errors="*{content}"> content 오류</div>
-        </p>
+        </div>
+
         <p id="editBtWrapper">
             <input id="editBt" type="submit" name="submit" value="수정" class="btn btn-primary">
         </p>

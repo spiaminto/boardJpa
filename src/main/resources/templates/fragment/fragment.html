@@ -21,17 +21,19 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <!--msg 를 그냥 사용가능. 이유는 모르겟. rttr.addflashAttr() 로 전송됨-->
-                    <a href="/board/list" class="nav-link" th:text="${msg}">카테고리1</a>
+                    <a href="/board/list/free" class="nav-link">자유게시판</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/board/list" class="nav-link" >카테고리2</a>
+                    <a href="/board/list/issue" class="nav-link" >이슈게시판</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/board/list" class="nav-link">카테고리3</a>
+                    <a href="/board/list/economy" class="nav-link">경제게시판</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/board/list" class="nav-link">카테고리4</a>
+                    <a href="/board/list/cs" class="nav-link">문의게시판</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/board/list/notice" class="nav-link">공지사항</a>
                 </li>
             </ul>
             <div class="d-flex justify-content-end">

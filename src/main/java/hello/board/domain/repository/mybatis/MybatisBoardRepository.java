@@ -44,6 +44,11 @@ public class MybatisBoardRepository implements BoardRepository {
     }
 
     @Override
+    public List<Board> findPagedAndCategorizedBoard(Criteria criteria) {
+        return boardMapper.findPagedAndCategorizedBoard(criteria);
+    }
+
+    @Override
     public Board save(Board board) {
         board.setRegedate(LocalDateTime.now());
         board.setUpdateDate(LocalDateTime.now());

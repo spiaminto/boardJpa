@@ -513,6 +513,10 @@
                 <span th:text="${board.id}">번호</span>
             </li>
             <li>
+                <span>카테고리: </span>
+                <span th:text="${board.category.getCategoryName()}">카테고리</span>
+            </li>
+            <li>
                 <span>작성자: </span>
                 <span th:text="${board.writer}">작성자</span>
             </li>

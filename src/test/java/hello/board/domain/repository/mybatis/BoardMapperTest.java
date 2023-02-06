@@ -2,7 +2,7 @@ package hello.board.domain.repository.mybatis;
 
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
-import hello.board.domain.repository.BoardSerachCond;
+import hello.board.domain.enums.Category;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,8 +31,31 @@ class BoardMapperTest {
     Board board = new Board("testTitle_",
             "test",
             "testContent",
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            Category.TEMP
     );
+
+    @Test
+    public void categoryTest() {
+        Criteria criteria2 = new Criteria(1,7,"content", "test");
+        Criteria criteria3 = new Criteria(1, 7, null, null);
+        criteria2.setCategory(Category.FREE);
+        criteria3.setCategory(Category.ALL);
+
+        log.info("name = " + criteria2.getCategory().name() + "getCode = " + criteria2.getCategory().getCode());
+
+        board.setMemberId(1L);
+        board.setCategory(Category.TEMP);
+        boardMapper.save(board);
+
+
+        List<Board> pagedBoard = boardMapper.findPagedBoard(criteria3);
+        for (Board board :
+                pagedBoard) {
+            log.info("board = {}", board);
+        }
+    }
+
     
     // id = 10 으로 테스트
 
@@ -69,23 +92,6 @@ class BoardMapperTest {
         Assertions.assertThat(findBoard).isEqualTo(board);
     }
 
-    @Test
-    public void findAll() {
-        List<Board> boardList = boardMapper.findAll(new BoardSerachCond("까마귀"));
-        for (Board board:
-             boardList) {
-            log.info("@found = {}", board.toString());
-        }
-    }
-
-    @Test
-    public void findByWriter() {
-        List<Board> boardList = boardMapper.findByWriter("jkljilohio");
-        for (Board board:
-                boardList) {
-            log.info("@found = {}", board.toString());
-        }
-    }
 
     @Test
     public void testSave() {
@@ -113,8 +119,8 @@ class BoardMapperTest {
         
         Board updateParam = new Board("updateTitle",
                 "update",
-                "updateContent"
-                );
+                "updateContent", Category.of("TEMP")
+        );
         updateParam.setRegedate(LocalDateTime.now());
 
         int row = boardMapper.update(10L, updateParam);

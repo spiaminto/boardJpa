@@ -23,6 +23,9 @@ public interface BoardMapper {
     // 검색 + 페이징 된 board 찾기
     List<Board> findPagedBoard(Criteria criteria);
 
+    // 검색 + 페이징 + 카테고리
+    List<Board> findPagedAndCategorizedBoard(Criteria criteria);
+
 //    List<Board> findByWriter(String writer);
 
     int save(Board board);
@@ -32,5 +35,4 @@ public interface BoardMapper {
     int update(long viewCount);
 
     int delete(Long id);
-
 }

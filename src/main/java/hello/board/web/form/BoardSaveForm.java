@@ -1,5 +1,6 @@
 package hello.board.web.form;
 
+import hello.board.domain.enums.Category;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,5 +22,7 @@ public class BoardSaveForm {
 
     // DB 에 진짜로 저장할 이미지url
     private String imageName;
+
+    private Category category;
 
 }

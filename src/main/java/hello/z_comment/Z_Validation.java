@@ -1,4 +1,4 @@
-package hello.board;
+package hello.z_comment;
 
 /**
  * 나중에 볼만한 내용 정리

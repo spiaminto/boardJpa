@@ -1,4 +1,4 @@
-package hello.board;
+package hello.z_comment;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;

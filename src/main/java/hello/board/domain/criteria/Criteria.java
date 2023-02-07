@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
  *
  * 검색시 사용하는 파라미터도 넣는것으로 보임 -> SQL 전달 파라미터를 모은 클래스로 동작하는듯?
  *
+ *
  */
 @Component
 @Slf4j
@@ -24,7 +25,10 @@ public class Criteria {
     // 페이지 당 글 갯수
     private int boardPerPage;
 
+    // 카테고리 url 용
     private String categoryCode;
+
+    // 내부에서 사용하는 카테고리
     private Category category;
 
     // 검색 열 조건

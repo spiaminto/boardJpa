@@ -206,13 +206,14 @@
             })
 
             // 게시글 삭제
-            $(".delete").on("click", function (event) {
+            $("#deleteNonSearch").on("click", function (event) {
                 let currentPage = $("#pageInfo").children().first().val();
                 let boardId = $("#info").children().first().data("boardid");
+                let categoryCode = $("#categoryCode").data("categorycode");
 
                 // confirm: Yes-True No-False
                 if (confirm("정말 삭제하시겠습니까?")) {
-                    location.replace("/board/delete/" + boardId + "?currentPage=" + currentPage);
+                    location.replace("/board/delete/" + categoryCode + "/" + boardId + "?currentPage=" + currentPage);
                 }
                 return false;
             });
@@ -224,14 +225,24 @@
                 // 이동할 유형 (list, update, delete)
                 let action = $(this).attr("data-action");
 
+                if (action == "delete") {
+                    // No - return 함
+                    if (!confirm("정말 삭제하시겠습니까?")) {
+                        return;
+                    }
+                }
+
                 // pathVariable 붙이려고 선언
                 let boardId = $("#info>li:first-child").attr("data-boardId");
 
+                // category 읽기 -> 게시글의 카테고리가 아닌, criteria 의 카테고리를 따라감
+                let category = $("#categoryCode").data("categorycode");
+
                 // url 생성
-                let url = "/board/" + action;
+                let url = "/board" + "/" + action + "/" + category;
 
                 // /list 아니면 pathVariable 붙임
-                if (action != "list") url += "/" + boardId
+                if (action != "list") url += "/" + boardId;
 
                 // input hidden에 담아 submit
                 $("#pageInfo").attr("action", url).submit();
@@ -514,7 +525,8 @@
             </li>
             <li>
                 <span>카테고리: </span>
-                <span th:text="${board.category.getCategoryName()}">카테고리</span>
+                <span id="categoryCode" th:data-categoryCode="${criteria.getCategoryCode()}"></span>
+                <span id="infoCategory" th:text="${board.category.getCategoryName()}" th:data-category="${board.category.getCode()}">카테고리</span>
             </li>
             <li>
                 <span>작성자: </span>
@@ -537,23 +549,23 @@
 
         <!-- 검색중 -->
         <div class="btn-group searching-nav" role="group"  th:if="${criteria.option != null}">
-            <button type="button" class="btn btn-primary" th:data-action="list">List</button>
-            <button type="button" class="btn btn-primary" th:data-action="edit">Update</button>
-            <button type="button" class="btn btn-primary delete" th:data-action="delete">Delete</button>
+            <button type="button" class="btn btn-primary" th:data-action="list">목록</button>
+            <button type="button" class="btn btn-primary" th:data-action="edit">수정</button>
+            <button type="button" class="btn btn-primary delete" th:data-action="delete">삭제</button>
         </div>
 
         <!-- 검색 안함 -->
         <div class="btn-group" role="group" th:if="${criteria.option == null}">
             <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
-                    th:onclick="|location.href='@{/board/list(currentPage=${criteria.currentPage})}'|">목록
+                    th:onclick="|location.href='@{/board/list/{categoryCode}(categoryCode=${criteria.getCategoryCode()}, currentPage=${criteria.currentPage})}'|">목록
             </button>
             <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
-                    th:onclick="|location.href='@{/board/edit/{boardId}(boardId=${board.id}, currentPage=${criteria.currentPage})}'|">
+                    th:onclick="|location.href='@{/board/edit/{categoryCode}/{boardId}(categoryCode = ${criteria.getCategoryCode()}, boardId=${board.id}, currentPage=${criteria.currentPage})}'|">
                 수정
             </button>
             <!-- 삭제 확인을 위해 onclick 비활성화 -->
             <!-- th:onclick="|location.href='@{/board/delete/{boardId}(boardId=${board.id}, currentPage=${criteria.currentPage})}'|"-->
-            <button type="button" class="btn btn-primary delete">
+            <button type="button" id="deleteNonSearch" class="btn btn-primary delete">
                 삭제
             </button>
         </div>

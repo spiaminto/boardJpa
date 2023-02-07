@@ -39,10 +39,16 @@ public class BoardController {
 
     private final CommentRepository commentRepository;
 
+    private Category category;
+    private String categoryCode;
+
     /**
      * 전체 글 List<Board> 를 페이징 하여 모델에 담아 /list 뷰 호출
      * 쿼리파라미터로 currentPage 를 받아 Criteria 에 맵핑한다. (setter 사용, 생성자 (아마) X )
      * beanvalidation 이 아닌 jquery 로 검증했음
+     *
+     * url 패턴 ( {variable}: 변수, [...]: 비 필수 )
+     * /board /{action} /{criteria.categoryCode} /[{board.Id}] ? currentPage=0 [ &option=option &keyword=keyword ]
      */
     @GetMapping(value = {"/list/{categoryCode}", "/list", "/"})
     public String pagedList(@AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -80,8 +86,8 @@ public class BoardController {
      * @param model
      * @return
      */
-    @GetMapping("/read/{boardId}")
-    public String read(@PathVariable Long boardId, Model model,
+    @GetMapping("/read/{categoryCode}/{boardId}")
+    public String read( @PathVariable Long boardId, Model model,
                        @ModelAttribute("criteria") Criteria criteria) {
 
         Board findBoard = boardRepository.findById(boardId);
@@ -100,8 +106,8 @@ public class BoardController {
      * @param model
      * @return
      */
-    @GetMapping("/write")
-    public String writeForm(Model model) {
+    @GetMapping("/write/{categoryCode}")
+    public String writeForm(Model model, @ModelAttribute Criteria criteria) {
         // th:object 로 커맨드 객체 받기위해?, bindingResult 와 관련성?
         model.addAttribute("board", new Board());
         return "/board/writeForm";
@@ -113,10 +119,11 @@ public class BoardController {
      * @param redirectAttributes    리다이렉트 파라미터 추가
      * @return
      */
-    @PostMapping("/write")
+    @PostMapping("/write/{categoryCode}")
     public String writeBoard(@AuthenticationPrincipal PrincipalDetails principalDetails,
                         @Validated @ModelAttribute("board") BoardSaveForm form,
                         BindingResult bindingResult, HttpServletRequest request,
+                        @ModelAttribute("criteria") Criteria criteria,
                         RedirectAttributes redirectAttributes) {
 
         if (form.getCategory() == null) {
@@ -146,7 +153,7 @@ public class BoardController {
         imageRepository.syncImage(saveBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "/board/read/" + saveBoard.getId(), "게시글이 등록되었습니다.", request.getQueryString()
+                "/board/read/" + criteria.getCategoryCode() + "/" + saveBoard.getId(), "게시글이 등록되었습니다.", request.getQueryString()
         ));
 
         // POST, Post Redirect Get
@@ -161,7 +168,7 @@ public class BoardController {
      * @param model
      * @return
      */
-    @GetMapping("/edit/{boardId}")
+    @GetMapping("/edit/{categoryCode}/{boardId}")
     public String editForm(@PathVariable Long boardId, HttpServletRequest request, Model model,
                            RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -175,7 +182,7 @@ public class BoardController {
         }
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "/board/read/" + boardId, "수정하려는 글과 작성자가 다릅니다.", request.getQueryString()
+                "/board/read/" + criteria.getCategoryCode() + "/"  + boardId, "수정하려는 글과 작성자가 다릅니다.", request.getQueryString()
         ));
         return "redirect:/alert";
     }
@@ -187,7 +194,7 @@ public class BoardController {
      * @param redirectAttributes
      * @return
      */
-    @PostMapping("/edit/{boardId}")
+    @PostMapping("/edit/{categoryCode}/{boardId}")
     public String editBoard(@PathVariable Long boardId,@Validated @ModelAttribute("board") BoardEditForm form,
                        BindingResult bindingResult, HttpServletRequest request,
                        @ModelAttribute Criteria criteria,
@@ -221,7 +228,7 @@ public class BoardController {
         imageRepository.syncImage(updateBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "board/read/" + updateBoard.getId(), "게시글이 수정되었습니다.", request.getQueryString()));
+                "board/read/" + criteria.getCategoryCode() + "/"  + updateBoard.getId(), "게시글이 수정되었습니다.", request.getQueryString()));
 
         return "redirect:/alert";
     }
@@ -231,17 +238,17 @@ public class BoardController {
      * @param boardId
      * @return
      */
-    @GetMapping("/delete/{boardId}")
+    @GetMapping("/delete/{categoryCode}/{boardId}")
     public String delete(@PathVariable Long boardId,
                          @AuthenticationPrincipal PrincipalDetails principalDetails,
                          HttpServletRequest request,
                          RedirectAttributes redirectAttributes,
-                         @RequestParam(required = false) String currentPage) {
+                         @ModelAttribute Criteria criteria) {
         Board findBoard = boardRepository.findById(boardId);
 
         if (!isSameWriter(principalDetails, findBoard)) {
             redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                    "/board/read/" + boardId, "삭제하려는 글과 작성자가 다릅니다.", request.getQueryString()
+                    "/board/read/" + criteria.getCategoryCode() + "/"  + boardId, "삭제하려는 글과 작성자가 다릅니다.", request.getQueryString()
             ));
             return "redirect:/alert";
         }
@@ -256,7 +263,7 @@ public class BoardController {
         imageRepository.deleteImage(boardId);
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "/board/list", "글이 삭제 되었습니다.", request.getQueryString()
+                "/board/list/" + criteria.getCategoryCode() ,"글이 삭제 되었습니다.", request.getQueryString()
         ));
         return "redirect:/alert";
     }

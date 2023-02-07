@@ -1,4 +1,4 @@
-package hello.board;
+package hello.z_comment;
 
 public class Z_Exception {
     // 예외처리 진행시

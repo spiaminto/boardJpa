@@ -61,13 +61,6 @@ public class PageMaker{
 
     public void calcPage() {
 
-        // 페이지네이션 url 의 카테고리 설정
-        if (categoryCode.equals("all")) {
-            categoryCode = "";
-        } else {
-            categoryCode = "/" + categoryCode;
-        }
-
         // 현패1 엔패5 / 현패3 엔패5 / 현패17 엔페20
         // (double) displayPageNum 으로 나누므로 소숫점 까지 나옴 -> 을 올림 후 계산
         endPageNum = (int) Math.ceil(criteria.getCurrentPage() / (double) displayPageNum) * displayPageNum;

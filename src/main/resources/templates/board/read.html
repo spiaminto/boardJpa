@@ -586,7 +586,7 @@
                 <!-- th placeholder comment.username -->
                 <input type="hidden" class="comment-writer form-control" th:value="${comment.writer}" name="writer">
                 <!-- th text comment.username -->
-                <span class="input-group-text comment-username flex-fill" th:text="${comment.writer}">writer</span>
+                <span class="input-group-text comment-username flex-fill" th:text="${comment.username}">writer</span>
                 <a class="comment-delete" th:href="@{/comment/delete/{commentId}(commentId=${comment.getCommentId()})}"
                     th:data-id="${comment.getCommentId()}">✖</a>
                 <div class="input-group">
@@ -604,8 +604,8 @@
         </div>
         <div id="myComment" sec:authorize="isAuthenticated()">
             <form id="myCommentForm" class="input-group" th:action="@{/comment/write}" method="post">
-                <input type="hidden" class="myWriter form-control" value="myWriter" name="writer" th:value="${#authentication.name}">
-                <span class="input-group-text comment-username bg-primary text-white flex-fill" th:text="${#authentication.name}">username</span>
+                <input type="hidden" class="myWriter form-control" value="myWriter" name="writer" th:value="${member.username}">
+                <span class="input-group-text comment-username bg-primary text-white flex-fill" th:text="${member.username}">username</span>
                 <div class="input-group">
                     <textarea class="comment-content form-control form-control-sm" name="content" placeholder="댓글을 입력하세요" required maxlength="50"></textarea>
                     <button class="btn btn-outline-secondary comment-submit" type="submit">등록</button>

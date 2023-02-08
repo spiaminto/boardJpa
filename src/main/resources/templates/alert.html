@@ -12,17 +12,26 @@
         const redirectURL = [[${redirectDTO.redirectURL}]];
         const queryString = [[${redirectDTO.queryString}]];
 
-        // alert 호출
-        alert(message);
-
-        console.log(queryString)
-
-        // redirect (replace 는 뒤로가기 불가능, href 는 가능)
-        if (queryString == null) {
-            location.replace(redirectURL);
+        if(message == "oauth2_add") {
+            if (confirm("해당 소셜 계정으로 가입된 회원이 없습니다. 가입 하시겠습니까?")) {
+                location.replace(redirectURL);
+            } else {
+                location.replace("/logout");
+            }
         } else {
-            location.replace(redirectURL + "?" + queryString)
+
+            alert(message);
+
+            console.log(queryString)
+
+            // redirect (replace 는 뒤로가기 불가능, href 는 가능)
+            if (queryString == null) {
+                location.replace(redirectURL);
+            } else {
+                location.replace(redirectURL + "?" + queryString)
+            }
         }
+
 
 
         /*]]>*/

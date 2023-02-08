@@ -252,7 +252,7 @@
 
 
     <form th:if="${isOauth2 == 'true'}"
-          th:action="@{/member/edit/OAuth2}" action="/home" method="POST" th:object="${member}" id="oauth2Form" class="form">
+          th:action="@{/member/edit/oauth2}" action="/home" method="POST" th:object="${member}" id="oauth2Form" class="form">
 
         <label for="oAuth2Provider">사용중인 소셜 로그인 서비스 </label>
         <div class="input-wrapper">

@@ -2,9 +2,12 @@ package hello.board.web.controller;
 
 import hello.board.domain.member.Member;
 import hello.board.domain.service.LoginService;
+import hello.board.web.RedirectDTO;
+import hello.board.web.auth.PrincipalDetails;
 import hello.board.web.form.LoginForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -55,6 +58,29 @@ public class LoginController {
         }
 
         return "/login/loginForm";
+    }
+
+    /**
+     * OAuth 로그인 의 default success url,
+     * 현재 Authentication 객체에 담긴 PrincipalDetails.Member.role 이 "ROLE_TEMP" 이면 회원가입요청
+     * @return
+     */
+    @RequestMapping("/login/check")
+    public String loginCheck(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                             RedirectAttributes redirectAttributes) {
+
+        String role = principalDetails.getMember().getRole();
+
+        if (role.equals("ROLE_TEMP")) {
+            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
+                    "/member/add/oauth2", "oauth2_add"
+            ));
+        } else {
+            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
+                    "/board/list/all", "로그인 되었습니다."));
+        }
+
+        return "redirect:/alert";
     }
 
     // /login POST

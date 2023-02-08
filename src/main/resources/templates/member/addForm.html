@@ -20,9 +20,13 @@
             margin: 0 auto;
         }
 
+        hr {
+            width: 560px;
+        }
+
         form {
             width: 560px;
-            margin: 0 auto;
+            margin: 30px auto 0;
         }
 
         .input-wrapper > * {
@@ -59,9 +63,17 @@
 
             let loginIdFlag = false;
             let usernameFlag = false;
-            let loginId = "";
-            let username = "";
 
+            // 변경 체크를 위한 초기값
+            let loginId = $("#loginId").val();
+            let username;
+            if ($(".isOauth2").val()) {
+                username = $("#oauth2Username").val();
+            } else {
+                username = $("#username").val();
+            }
+
+            // loginId 체크
             $("#duplicateLoginIdCheckBt").on("click", function () {
                 loginId = $("#loginId").val();
 
@@ -89,8 +101,14 @@
                 })
             })
 
-            $("#duplicateUsernameCheckBt").on("click", function () {
-                username = $("#username").val();
+            // username 체크
+            $(".duplicateUsernameCheckBt").on("click", function () {
+
+                if ($(".isOauth2").val()) {
+                    username = $("#oauth2Username").val();
+                } else {
+                    username = $("#username").val();
+                }
 
                 if (username == "" || username.length > 16) {
                     alert("유효한 닉네임을 입력해 주세요.");
@@ -105,17 +123,18 @@
                     success: function (data) {
                         if (data == true) {
                             alert("이미 사용중인 닉네임 입니다.")
-                            $("#username").removeClass("is-valid");
+                            $(".username").removeClass("is-valid");
                             usernameFlag = false;
                         } else {
                             alert("사용 가능한 닉네임 입니다.")
-                            $("#username").addClass("is-valid");
+                            $(".username").addClass("is-valid");
                             usernameFlag = true;
                         }
                     }
                 })
             })
 
+            // 일반 유저 폼 submit
             $("#form").on("submit", function (event) {
                 event.preventDefault();
 
@@ -141,6 +160,22 @@
                     alert((loginIdFlag ? "닉네임 " : "로그인ID ") + "중복 체크 해주세요");
                 }
             })
+
+            // OAuth2 유저 폼 submit
+            $("#oauth2Form").on("submit", function (event) {
+                event.preventDefault();
+
+                console.log("$(username) " + $("#oauth2Username").val() + " username " + username)
+
+                // 값 변경 확인
+                if ($("#oauth2Username").val() != username) usernameFlag = false;
+
+                if (usernameFlag == true) {
+                    this.submit();
+                } else {
+                    alert("닉네임 중복 체크 해주세요");
+                }
+            })
         })
     </script>
 </head>
@@ -151,10 +186,12 @@
     </nav>
 
     <h2> 회원 가입 </h2>
+    <hr>
 
     <!-- 로그인ID 와 닉네임은 중복체크를 위해 클라이언트 단에서 유효성 검사를 하긴 함
           -> 새로고침 날아감 때문에 패스워드도 그냥 유효성 검사 함 -->
-    <form th:action action="/home" method="POST" th:object="${member}" id="form" class="form">
+    <form th:action action="/home" method="POST" th:object="${member}" id="form" class="form"
+    th:unless="${isOauth2 == 'true'}">
 
         <label for="loginId" class="col">로그인 ID </label>
         <div class="input-wrapper">
@@ -198,6 +235,44 @@
         <div class="d-flex justify-content-center">
             <button id="submitBt" type="submit" class="btn btn-primary"> 회원가입</button>
         </div>
+
+    </form>
+
+    <form th:if="${isOauth2 == 'true'}"
+          th:action="@{/member/add/oauth2}" action="/home" method="POST" th:object="${member}" id="oauth2Form" class="form">
+
+        <label for="oAuth2Provider">사용할 소셜 로그인 서비스 </label>
+        <div class="input-wrapper">
+            <input type="text" id="oAuth2Provider" th:field="*{provider}" th:errorclass="is-invalid"
+                   placeholder="서비스 제공자" class="form-control" disabled>
+            <div class="invalid-feedback"> 내부 에러 </div>
+        </div>
+
+        <label for="email">이메일 </label>
+        <div class="input-wrapper">
+            <input type="text" id="oAuth2Email" th:field="*{email}" th:errorclass="is-invalid"
+                   placeholder="이메일을 입력해 주세요" class="form-control" disabled>
+            <div class="invalid-feedback"> 유효한 이메일을 입력해 주세요 </div>
+        </div>
+
+        <label for="username">닉네임 </label>
+        <div class="input-wrapper">
+            <input type="text" th:field="*{username}" id="oauth2Username" th:errorclass="is-invalid"
+                   placeholder="최대 20자 까지 허용합니다." class="form-control username editable">
+            <button class="duplicateUsernameCheckBt btn btn-secondary" type="button">
+                중복확인
+            </button>
+            <div class="valid-feedback"> 사용 가능한 닉네임 입니다.</div>
+            <div class="invalid-feedback"> 닉네임을 입력해 주세요 (최대 16 자)</div>
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <button id="oauth2SubmitBt" type="submit" class="btn btn-primary">회원 가입</button>
+        </div>
+
+        <!-- Oauth2 유저인지 확인-->
+        <input class="isOauth2" type="hidden" name="isOauth2" th:value="${isOauth2}">
+        <input type="hidden" name="providerId" th:value="${member.getProviderId()}">
 
     </form>
 

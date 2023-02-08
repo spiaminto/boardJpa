@@ -8,11 +8,22 @@
     <title>게시판</title>
     <style>
 
-        h1 {
-            font-size: 3em;
-            text-align: center;
-            font-weight: bold;
-            margin-top: 50px;
+
+
+        /*h1 {*/
+        /*    font-size: 3em;*/
+        /*    text-align: center;*/
+        /*    font-weight: bold;*/
+        /*    margin-top: 50px;*/
+        /*}*/
+
+        #container {
+            padding-top: 10px;
+        }
+
+        #header {
+            text-indent: 1em;
+            font-size: 1.7em;
         }
 
         #noneContent {
@@ -130,6 +141,9 @@
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
+
+    <h2 id="header" th:text="${criteria.category.getCategoryName() + ' 게시판'}">게시판</h2>
+    <hr>
 
 
     <div id="noneContent" th:if="${boardList.isEmpty()}">

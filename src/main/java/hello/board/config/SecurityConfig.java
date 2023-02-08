@@ -38,10 +38,8 @@ public class SecurityConfig {
         http.authorizeRequests()
 
                 // 로그인 필수
-                .antMatchers("/*/write/**", "/*/edit/**", "/*/delete/**", "/*/info/**").authenticated()
-
-                // 일단 로그아웃 하지말고
-                //.antMatchers("/logout").authenticated()
+                .antMatchers("/*/write/**", "/*/edit/**", "/*/delete/**", "/*/info/**")
+                    .access("hasRole('ROLE_USER')")
 
                 // 모두 허용
                 .anyRequest().permitAll()
@@ -61,15 +59,19 @@ public class SecurityConfig {
 
                 .failureHandler(customFailureHandler)
 
-                .defaultSuccessUrl("/board/list")
+                .defaultSuccessUrl("/board/list/all")
 
                 .and()
 
                 .logout().permitAll()
 
+                    .deleteCookies("JSESSIONID") // 로그아웃 시 JSESSIONID 제거
+                    .invalidateHttpSession(true) // 로그아웃 시 세션 종료
+                    .clearAuthentication(true) // 로그아웃 시 권한 제거
+
                 .logoutUrl("/logout")
 
-                .logoutSuccessUrl("/board/list")
+                .logoutSuccessUrl("/board/list/all")
 
                 .and()
 
@@ -78,7 +80,7 @@ public class SecurityConfig {
                 // 딱히 의미 업음? (로그인 폼을 provider 가 제공)
                 .loginPage("/loginForm")
 
-                .defaultSuccessUrl("/board/list")
+                .defaultSuccessUrl("/login/check")
 
                 // code 전송 부분을 자동화 하고, access token + 사용자 프로필 정보를 바로 받는다.
                 .userInfoEndpoint()

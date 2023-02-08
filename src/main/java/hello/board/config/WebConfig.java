@@ -2,6 +2,7 @@ package hello.board.config;
 
 import hello.board.web.interceptor.LogInterceptor;
 import hello.board.web.interceptor.LoginCheckInterceptor;
+import hello.board.web.interceptor.TempUserCheckInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -48,6 +49,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/static/**", "/css/**", "/image/**",
                         "https://maxcdn.bootstrapcdn.com/**");
+
+        registry.addInterceptor(new TempUserCheckInterceptor())
+                .order(2)
+                .addPathPatterns("/board/**", "/member/**", "/login/**", "/comment/**")
+                .excludePathPatterns("/member/add/oauth2", "/alert", "/login/check", "/member/duplicateCheck");
     }
 
 }

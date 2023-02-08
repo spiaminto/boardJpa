@@ -65,7 +65,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         Optional<Member> findMember =
                 memberRepository.findByProviderAndProviderId(oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
 
-        Member member = null;
+        Member returnMember = null;
 
         String forOauth2UserLoginId = oAuth2UserInfo.getProvider() + "_" + oAuth2UserInfo.getProviderId();
         // 초기 username = email 에서 @gmail.com 제외한 나머지
@@ -74,32 +74,30 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         // 찾은 유저가 존재
         if (findMember.isPresent()) {
             log.info("이미 존재하는 Oauth2User");
-            member = findMember.get();
             // 이메일 바뀌면 이메일 갱신
-            if (!oAuth2UserInfo.getEmail().equals(member.getEmail())) {
+            if (!oAuth2UserInfo.getEmail().equals(findMember.get().getEmail())) {
                 log.info("{} 이메일 변경 {} -> {}, providerId={}",
-                        oAuth2UserInfo.getName(), oAuth2UserInfo.getEmail(), member.getEmail(), oAuth2UserInfo.getProviderId());
+                        oAuth2UserInfo.getName(), findMember.get().getEmail(), oAuth2UserInfo.getEmail(), oAuth2UserInfo.getProviderId());
                 memberRepository.updateEmail(oAuth2UserInfo.getProviderId(), oAuth2UserInfo.getEmail());
             }
+
+            // 온전한 멤버정보의 리턴을 위해 조회후 리턴
+            returnMember = memberRepository.findByLoginId(forOauth2UserLoginId).get();
 
         // 찾은 유저 없음
         } else {
             log.info("OAuth2User 회원가입, OAuth2UserInfo={}", oAuth2UserInfo);
-            // 회원가입
-            // 비밀번호 암호화 하지 않음 -> 로그인 불가능
-            member = new Member(oAuth2UserInfo.getProvider(),
+
+            // 임시로 생성한 멤버를 리턴 -> Authentication 객체에 담기나, 회원가입 X
+            returnMember = new Member(oAuth2UserInfo.getProvider(),
                     oAuth2UserInfo.getProviderId(),
                     forOauth2UserLoginId,
                     forOauth2UserUsername,
                     "forOauth2UserPassword",
                     oAuth2UserInfo.getEmail(),
-                    "ROLE_USER" );
-            memberRepository.save(member);
+                    "ROLE_TEMP" );
         }
 
-        // 온전한 멤버정보의 리턴을 위해 조회후 리턴
-        findMember = memberRepository.findByLoginId(forOauth2UserLoginId);
-
-        return new PrincipalDetails(findMember.get(), oAuth2User.getAttributes());
+        return new PrincipalDetails(returnMember, oAuth2User.getAttributes());
     }
 }

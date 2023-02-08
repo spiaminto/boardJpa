@@ -15,6 +15,7 @@ public class Comment {
 
     private Long boardId;
 
+    // username 임
     private String  writer;
 
     private String content;

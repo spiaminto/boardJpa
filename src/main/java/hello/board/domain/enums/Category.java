@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum Category {
-    ALL("all", "모두"),
+    ALL("all", "전체"),
     FREE("free", "자유"),
     ISSUE("issue", "이슈"),
     ECONOMY("economy", "경제"),

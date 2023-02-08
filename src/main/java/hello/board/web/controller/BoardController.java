@@ -88,6 +88,7 @@ public class BoardController {
      */
     @GetMapping("/read/{categoryCode}/{boardId}")
     public String read( @PathVariable Long boardId, Model model,
+                       @AuthenticationPrincipal PrincipalDetails principalDetails,
                        @ModelAttribute("criteria") Criteria criteria) {
 
         Board findBoard = boardRepository.findById(boardId);
@@ -97,6 +98,9 @@ public class BoardController {
 
         model.addAttribute(findBoard);
         model.addAttribute("commentList", commentList);
+
+        // comment 에서 member.loginId 사용해야됨.
+        model.addAttribute("member", principalDetails.getMember());
 
         return "/board/read";
     }
@@ -131,7 +135,7 @@ public class BoardController {
         }
         // 검증 오류 발견
         if (bindingResult.hasErrors()) {
-            log.info("/write POST bindingResult.hasErrors {}");
+            log.info("/write POST bindingResult.hasErrors {}", bindingResult);
             return "/board/writeForm";
         }
 

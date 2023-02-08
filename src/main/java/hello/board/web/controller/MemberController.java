@@ -8,6 +8,7 @@ import hello.board.web.auth.PrincipalDetails;
 import hello.board.web.form.MemberEditForm;
 import hello.board.web.form.MemberSaveForm;
 import hello.board.web.form.OAuth2MemberEditForm;
+import hello.board.web.form.OAuth2MemberSaveForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.security.Principal;
 
 @Controller
 @Slf4j
@@ -61,7 +64,54 @@ public class MemberController {
             return "redirect:/alert";
         }
 
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/board/list", "회원가입 완료"));
+        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/board/list/all", "회원가입 완료"));
+
+        return "redirect:/alert";
+    }
+
+    @GetMapping("/add/oauth2")
+    public String addOauth2Member(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                  RedirectAttributes redirectAttributes, Model model) {
+        Member member = principalDetails.getMember();
+
+        // 비정상 요청
+        if (!member.getRole().equals("ROLE_TEMP")) {
+            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
+                    "/board/list/all", "소셜가입_비정상 요청"
+            ));
+            return "redirect:/alert";
+        }
+
+        model.addAttribute("member", principalDetails.getMember());
+        model.addAttribute("isOauth2", "true");
+
+        return "/member/addForm";
+    }
+
+    @PostMapping("/add/oauth2")
+        public String addOauth2Member(@Validated @ModelAttribute("member") OAuth2MemberSaveForm form,
+                                      BindingResult bindingResult,
+                                      @AuthenticationPrincipal PrincipalDetails principalDetails,
+                                      RedirectAttributes redirectAttributes) {
+        // 검증 오류 발생
+        if (bindingResult.hasErrors()) {
+            log.info("/add/oauth2 POST bindingResult.hasError {}", bindingResult);
+            return "/member/addForm";
+        }
+
+        Member member = principalDetails.getMember();
+        member.setRole("ROLE_USER");
+        member.setUsername(form.getUsername());
+
+        ResultDTO result = memberRepository.save(member);
+
+        // 가입 실패
+        if (!result.isSuccess()) {
+            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/member/add", result.getCustomMessage()));
+            return "redirect:/alert";
+        }
+
+        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/board/list/all", "소셜계정 회원가입 완료"));
 
         return "redirect:/alert";
     }
@@ -69,7 +119,8 @@ public class MemberController {
     @GetMapping("/info")
     public String infoForm(@AuthenticationPrincipal PrincipalDetails principalDetails,
                            Model model) {
-        model.addAttribute("member", principalDetails.getMember());
+        Long id = principalDetails.getMember().getId();
+        model.addAttribute("member", memberRepository.findById(id));
 
         // OAuth2 로그인 유저인 경우
         if (principalDetails.getMember().getProvider() != null) {
@@ -127,7 +178,7 @@ public class MemberController {
         return "/alert";
     }
 
-    @PostMapping("/edit/OAuth2")
+    @PostMapping("/edit/oauth2")
     public String editOAuth2Member(@Validated @ModelAttribute("member")OAuth2MemberEditForm oAuth2MemberEditForm,
                                    @AuthenticationPrincipal PrincipalDetails principalDetails,
                                    BindingResult bindingResult, Model model) {

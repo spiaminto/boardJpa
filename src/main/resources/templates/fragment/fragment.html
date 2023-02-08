@@ -14,26 +14,26 @@
 
 <nav th:fragment="nav-fragment" class="navbar navbar-expand-md navbar-dark bg-primary bg-gradient fixed-top">
     <div class="container-fluid" id="navBarContainer">
-        <a class="navbar-brand text-light" href="/board/list/all" aria-current="page" id="header">게시판</a>
+        <a class="navbar-brand text-light" href="/board/list/all" aria-current="page" id="navHeader">게시판</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a href="/board/list/free" class="nav-link">자유게시판</a>
+                    <a href="/board/list/free" class="nav-link">자유</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/board/list/issue" class="nav-link" >이슈게시판</a>
+                    <a href="/board/list/issue" class="nav-link" >이슈</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/board/list/economy" class="nav-link">경제게시판</a>
+                    <a href="/board/list/economy" class="nav-link">경제</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/board/list/cs" class="nav-link">문의게시판</a>
+                    <a href="/board/list/cs" class="nav-link">문의</a>
                 </li>
                 <li class="nav-item">
-                    <a href="/board/list/notice" class="nav-link">공지사항</a>
+                    <a href="/board/list/notice" class="nav-link">공지</a>
                 </li>
             </ul>
             <div class="d-flex justify-content-end">
@@ -48,12 +48,12 @@
                                     th:onclick="|location.href='@{/member/add}'|">회원가입</button>
                         </form>
                     </li>
-                    <li id="loginMessage" class="nav-item" sec:authorize="isAuthenticated()">
+                    <li id="loginMessage" class="nav-item" sec:authorize="hasRole('ROLE_USER')">
                             <span class="navbar-text" th:text="|${#authentication.name}님 로그인 되었습니다.|">
                                 login message
                             </span>
                     </li>
-                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <li class="nav-item" sec:authorize="hasRole('ROLE_USER')">
                         <form class="container-fluid loginBtBox">
                             <button class="btn btn-sm btn-light me-2" type="button"
                                     th:onclick="|location.href='@{/member/info}'|" id="memberEditBt">회원정보</button>

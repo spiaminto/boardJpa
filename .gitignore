@@ -39,4 +39,4 @@ out/
 # Custom
 application-oauth.properties
 /src/main/java/hello/z_comment
-Memo
+z.memo

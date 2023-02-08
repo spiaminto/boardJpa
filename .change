@@ -24,21 +24,27 @@ commit 6
     일반 session 에 로그인정보를 더이상 저장하지 않음, 비밀번호 암호화됨 등
     list 요소 크기 조정
 
-commit7
+commit 7
     구글로그인 적용
     member 테이블, board 테이블 제약조건 수정 (loginId, useranme, password, writer)
     member add 와 edit 관련 기능들 수정 (email 추가 등)
 
-commit8
+commit 8
     네이버, 카카오 로그인 적용
     디자인 수정 (배경색, 소셜 로그인 버튼 등)
 
-commit9
+commit 9
     카테고리화 적용, 글 작성/삭제 검증 피드백 수정
     /list 날짜 표시 변경
 
-commit10
+commit 10
     페이지네이션, 검색 카테고리 적용
+
+commit 11
+    /board 관련 url 카테고리 추가 및 카테고리 기능 재적용
+
+commit 12
+    메모 
 
 
     

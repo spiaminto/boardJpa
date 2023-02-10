@@ -22,6 +22,7 @@ public class CommentController {
 
     private Map<String, Object> resp;
 
+
     /**
      * 댓글 내용을 받아서 DB 로 저장 후 현재페이지 새로고침
      * @return
@@ -62,9 +63,10 @@ public class CommentController {
 
         updateParam.setContent(content);
         int result = commentRepository.update(commentId, updateParam);
-        Comment findComment = commentRepository.findByCommentId(commentId).get();
+        Comment findComment = commentRepository.findByCommentId(commentId);
 
         resp = new HashMap<>();
+        resp.put("commentId", String.valueOf(findComment.getCommentId()));
         resp.put("result", String.valueOf(result));
         resp.put("content", findComment.getContent());
 

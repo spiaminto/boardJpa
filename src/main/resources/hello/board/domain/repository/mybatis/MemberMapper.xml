@@ -49,6 +49,11 @@
         where username = #{username}
     </select>
 
+    <select id="findTargetByTargetId" resultType="string">
+        select username from member
+        where id = #{targetId}
+    </select>
+
     <select id="findAll" resultType="Member">
         select * from member
     </select>

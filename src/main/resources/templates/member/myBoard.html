@@ -5,25 +5,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>게시판</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+          crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/global.css}" href="/static/css/global.css">
+    <title>마이 페이지</title>
     <style>
 
-
-
-        /*h1 {*/
-        /*    font-size: 3em;*/
-        /*    text-align: center;*/
-        /*    font-weight: bold;*/
-        /*    margin-top: 50px;*/
-        /*}*/
-
-        #container {
-            padding-top: 10px;
+        #myPageNav {
+            margin: 20px auto ;
+            background-color: #f7f7f7;
         }
 
         #headerText {
             text-indent: 1em;
             font-size: 1.7em;
+            display: inline-block;
+        }
+
+        #myPageCategoryForm {
+            display: inline-flex;
+            margin-left: 30px;
         }
 
         #noneContent {
@@ -34,12 +37,6 @@
 
         #noneContent p {
             padding: 30px;
-        }
-
-        #write::after {display: block; content: none; clear: both}
-
-        #write > button {
-            float: right;
         }
 
         #content .category-label {
@@ -78,19 +75,34 @@
 
         #searchForm button {
             width: 15%;
-            height: 100%;
             vertical-align: inherit;
         }
 
     </style>
     <script src="http://code.jquery.com/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
-          rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
-          crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
-    <link rel="stylesheet" type="text/css" th:href="@{/css/global.css}" href="/static/css/global.css">
     <script>
         $(document).ready(function () {
+
+            // 내부 네비바 active
+            $(".nav-pills .nav-link").on({
+                mouseenter: function () {
+                    $(this).addClass("active");
+                },
+                mouseleave: function () {
+                    $(this).removeClass("active");
+                }
+            });
+
+            // 카테고리 선택 시 바로전송
+            // 폼 submit 하면 categoryCode 파라미터가 붙으므로, 직접 리디렉션
+            $("#myPageCategorySelect").on("change", function () {
+                let categoryCode = "/" + $("#myPageCategorySelect").val();
+                let action = $("#myPageCategoryForm").attr("action");
+                action += categoryCode;
+                location.href = action;
+            })
+
+            // 검색
             let searchForm = $("#searchForm");
 
             $("#searchForm>button").on("click", function (event) {
@@ -144,25 +156,42 @@
             })
         })
     </script>
-    <script th:inline="javascript">
-        // /*<![CDATA[*/
 
-        /*]]>*/
-    </script>
 </head>
-
-<!-- fixedTop nav 랑 안겹치게 하는 클래스 옵션 pt-5 로 padding-top 5 주면 되는데 더 높게하려면
-        따로 지정해줘야 되는거 같아서 그냥 nav-css 에다가 60px 로 선언함-->
-<!--<body class="pt-5">-->
 <body id="body">
 <div id="container" class="container">
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
 
-    <h2 id="header" th:text="${criteria.category.getCategoryName() + ' 게시판'}">게시판</h2>
+    <div id="header">
+        <h2 id="headerText"> 마이 페이지 > 내 게시글</h2>
+        <form id="myPageCategoryForm" action="/member/mypage/myboard" method="get" th:object="${criteria}">
+            <input type="hidden" name="currentPage" value="1">
+            <select th:field="*{categoryCode}" class="form-select" id="myPageCategorySelect" required>
+                <option value="all">전체</option>
+                <option value="free">자유</option>
+                <option value="issue">이슈</option>
+                <option value="economy">경제</option>
+                <option value="cs">문의</option>
+                <option value="notice">공지</option>
+            </select>
+        </form>
+    </div>
+
     <hr>
 
+    <ul  id="myPageNav" class="nav nav-pills nav-justified">
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/member/mypage/myboard">내 게시글</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/member/mypage/mycomment" >내 댓글</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/member/mypage/info" >내 정보</a>
+        </li>
+    </ul>
 
     <div id="noneContent" th:if="${boardList.isEmpty()}">
         <p>
@@ -174,8 +203,7 @@
         <table id="listTable" class="table">
             <colgroup>
                 <col width="7%">
-                <col width="41%">
-                <col width="15%">
+                <col width="56%">
                 <col width="15%">
                 <col width="15%">
                 <col width="7%">
@@ -185,7 +213,6 @@
             <tr>
                 <th>번호</th>
                 <th>제목</th>
-                <th>작성자</th>
                 <th>작성시각</th>
                 <th>수정시각</th>
                 <th>조회</th>
@@ -211,7 +238,6 @@
                        th:href="@{|/board/read/${pageMaker.categoryCode}/${item.id}?currentPage=${currentPage}&option=${criteria.option}&keyword=${criteria.keyword}|}"
                        th:text="${item.title}">title</a>
                 </td>
-                <td th:text="${item.writer}">writer</td>
 
                 <td th:if="${item.isToday(item.regedate)}" th:text="${#temporals.format(item.regedate, 'HH:mm')}">regdate</td>
                 <td th:if="${!item.isToday(item.regedate)}" th:text="${#temporals.format(item.regedate, 'yy-MM-dd')}">regdate</td>
@@ -225,40 +251,40 @@
         </table>
 
 
-    <!-- a 태그들의 th:href 는 검색중이 아닐때만 사용, 검색중일때는 자바스크립트 사용 (if selectOption != none) -->
-    <!-- pagination -->
-    <div class="container">
-        <ul class="pagination col justify-content-center" id="paginationContainer">
-            <li class="page-item" th:if="${pageMaker.isPrevBt}">
-                <a th:href="@{|/board/list/${pageMaker.getCategoryCode()}?currentPage=${(pageMaker.startPageNum)-1}|}"
-                   th:data-pageNum="${(pageMaker.startPageNum)-1}" class="page-link">&laquo;</a>
-            </li>
-            <!-- ${#numbers.sequence(from,to,[step])} 단순반복 numbers 유틸리티 클래스 배열 생성후 사용 -->
-            <!--    <li th:each="num : ${#numbers.sequence(${pageMaker.startPageNum},${pageMaker.endPageNum})}">-->
-            <li class="page-item page-item-number" th:each="num : ${#numbers.sequence(pageMaker.startPageNum, pageMaker.endPageNum)}">
-                <a th:href="@{|/board/list/${pageMaker.getCategoryCode()}?currentPage=${num}|}" th:text="${num}" th:data-pagenum="${num}"
-                   class="page-link page-link-number"> 페이지번호 </a>
-            </li>
-            <li class="page-item" th:if="${pageMaker.isNextBt()}">
-                <a th:href="@{|/board/list/${pageMaker.getCategoryCode()}?currentPage=${pageMaker.endPageNum+1}|}"
-                   th:data-pageNum="${pageMaker.endPageNum+1}" class="page-link">&raquo;</a>
-            </li>
-        </ul>
-    </div>
+        <!-- a 태그들의 th:href 는 검색중이 아닐때만 사용, 검색중일때는 자바스크립트 사용 (if selectOption != none) -->
+        <!-- pagination -->
+        <div class="container">
+            <ul class="pagination col justify-content-center" id="paginationContainer">
+                <li class="page-item" th:if="${pageMaker.isPrevBt}">
+                    <a th:href="@{|/member/mypage/myboard/${pageMaker.categoryCode}?currentPage=${(pageMaker.startPageNum)-1}|}"
+                       th:data-pageNum="${(pageMaker.startPageNum)-1}" class="page-link">&laquo;</a>
+                </li>
+                <!-- ${#numbers.sequence(from,to,[step])} 단순반복 numbers 유틸리티 클래스 배열 생성후 사용 -->
+                <!--    <li th:each="num : ${#numbers.sequence(${pageMaker.startPageNum},${pageMaker.endPageNum})}">-->
+                <li class="page-item page-item-number" th:each="num : ${#numbers.sequence(pageMaker.startPageNum, pageMaker.endPageNum)}">
+                    <a th:href="@{|/member/mypage/myboard/${pageMaker.categoryCode}?currentPage=${num}|}" th:text="${num}" th:data-pagenum="${num}"
+                       class="page-link page-link-number"> 페이지번호 </a>
+                </li>
+                <li class="page-item" th:if="${pageMaker.isNextBt()}">
+                    <a th:href="@{|/member/mypage/myboard/${pageMaker.categoryCode}?currentPage=${pageMaker.endPageNum+1}|}"
+                       th:data-pageNum="${pageMaker.endPageNum+1}" class="page-link">&raquo;</a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <!-- 글쓰기 버튼 -->
-    <div class="float-right" id="write">
-        <button type="button" class="btn btn-primary"
-                th:onclick="|location.href='@{/board/write/{categoryCode}(categoryCode=${criteria.getCategoryCode})}'|">글쓰기</button>
-    </div>
+<!--    <div class="float-right" id="write">-->
+<!--        <button type="button" class="btn btn-primary"-->
+<!--                th:onclick="|location.href='@{/board/write/{categoryCode}(categoryCode=${criteria.getCategoryCode})}'|">글쓰기</button>-->
+<!--    </div>-->
 
     <!-- 검색창 -->
     <div class="row justify-content-center input-group" style="clear:right;width:500px;margin:auto">
         <!-- th:action 태그는 javascript 를 통해 submit 할떄 적용되지 않는 것으로 보임 -->
         <!-- method = get 이므로 form 데이터가 queryString 에 붙어나감 -->
         <form id="searchForm" action="/board/list" method="get"
-              th:action="@{|/board/list/${pageMaker.categoryCode}|}" th:object="${criteria}">
+              th:action="@{|/member/mypage/myboard/${pageMaker.categoryCode}|}" th:object="${criteria}">
             <input type="hidden" name="currentPage" value="1">
             <select th:field="*{option}" name="option" class="form-select" id="searchOption">
                 <option value="">전체보기</option>
@@ -266,7 +292,7 @@
                 <option value="content">내용</option>
             </select>
             <input id="searchKeyword" type="text" th:field="*{keyword}" name="keyword" class="form-control"/>
-            <button class="btn btn-primary btn-sm">검색</button>
+            <button class="btn btn-primary">검색</button>
         </form>
     </div>
 
@@ -283,10 +309,4 @@
         integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
         crossorigin="anonymous"></script>
 </body>
-
-<!-- 메모
-url 이동 표현식례
-th:href="@{/basic/items/{itemId(itemId=${item.id}, query='test')}"
-생성 링크: http://localhost:8080/basic/items/1?query=test
--->
 </html>

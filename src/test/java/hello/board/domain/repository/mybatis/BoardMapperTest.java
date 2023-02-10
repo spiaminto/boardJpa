@@ -13,6 +13,7 @@ import org.springframework.cglib.core.Local;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -139,5 +140,34 @@ class BoardMapperTest {
         String query = "/board/edit/96?currentPage=1.option=title.keyword=원";
         query = query.replace(".", "&");
         log.info(query);
+    }
+
+    @Test
+    public void findPagedBoardWithMemberId() {
+        board.setMemberId(9999L);
+        for(int i = 0; i < 15; i++) {
+            boardMapper.save(board);
+            board.setMemberId(10000L);
+            boardMapper.save(board);
+            board.setMemberId(9999L);
+        }
+        Criteria criteria = new Criteria();
+
+        List<Board> pagedBoardWithMemberId = boardMapper.findPagedBoardWithMemberId(criteria, 9999L);
+        for (Board board :
+                pagedBoardWithMemberId) {
+            log.info(board.toString());
+        }
+
+    }
+
+    @Test
+    public void findByIdList() {
+        List<Long> idList = new ArrayList<>();
+        idList.add(308L);
+        idList.add(309L);
+        idList.add(310L);
+
+        boardMapper.findByIdList(idList);
     }
 }

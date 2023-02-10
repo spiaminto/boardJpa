@@ -1,13 +1,10 @@
 package hello.board.domain.paging;
 
-import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * 페이징 계산 및 사용자에게 보여줄 데이터를 만드는 PageMaker 클래스.
@@ -32,7 +29,7 @@ public class PageMaker{
     private int currentPage;
 
     // 전체글 / 페이지 갯수
-    private int totalBoardCount;
+    private int totalCount;
 
     // 시작 페이지 번호 / 끝 페이지 번호
     private int startPageNum;
@@ -50,9 +47,9 @@ public class PageMaker{
     // => 글 데이터가 같이 있으면 나중에 꺼낼때 문제 생기므로 삭제
 //    private List<Board> boardList;
 
-    public PageMaker(Criteria criteria, Integer totalBoardCount) {
+    public PageMaker(Criteria criteria, Integer totalCount) {
         this.criteria = criteria;
-        this.totalBoardCount = totalBoardCount;
+        this.totalCount = totalCount;
         this.currentPage = criteria.getCurrentPage();
         this.categoryCode = criteria.getCategoryCode();
 
@@ -70,7 +67,7 @@ public class PageMaker{
         startPageNum = endPageNum - displayPageNum + 1;
 
         // 토탈71 퍼페10 라페8 / 토탈70 퍼페10 라페7
-        int lastPage =(int) Math.ceil(totalBoardCount / (double)criteria.getBoardPerPage());
+        int lastPage =(int) Math.ceil(totalCount / (double)criteria.getBoardPerPage());
 //      int lastPage = (totalBoard - 1) / criteria.getBoardPerPage() + 1;
 
         // 끝 페이지 번호가 마지막 페이지보다 높으면 마지막 페이지를 끝페이지 번호로.

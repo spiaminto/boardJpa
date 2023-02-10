@@ -28,6 +28,11 @@ public class MybatisBoardRepository implements BoardRepository {
     }
 
     @Override
+    public Integer countTotalBoardWithMemberId(Criteria criteria, Long memberId) {
+        return boardMapper.countTotalBoardWithMemberId(criteria, memberId);
+    }
+
+    @Override
     public void updateViewCount(long id) {
         boardMapper.updateViewCount(id);
     }
@@ -37,10 +42,20 @@ public class MybatisBoardRepository implements BoardRepository {
         return boardMapper.findById(id);
     }
 
+    @Override
+    public List<Board> findByIdList(List<Long> idList) {
+        return boardMapper.findByIdList(idList);
+    }
+
     // 검색 + 페이징
     @Override
     public List<Board> findPagedBoard(Criteria criteria) {
         return boardMapper.findPagedBoard(criteria);
+    }
+
+    @Override
+    public List<Board> findPagedBoardWithMemberId(Criteria criteria, Long memberId) {
+        return boardMapper.findPagedBoardWithMemberId(criteria, memberId);
     }
 
     @Override

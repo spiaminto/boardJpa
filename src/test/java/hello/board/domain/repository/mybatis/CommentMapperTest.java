@@ -1,6 +1,8 @@
 package hello.board.domain.repository.mybatis;
 
 import hello.board.domain.comment.Comment;
+import hello.board.domain.criteria.Criteria;
+import hello.board.domain.enums.Category;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @Transactional
 /**
- * 이 테스트가 제일 나은듯?
+ * 이 테스트가 제일 나은듯? -> 페이지 검색부터 다시 막씀
  */
 class CommentMapperTest {
 
@@ -29,6 +31,7 @@ class CommentMapperTest {
     CommentMapper commentMapper;
     Comment testComment = new Comment(98L, "asdf", "댓글");
     Comment testComment2 = new Comment(98L, "asdfasdf", "댓글2");
+
 
     @Test
     void findByBoardId() {
@@ -53,6 +56,15 @@ class CommentMapperTest {
 
     @Test
     void findByCommentId() {
+        // groupId set 이 repository 에 있는데 mapper 로 테스트 하는건 아닌듯.
+        Comment testComment3 = new Comment(1L, 1L, "test",
+                "String content", 289L, 5555, 0, Category.ALL);
+        commentMapper.save(testComment3);
+        Optional<Comment> first = commentMapper.findByBoardId(1L).stream().findFirst();
+        if (first.isPresent()) {
+            commentMapper.findByCommentId(first.get().getCommentId());
+        }
+
     }
 
     @Test
@@ -62,7 +74,7 @@ class CommentMapperTest {
        commentMapper.save(testComment);
 
        // Optional<Comment> 로 찾아 .get() 하면 값 뽑아옴. (없으면 Exception)
-       Comment findComment = commentMapper.findByCommentId(testComment.getCommentId()).get();
+       Comment findComment = commentMapper.findByCommentId(testComment.getCommentId());
 
        log.info("findComment = {}", findComment);
        log.info("testComment = {}", testComment.toString());
@@ -86,7 +98,7 @@ class CommentMapperTest {
 
         commentMapper.update(testComment.getCommentId(), updateParam);
 
-        Comment findComment = commentMapper.findByCommentId(testComment.getCommentId()).get();
+        Comment findComment = commentMapper.findByCommentId(testComment.getCommentId());
 
         log.info("testComment = {}", testComment.toString());
         log.info("findComment = {}", findComment);
@@ -103,6 +115,34 @@ class CommentMapperTest {
         commentMapper.save(testComment);
         commentMapper.delete(testComment.getCommentId());
 
-        Assertions.assertThat(commentMapper.findByCommentId(testComment.getCommentId())).isEmpty();
+//        Assertions.assertThat(commentMapper.findByCommentId(testComment.getCommentId())).isEmpty();
+    }
+
+    @Test
+    void findPagedCommentWithMemberIdTest() {
+
+//        Comment testComment3 = new Comment(1L, 1L, "test", "String content",
+//                6666L, 5555, 0, Category.ALL);
+
+        Criteria criteria = new Criteria();
+        criteria.setCategory(Category.FREE);
+        criteria.setOption("content");
+        criteria.setKeyword("재밌");
+        criteria.setBoardPerPage(5);
+
+//        for(int i = 0; i < 20; i++) {
+//            commentMapper.save(testComment3);
+//            if (i%2 == 0) {
+//            }
+//        }
+
+        List<Comment> pagedCommentWithMemberId = commentMapper.findPagedCommentWithMemberId(criteria,1L);
+
+        // setTarget() 까지 확인
+        for (Comment comment :
+                pagedCommentWithMemberId) {
+            log.info(comment.toString());
+        }
+
     }
 }

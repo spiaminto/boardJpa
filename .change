@@ -47,7 +47,11 @@ commit 12
     메모
 
 commit 13
-    소셜 계정 로그인 시 회원가입을 직접 하도록 수정 및 임시유저 검사
+    소셜 계정 로그인 시 회원가입을 직접 하도록 수정 및 임시유저 검사.
+
+commit 14
+    마이페이지(내글, 내댓글, 내정보) 추가, 회원정보 화면을 대체.
+    Comment 에 targetId, target, memberId(FK), category 추가, boardId 에 FK 추가
 
 
     

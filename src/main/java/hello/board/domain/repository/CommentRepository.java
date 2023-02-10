@@ -1,15 +1,20 @@
 package hello.board.domain.repository;
 
 import hello.board.domain.comment.Comment;
+import hello.board.domain.criteria.Criteria;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepository {
 
-    Optional<Comment> findByCommentId(Long commentId);
+    Integer countTotalCommentWithMemberId(Criteria criteria, Long memberId);
+
+    Comment findByCommentId(Long commentId);
 
     List<Comment> findByBoardId(Long boardId);
+
+    List<Comment> findPagedCommentWithMemberId(Criteria criteria, Long memberId);
 
     Comment save(Comment comment);
 

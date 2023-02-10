@@ -99,8 +99,10 @@ public class BoardController {
         model.addAttribute(findBoard);
         model.addAttribute("commentList", commentList);
 
-        // comment 에서 member.loginId 사용해야됨.
-        model.addAttribute("member", principalDetails.getMember());
+        // comment 에서 member.username 사용해야됨.
+        if (principalDetails != null) {
+            model.addAttribute("member", principalDetails.getMember());
+        }
 
         return "/board/read";
     }

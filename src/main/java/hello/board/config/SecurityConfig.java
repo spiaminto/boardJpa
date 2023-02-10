@@ -38,7 +38,7 @@ public class SecurityConfig {
         http.authorizeRequests()
 
                 // 로그인 필수
-                .antMatchers("/*/write/**", "/*/edit/**", "/*/delete/**", "/*/info/**")
+                .antMatchers("/*/write/**", "/*/edit/**", "/*/delete/**", "/*/info/**", "/*/mypage/**")
                     .access("hasRole('ROLE_USER')")
 
                 // 모두 허용

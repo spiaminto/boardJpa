@@ -26,7 +26,6 @@ public interface MemberMapper {
 
     // 중복유저 체크할떄 사용
     Optional<Member> findByUsername(String username);
-
     Optional<Member> findByProviderAndProviderId(@Param("provider")String provider, @Param("providerId") String providerId);
 
     List<Member> findAll();

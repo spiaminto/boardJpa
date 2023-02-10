@@ -1,6 +1,12 @@
 package hello.board.web.controller;
 
+import hello.board.domain.board.Board;
+import hello.board.domain.comment.Comment;
+import hello.board.domain.criteria.Criteria;
 import hello.board.domain.member.Member;
+import hello.board.domain.paging.PageMaker;
+import hello.board.domain.repository.BoardRepository;
+import hello.board.domain.repository.CommentRepository;
 import hello.board.domain.repository.MemberRepository;
 import hello.board.domain.repository.ResultDTO;
 import hello.board.web.RedirectDTO;
@@ -20,7 +26,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -29,6 +36,10 @@ import java.security.Principal;
 public class MemberController {
 
     private final MemberRepository memberRepository;
+
+    private final BoardRepository boardRepository;
+
+    private final CommentRepository commentRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -116,7 +127,7 @@ public class MemberController {
         return "redirect:/alert";
     }
 
-    @GetMapping("/info")
+    @GetMapping("/mypage/info")
     public String infoForm(@AuthenticationPrincipal PrincipalDetails principalDetails,
                            Model model) {
         Long id = principalDetails.getMember().getId();
@@ -181,7 +192,8 @@ public class MemberController {
     @PostMapping("/edit/oauth2")
     public String editOAuth2Member(@Validated @ModelAttribute("member")OAuth2MemberEditForm oAuth2MemberEditForm,
                                    @AuthenticationPrincipal PrincipalDetails principalDetails,
-                                   BindingResult bindingResult, Model model) {
+                                   BindingResult bindingResult,
+                                   RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             log.info("/edit POST bindingResult.hasError");
@@ -191,16 +203,90 @@ public class MemberController {
         String username = oAuth2MemberEditForm.getUsername();
         String providerId = oAuth2MemberEditForm.getProviderId();
 
-        memberRepository.updateUsername(providerId, username);
+        log.info("providerId = {}, username = {}", providerId, username);
+
+        boolean isSuccess = false;
+
+        isSuccess = memberRepository.updateUsername(providerId, username) == 1 ? true : false;
 
         // 시큐리티 세션 갱신 (보안상? 맞는진? 모르겠음)
         principalDetails.editMember(username);
 
-        //alert
-        model.addAttribute("redirectDTO", new RedirectDTO(
-                "/board/list", "멤버 정보가 변경되었습니다."
-        ));
-        return "/alert";
+        if (isSuccess) {
+            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
+                    "/board/mypage/info", "멤버 정보가 변경되었습니다."
+            ));
+            return "redirect:/alert";
+        } else {
+            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
+                    "/member/mypage/info", "멤버 정보 변경에 실패하였습니다."
+            ));
+            return "redirect:/alert";
+        }
+    }
+
+    // 내 글
+    @GetMapping({"/mypage/myboard/{categoryCode}", "/mypage/myboard"})
+    public String myPage(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                         @ModelAttribute("criteria") Criteria criteria,
+                         Model model) {
+
+        Member currentMember = principalDetails.getMember();
+        log.info(criteria.getCurrentPage() + criteria.getKeyword() + criteria.getOption() + criteria.getCategory());
+
+        // 총 글갯수 가져오기
+        Integer countTotalBoard = boardRepository.countTotalBoardWithMemberId(criteria, currentMember.getId());
+
+        // 글 가져오기
+        List<Board> pagedBoard = boardRepository.findPagedBoardWithMemberId(criteria, currentMember.getId());
+
+        // 페이징 할 정보 설정하기
+        PageMaker pageMaker = new PageMaker(criteria, countTotalBoard);
+
+        // 페이지메이커, 글 목록 모델에 넣기
+        model.addAttribute("pageMaker", pageMaker);
+        model.addAttribute("boardList", pagedBoard);
+
+
+        return "/member/myBoard";
+    }
+
+    // 내 댓글
+    @GetMapping({"/mypage/mycomment/{categoryCode}", "/mypage/mycomment"})
+    public String myComment(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                         @ModelAttribute("criteria") Criteria criteria,
+                         Model model) {
+
+        Member currentMember = principalDetails.getMember();
+        log.info(criteria.getCurrentPage() + criteria.getKeyword() + criteria.getOption() + criteria.getCategory());
+
+        // 댓글 가져오기
+        List<Comment> pagedComment = commentRepository.findPagedCommentWithMemberId(criteria, currentMember.getId());
+
+        List<Long> commentIdList = new ArrayList<>();
+        for (Comment comment : pagedComment) {
+            commentIdList.add(comment.getCommentId());
+        }
+
+        List<Board> boardList = new ArrayList<>();
+        if (!commentIdList.isEmpty()) {
+            // 댓글이 달린 게시글 가져오기
+            boardList = boardRepository.findByIdList(commentIdList);
+        }
+
+
+        // 총 글갯수 가져오기
+        Integer countTotal = commentRepository.countTotalCommentWithMemberId(criteria, currentMember.getId());
+
+        // 페이징 할 정보 설정하기
+        PageMaker pageMaker = new PageMaker(criteria, countTotal);
+
+        // 페이지메이커, 글 목록 모델에 넣기
+        model.addAttribute("pageMaker", pageMaker);
+        model.addAttribute("commentList", pagedComment);
+        model.addAttribute("boardList", boardList);
+
+        return "/member/myComment";
     }
 
     @ResponseBody

@@ -18,6 +18,20 @@
         </where>
     </select>
 
+    <!--countTotalBoard-->
+    <select id="countTotalBoardWithMemberId" resultType="Integer">
+        select count(*) from board
+        <where>
+            memberId = #{memberId}
+            <if test="criteria.category != null and criteria.category.name() != 'ALL'">
+                and category = #{criteria.category}
+            </if>
+            <if test="criteria.keyword != null and criteria.keyword != ''">
+                and ${criteria.option} like concat('%',#{criteria.keyword},'%')
+            </if>
+        </where>
+    </select>
+
     <!-- updateViewCount -->
     <update id="updateViewCount">
         update board
@@ -29,6 +43,14 @@
     <select id="findById" resultType="Board">
         select * from board
         where id = #{id}
+    </select>
+
+    <select id="findByIdList" resultType="Board">
+        select * from board
+        where id in 
+        <foreach collection="idList" item="id" index="index" separator="," open="(" close=")">
+            #{id}
+        </foreach>
     </select>
 
     <!-- findAll 제목으로 검색용 -->
@@ -54,6 +76,21 @@
         </where>
         order by id desc
         limit #{startRowNum}, #{boardPerPage}
+    </select>
+
+    <select id="findPagedBoardWithMemberId" resultType="Board">
+        select * from board
+        <where>
+            memberId = #{memberId}
+            <if test="criteria.category != null and criteria.category.name() != 'ALL'">
+                and category = #{criteria.category}
+            </if>
+            <if test="criteria.keyword != null and criteria.keyword != ''">
+                and ${criteria.option} like concat('%',#{criteria.keyword},'%')
+            </if>
+        </where>
+        order by id desc
+        limit #{criteria.startRowNum}, #{criteria.boardPerPage}
     </select>
 
 
@@ -83,7 +120,7 @@
 
     <!-- delete -->
     <delete id="delete">
-        delete from board where id = #{id}
+        delete from board where id = #{id} cascade
     </delete>
 
 

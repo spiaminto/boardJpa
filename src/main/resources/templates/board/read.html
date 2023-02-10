@@ -458,7 +458,7 @@
             })
 
             // 답글 폼 생성
-            $(".other-comment>.comment-username, .other-comment-empty>.comment-username").each(function (index, item) {
+            $(".other-comment>.comment-username, .other-comment-reply>.comment-username").each(function (index, item) {
                 $(item).on("click", makeReply)
             })
 
@@ -475,6 +475,7 @@
 
                 // click 한 username 의 형제 .comment-delete 에서 commentId 획득
                 let groupId = $(this).siblings(".comment-delete").data("id");
+                let targetId = $(this).siblings(".comment-memberId").val();
                 // click 한 username 의 부모 .other-comment 의 형제중 reply 갯수( 다음 other-comment 직전까지) 획득
                 let order = $(this).parent().nextUntil(".other-comment").length + 1;
                 let target = $(this).text();
@@ -483,10 +484,12 @@
                 $("#myComment").clone(true)
                     .prop("id", "myCommentReply")
                     .children("#myCommentForm").prop("id", "myCommentReplyForm")
+                    .children(".comment-username").on("click", makeReply).end()
                     .children(".comment-groupId").val(groupId).end()
                     .children(".comment-order").val(order).end()
                     .children(".comment-depth").val("1").end()
                     .children(".comment-target").val(target).end()
+                    .children(".comment-targetId").val(targetId).end()
                     .find(".comment-submit").attr("data-isreply", "1").end()
                     // 다시 #mycommentForm 으로
                     .end()
@@ -579,14 +582,14 @@
         <div id="otherCommentContainer">
             <!-- other-comment 와 other-comment-reply 를 묶기위해 comment 클래스 임시로 넣음 -->
             <div class="other-comment input-group comment" th:each="comment, commentState : ${commentList}" th:id="'comment'+ ${comment.getCommentId()}"
-                th:data-group="${comment.getGroupId()}">
+                th:data-group="${comment.groupId}">
                 <!-- 나중에 jquery 에서 얘가 있으면 .parent().addClass(other-comment-reply).removeClass...-->
                 <span th:if="${comment.getTarget() != null && comment.getTarget() != ''}" class="input-group-text comment-reply-for"
                       th:text="'@' + ${comment.getTarget()}">@상대방ID</span>
                 <!-- th placeholder comment.username -->
                 <input type="hidden" class="comment-writer form-control" th:value="${comment.writer}" name="writer">
                 <!-- th text comment.username -->
-                <span class="input-group-text comment-username flex-fill" th:text="${comment.username}">writer</span>
+                <span class="input-group-text comment-username flex-fill" th:text="${comment.writer}">writer</span>
                 <a class="comment-delete" th:href="@{/comment/delete/{commentId}(commentId=${comment.getCommentId()})}"
                     th:data-id="${comment.getCommentId()}">✖</a>
                 <div class="input-group">
@@ -596,9 +599,11 @@
                     <button class="btn btn-outline-secondary comment-update-submit" type="button">등록</button>
                 </div>
                 <input type="hidden" class="comment-boardId" name="boardId" value="0" th:value="${boardId}">
+                <input type="hidden" class="comment-memberId" name="memberId" value="0" th:value="${comment.memberId}">
                 <input type="hidden" class="comment-groupId" name="groupId" value="0" th:value="${comment.groupId}">
                 <input type="hidden" class="comment-order" name="groupOrder" value="0" th:value="${comment.groupOrder}">
                 <input type="hidden" class="comment-depth" name="groupDepth" value="0" th:value="${comment.groupDepth}">
+                <input type="hidden" class="comment-category" name="category" value="" th:value="${comment.category.name()}">
                 <div class="is-reply" th:if="${comment.groupDepth > 0}"></div>
             </div>
         </div>
@@ -611,10 +616,13 @@
                     <button class="btn btn-outline-secondary comment-submit" type="submit">등록</button>
                 </div>
                 <input type="hidden" class="comment-boardId" name="boardId" value="0" th:value="${boardId}">
+                <input type="hidden" class="comment-memberId" name="memberId" value="0" th:value="${member.id}">
                 <input type="hidden" class="comment-groupId" name="groupId" value="0">
                 <input type="hidden" class="comment-order" name="groupOrder" value="0">
                 <input type="hidden" class="comment-depth" name="groupDepth" value="0">
                 <input type="hidden" class="comment-target" name="target" value="">
+                <input type="hidden" class="comment-targetId" name="targetId" value="">
+                <input type="hidden" class="comment-category" name="category" value="" th:value="${board.category.name()}">
             </form>
         </div>
     </div>
@@ -632,9 +640,12 @@
                 <button class="btn btn-outline-secondary comment-update-submit" type="button">등록</button>
             </div>
             <input type="hidden" name="boardId" value="0" th:value="${boardId}">
+            <!-- 로그인 아니면 생성X -->
+            <input type="hidden" name="memberId" value="0" sec:authorize="isAuthenticated()" th:value="${member.id}">
             <input type="hidden" class="comment-groupId" name="groupId" value="0">
             <input type="hidden" class="comment-order" name="groupOrder" value="0">
             <input type="hidden" class="comment-depth" name="groupDepth" value="0">
+            <input type="hidden" class="comment-category" name="category" value="" th:value="${board.category.name()}">
         </div>
     </div>
 

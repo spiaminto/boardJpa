@@ -12,16 +12,20 @@ import java.util.List;
 public interface BoardMapper {
 
     Integer countTotalBoard(Criteria criteria);
+    Integer countTotalBoardWithMemberId(@Param("criteria") Criteria criteria, @Param("memberId") Long memberId);
 
     void updateViewCount(long id);
 
     Board findById(Long id);
+
+    List<Board> findByIdList(@Param("idList") List<Long> idList);
 
     // 검색용으로 사용
 //    List<Board> findAll(BoardSerachCond cond);
 
     // 검색 + 페이징 된 board 찾기
     List<Board> findPagedBoard(Criteria criteria);
+    List<Board> findPagedBoardWithMemberId(@Param("criteria") Criteria criteria, @Param("memberId") Long memberId);
 
     // 검색 + 페이징 + 카테고리
     List<Board> findPagedAndCategorizedBoard(Criteria criteria);

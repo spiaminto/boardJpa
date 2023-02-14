@@ -75,7 +75,7 @@
             </if>
         </where>
         order by id desc
-        limit #{startRowNum}, #{boardPerPage}
+        limit #{startRowNum}, #{contentPerPage}
     </select>
 
     <select id="findPagedBoardWithMemberId" resultType="Board">
@@ -90,7 +90,7 @@
             </if>
         </where>
         order by id desc
-        limit #{criteria.startRowNum}, #{criteria.boardPerPage}
+        limit #{criteria.startRowNum}, #{criteria.contentPerPage}
     </select>
 
 
@@ -116,6 +116,12 @@
             updateDate=#{updateParam.updateDate},
             category=#{updateParam.category}
         where id = #{id}
+    </update>
+
+    <update id="syncWriter">
+        update board
+        set writer = #{updateName}
+        where memberId = #{memberId}
     </update>
 
     <!-- delete -->

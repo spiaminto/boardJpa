@@ -67,7 +67,7 @@ public class PageMaker{
         startPageNum = endPageNum - displayPageNum + 1;
 
         // 토탈71 퍼페10 라페8 / 토탈70 퍼페10 라페7
-        int lastPage =(int) Math.ceil(totalCount / (double)criteria.getBoardPerPage());
+        int lastPage =(int) Math.ceil(totalCount / (double)criteria.getContentPerPage());
 //      int lastPage = (totalBoard - 1) / criteria.getBoardPerPage() + 1;
 
         // 끝 페이지 번호가 마지막 페이지보다 높으면 마지막 페이지를 끝페이지 번호로.

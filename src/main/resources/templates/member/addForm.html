@@ -15,16 +15,7 @@
             padding: 30px;
         }
 
-        h2 {
-            text-align: center;
-            margin: 0 auto;
-        }
-
-        hr {
-            width: 560px;
-        }
-
-        form {
+        .addForm {
             width: 560px;
             margin: 30px auto 0;
         }
@@ -185,12 +176,15 @@
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
 
-    <h2> 회원 가입 </h2>
+    <div>
+        <h2 id="headerText"> 회원 가입 </h2>
+    </div>
+
     <hr>
 
     <!-- 로그인ID 와 닉네임은 중복체크를 위해 클라이언트 단에서 유효성 검사를 하긴 함
           -> 새로고침 날아감 때문에 패스워드도 그냥 유효성 검사 함 -->
-    <form th:action action="/home" method="POST" th:object="${member}" id="form" class="form"
+    <form th:action action="/home" method="POST" th:object="${member}" id="form" class="form addForm"
     th:unless="${isOauth2 == 'true'}">
 
         <label for="loginId" class="col">로그인 ID </label>
@@ -239,7 +233,7 @@
     </form>
 
     <form th:if="${isOauth2 == 'true'}"
-          th:action="@{/member/add/oauth2}" action="/home" method="POST" th:object="${member}" id="oauth2Form" class="form">
+          th:action="@{/member/add/oauth2}" action="/home" method="POST" th:object="${member}" id="oauth2Form" class="addForm form">
 
         <label for="oAuth2Provider">사용할 소셜 로그인 서비스 </label>
         <div class="input-wrapper">

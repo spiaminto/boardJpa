@@ -43,15 +43,30 @@
         }
 
         #oAuth2LoginBox {
-            margin-top: 20px;
+            margin-top: 30px;
             text-align: center;
+            border: solid 1px lightgray;
+            border-radius: 10px;
+            position: relative;
         }
 
-        #oAuth2LoginWrapper {
+        #oAuth2LoginHeader {
+            display: block;
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            background-color: white;
+            transform: translateX(-50%);
+            color: grey;
+            font-size: 0.9em;
+        }
+
+        #oAuth2LoginBtWrapper {
             /*border-style: solid;*/
             border-color: lightgrey;
             border-width: thin;
             border-radius: 10px;
+            margin-top: 10px;
         }
 
         #oAuth2LoginBox button {
@@ -61,9 +76,8 @@
         }
 
         #oAuth2LoginBox button:hover {
-            border-style: solid;
-            border-color: lightgrey;
-            border-width: 2px;
+            outline: 2px solid lightgrey;
+            outline-offset: -3px;
         }
 
         #oAuth2LoginBox button:last-child {
@@ -142,7 +156,8 @@
                     type="button" class="btn btn-primary bg-gradient">취소</button>
         </div>
         <div id="oAuth2LoginBox">
-            <div id="oAuth2LoginWrapper">
+            <span id="oAuth2LoginHeader"> 소셜 계정으로 로그인 / 회원가입</span>
+            <div id="oAuth2LoginBtWrapper">
                 <button type="button" onclick="location.href='/oauth2/authorization/google'"
                         class="btn">
                     <img th:src="@{/image/google_small.png}" src="/static/image/google_small.png" height="40px" alt="구글">

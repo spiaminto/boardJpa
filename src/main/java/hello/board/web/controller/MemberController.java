@@ -143,7 +143,7 @@ public class MemberController {
 
     @PostMapping("/edit")
     public String editMember(@Validated @ModelAttribute("member") MemberEditForm memberEditForm,
-                             BindingResult bindingResult, Model model,
+                             BindingResult bindingResult, RedirectAttributes redirectAttributes,
                              @AuthenticationPrincipal PrincipalDetails principalDetails
                              ) {
         // 검증 오류 발생
@@ -154,6 +154,7 @@ public class MemberController {
 
         Member currentMember = principalDetails.getMember();
         String beforeLoginId = currentMember.getLoginId();
+        String beforeUsername = currentMember.getUsername();
         String beforePassword = currentMember.getPassword();
 
         String encodedPassword = bCryptPasswordEncoder.encode(memberEditForm.getPassword());
@@ -166,27 +167,37 @@ public class MemberController {
         log.info("currentMember.getId = {}", currentMember.getId());
         Member updatedMember = memberRepository.update(currentMember.getId(), updateParam);
 
-        // 로그인 정보도 수정 -> 강제 로그아웃
+        // username 수정 -> 동기화
+        if (!beforeUsername.equals(memberEditForm.getUsername())) {
+            boolean isSuccess = syncUserName(currentMember.getId(), beforeUsername, memberEditForm.getUsername(), redirectAttributes);
+
+            // 실패하면 바로 리다이렉트
+            if (!isSuccess) {
+                return "redirect:/alert";
+            }
+        }
+
+        // loginId, password 수정 -> 강제 로그아웃
         if (!beforeLoginId.equals(memberEditForm.getLoginId())
                 || !bCryptPasswordEncoder.matches(memberEditForm.getPassword(), beforePassword)
         ) {
             log.info("/edit POST 로그인 정보수정");
 
             // alert
-            model.addAttribute("redirectDTO", new RedirectDTO(
+            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                     "/logout", "로그인 정보가 변경되었습니다. 재로그인해 주세요."));
-            return "/alert";
+            return "redirect:/alert";
         }
 
         // 시큐리티 세션 갱신 (보안상? 맞는진? 모르겠음)
         principalDetails.editMember(updatedMember.getUsername());
 
         //alert
-        model.addAttribute("redirectDTO", new RedirectDTO(
-                "/board/list", "멤버 정보가 변경되었습니다."
+        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
+                "/member/mypage/info", "멤버 정보가 변경되었습니다."
         ));
 
-        return "/alert";
+        return "redirect:/alert";
     }
 
     @PostMapping("/edit/oauth2")
@@ -200,6 +211,7 @@ public class MemberController {
             return "/member/infoForm";
         }
 
+        Member currentMember = principalDetails.getMember();
         String username = oAuth2MemberEditForm.getUsername();
         String providerId = oAuth2MemberEditForm.getProviderId();
 
@@ -213,10 +225,19 @@ public class MemberController {
         principalDetails.editMember(username);
 
         if (isSuccess) {
+                // username 수정 -> 동기화
+                boolean isSyncSuccess = syncUserName(currentMember.getId(), currentMember.getUsername(), oAuth2MemberEditForm.getUsername(), redirectAttributes);
+
+                // 실패하면 바로 리다이렉트
+                if (!isSyncSuccess) {
+                    return "redirect:/alert";
+                }
+
             redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                    "/board/mypage/info", "멤버 정보가 변경되었습니다."
+                    "/member/mypage/info", "멤버 정보가 변경되었습니다."
             ));
             return "redirect:/alert";
+
         } else {
             redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                     "/member/mypage/info", "멤버 정보 변경에 실패하였습니다."
@@ -304,6 +325,29 @@ public class MemberController {
         }
     }
 
+    // username 동기화, 성공시 true 반환
+    public boolean syncUserName(Long memberId, String currentUsername, String udpateUsername, RedirectAttributes redirectAttributes) {
+        ResultDTO boardResult = boardRepository.syncWriter(memberId, udpateUsername);
+        ResultDTO commentResult = commentRepository.syncWriterAndTarget(memberId, udpateUsername);
+
+        // username 동기화 에러
+        if (!boardResult.isSuccess() || !commentResult.isSuccess()) {
+            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
+                    "/member/mypage/info", "시스템 문제로 닉네임을 바꾸는데 실패했습니다."
+            ) );
+            if (!boardResult.isSuccess()) {
+                log.info("{} , {} -> {}, ResultDTO.exception = {}, ResultDTO.message = {}",
+                        boardResult.getCustomMessage(), currentUsername, udpateUsername,
+                        boardResult.getException(), boardResult.getMessage() );
+            } else {
+                log.info("{} , {} -> {}, ResultDTO.exception = {}, ResultDTO.message = {}",
+                        commentResult.getCustomMessage(), currentUsername, udpateUsername,
+                        commentResult.getException(), commentResult.getMessage() );
+            }
+            return false;
+        }
+        return true;
+    }
 
 
     // 회원삭제 /delete/{id}

@@ -53,6 +53,10 @@ commit 14
     마이페이지(내글, 내댓글, 내정보) 추가, 회원정보 화면을 대체.
     Comment 에 targetId, target, memberId(FK), category 추가, boardId 에 FK 추가
 
+commit 15
+    member.username 변경 동기화
+
+
 
     
 

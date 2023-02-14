@@ -3,11 +3,9 @@ package hello.board.domain.repository.mybatis;
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.repository.BoardRepository;
+import hello.board.domain.repository.ResultDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -78,6 +76,16 @@ public class MybatisBoardRepository implements BoardRepository {
         int row = boardMapper.update(id, updateParam);
         if (row != 1) return null;
         return findById(id);
+    }
+
+    @Override
+    public ResultDTO syncWriter(Long memberId, String updateName) {
+        try {
+            boardMapper.syncWriter(memberId, updateName);
+            return new ResultDTO(true);
+        } catch (Exception e) {
+            return new ResultDTO(false, e.toString(), e.getMessage(), "BoardMapper.syncWriter 오류");
+        }
     }
 
     // 필요시 반환

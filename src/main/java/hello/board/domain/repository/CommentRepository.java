@@ -24,4 +24,7 @@ public interface CommentRepository {
 
     // db 에서 foreign key cascade? 사용해서 지워야 할듯. 일단 따로 delete 하도록함
     int deleteByBoardId(Long boardId);
+    
+    // member.username 바뀔때 동기화
+    ResultDTO syncWriterAndTarget(Long memberId, String updateName);
 }

@@ -9,7 +9,6 @@
     <style>
 
         #wrapper {
-            padding: 30px;
             background-color: white;
         }
 
@@ -288,11 +287,11 @@
                         $(".other-comment-empty input").each(function (index, item) {
                             $(item).val(inputList[index]);
                         })
-                        // clone([이벤트복사여부, bool])
+                        // clone([이벤트복사여부, bool]) -> 근데 하위 이벤트는 복사 안되는듯?
                         $(".other-comment-empty").clone(true)
                             .attr("id", "comment" + resp.commentId)
                             .children(".comment-reply-for").css("display", "none").end()
-                            .children(".comment-username").text(resp.writer).end()
+                            .children(".comment-username").text(resp.writer).on("click", makeReply).end()
                             .children(".comment-delete").attr("data-id", resp.commentId).end()
                             .find(".comment-content").attr("placeholder", resp.content).end()
                             .find(".comment-update").attr("data-id", resp.commentId).end()
@@ -475,6 +474,16 @@
 
                 // click 한 username 의 형제 .comment-delete 에서 commentId 획득
                 let groupId = $(this).siblings(".comment-delete").data("id");
+
+                // 답글 달 대상이 댓글인지 대댓글인지 확인
+                if ($(this).siblings(".comment-depth").val() == 1) {
+                    // 대-대댓글
+                    groupId = $(this).siblings(".comment-groupId").val();
+                } else {
+                    // 대댓글
+                    groupId = $(this).siblings(".comment-delete").data("id");
+                }
+
                 let targetId = $(this).siblings(".comment-memberId").val();
                 // click 한 username 의 부모 .other-comment 의 형제중 reply 갯수( 다음 other-comment 직전까지) 획득
                 let order = $(this).parent().nextUntil(".other-comment").length + 1;
@@ -517,7 +526,7 @@
 
     <div id="wrapper">
 
-        <h2 th:text="${board.title}"> Title </h2>
+        <h2 id="headerText" th:text="${board.title}"> Title </h2>
 
         <hr>
 
@@ -641,7 +650,7 @@
             </div>
             <input type="hidden" name="boardId" value="0" th:value="${boardId}">
             <!-- 로그인 아니면 생성X -->
-            <input type="hidden" name="memberId" value="0" sec:authorize="isAuthenticated()" th:value="${member.id}">
+            <input type="hidden" class="comment-memberId" name="memberId" value="0" sec:authorize="isAuthenticated()" th:value="${member.id}">
             <input type="hidden" class="comment-groupId" name="groupId" value="0">
             <input type="hidden" class="comment-order" name="groupOrder" value="0">
             <input type="hidden" class="comment-depth" name="groupDepth" value="0">

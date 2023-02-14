@@ -21,9 +21,19 @@ public class ResultDTO {
     // custom message
     private String customMessage;
 
+    // affected row count
+    private int rowCount;
+
     // 성공시 처리용
     public ResultDTO(boolean isSuccess) {
         this.isSuccess = isSuccess;
     }
 
+    // 실패 - rowCount 없음
+    public ResultDTO(boolean isSuccess, String exception, String message, String customMessage) {
+        this.isSuccess = isSuccess;
+        this.exception = exception;
+        this.message = message;
+        this.customMessage = customMessage;
+    }
 }

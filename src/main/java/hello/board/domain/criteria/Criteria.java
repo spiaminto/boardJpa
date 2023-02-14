@@ -23,7 +23,7 @@ public class Criteria {
     // 현재 페이지 번호
     private Integer currentPage;
     // 페이지 당 글 갯수
-    private int boardPerPage;
+    private int contentPerPage;
 
     // 카테고리 url 용
     private String categoryCode;
@@ -39,15 +39,15 @@ public class Criteria {
     // 요청 파라미터가 없을때 (최초접속)
     public Criteria() {
         this.currentPage = 1;
-        this.boardPerPage = 12;
+        this.contentPerPage = 12;
         this.category = Category.ALL;
         this.categoryCode = Category.ALL.getCode();
     }
 
     // test 사용
-    public Criteria(int currentPage, int boardPerPage, String option, String keyword) {
+    public Criteria(int currentPage, int contentPerPage, String option, String keyword) {
         this.currentPage = currentPage;
-        this.boardPerPage = boardPerPage;
+        this.contentPerPage = contentPerPage;
         this.option = option;
         this.keyword = keyword;
     }
@@ -55,7 +55,7 @@ public class Criteria {
     // Limit 문의 시작행은 0(행) 부터 시작
     // 현패1 -> 시작행 0(1~10) / 현패2 -> 시작행 10(11~20) / 현패3 -> 시작행 20(21~30)
     public int getStartRowNum() {
-        return (currentPage - 1) * boardPerPage;
+        return (currentPage - 1) * contentPerPage;
     }
 
     // 의미가 있나?

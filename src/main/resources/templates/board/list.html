@@ -160,9 +160,11 @@
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
 
-    <h2 id="header" th:text="${criteria.category.getCategoryName() + ' 게시판'}">게시판</h2>
-    <hr>
+    <div id="header">
+        <h2 id="headerText" th:text="${criteria.category.getCategoryName() + ' 게시판'}">게시판</h2>
+    </div>
 
+    <hr>
 
     <div id="noneContent" th:if="${boardList.isEmpty()}">
         <p>

@@ -10,14 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
@@ -128,7 +125,7 @@ class CommentMapperTest {
         criteria.setCategory(Category.FREE);
         criteria.setOption("content");
         criteria.setKeyword("재밌");
-        criteria.setBoardPerPage(5);
+        criteria.setContentPerPage(5);
 
 //        for(int i = 0; i < 20; i++) {
 //            commentMapper.save(testComment3);

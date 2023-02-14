@@ -13,11 +13,6 @@
     <title>회원 수정</title>
     <style>
 
-        #header {
-            text-indent: 1em;
-            font-size: 1.7em;
-        }
-
         #myPageNav {
             margin: 20px auto ;
             background-color: #f7f7f7;
@@ -210,7 +205,10 @@
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
 
-    <h2 id="header"> 마이 페이지 > 내 정보 </h2>
+    <div>
+        <h2 id="headerText"> 마이 페이지 > 내 정보 </h2>
+    </div>
+
     <hr>
 
     <ul  id="myPageNav" class="nav nav-pills nav-justified">

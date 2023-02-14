@@ -86,4 +86,11 @@ public class MybatisMemberRepository implements MemberRepository {
         }
         return !result.isEmpty();
     }
+
+    // member.username 을 바꿀때, board 와 comment 테이블의 writer, target 등을 갱신
+    public boolean syncUsername(Long memberId, String updateName) {
+
+
+        return true;
+    }
 }

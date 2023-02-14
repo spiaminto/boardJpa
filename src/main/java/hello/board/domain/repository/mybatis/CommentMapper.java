@@ -4,6 +4,7 @@ import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,10 @@ public interface CommentMapper {
     int setGroupId(@Param("commentId") Long commentId, @Param("groupId") Long groupId);
 
     int update(@Param("commentId") Long commentId, @Param("updateParam") Comment updateParam);
+
+    int syncWriter(@Param("memberId") Long memberId, @Param("updateName") String updateName);
+
+    int syncTarget(@Param("memberId") Long memberId, @Param("updateName") String updateName);
 
     int delete(Long commentId);
 

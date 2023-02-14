@@ -36,6 +36,8 @@ public interface BoardMapper {
 
     int update(@Param("id") Long id, @Param("updateParam") Board updateParam);
 
+    int syncWriter(@Param("memberId") Long memberId, @Param("updateName") String updateName);
+
     int update(long viewCount);
 
     int delete(Long id);

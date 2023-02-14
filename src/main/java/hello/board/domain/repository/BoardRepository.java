@@ -34,4 +34,7 @@ public interface BoardRepository {
     // 필요시 boolean 으로 수정
     int delete(Long id);
 
+    // member.username 변화시 동기화
+    ResultDTO syncWriter(Long memberId, String updateName);
+
 }

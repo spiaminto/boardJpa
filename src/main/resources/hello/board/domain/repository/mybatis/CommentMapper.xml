@@ -38,7 +38,7 @@
             </if>
         </where>
         order by comment_id desc
-        limit #{criteria.startRowNum}, #{criteria.boardPerPage}
+        limit #{criteria.startRowNum}, #{criteria.contentPerPage}
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="comment_id">
@@ -59,6 +59,18 @@
         set content = #{updateParam.content},
             updateDate = #{updateParam.updateDate}
         where comment_id = #{commentId}
+    </update>
+
+    <update id="syncWriter">
+        update comment
+        set writer = #{updateName}
+        where member_id = #{memberId}
+    </update>
+
+    <update id="syncTarget">
+        update comment
+        set target = #{updateName}
+        where target_id = #{memberId}
     </update>
 
     <delete id="delete">

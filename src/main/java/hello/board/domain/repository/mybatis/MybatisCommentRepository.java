@@ -3,6 +3,7 @@ package hello.board.domain.repository.mybatis;
 import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.repository.CommentRepository;
+import hello.board.domain.repository.ResultDTO;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -56,6 +57,24 @@ public class MybatisCommentRepository implements CommentRepository {
     public int update(Long commentId, Comment updateParam) {
         updateParam.setUpdateDate(LocalDateTime.now());
         return commentMapper.update(commentId, updateParam);
+    }
+
+    @Override
+    public ResultDTO syncWriterAndTarget(Long memberId, String updateName) {
+        boolean flag = false;
+        try {
+            commentMapper.syncWriter(memberId, updateName);
+            flag = true;
+            commentMapper.syncTarget(memberId, updateName);
+            return new ResultDTO(true);
+        } catch (Exception e) {
+            if (flag) {
+                return new ResultDTO(false, e.toString(), e.getMessage(), "commentMapper.syncTarget 오류");
+            } else {
+                return new ResultDTO(false, e.toString(), e.getMessage(), "commentMapper.syncWriter 오류");
+            }
+
+        }
     }
 
     @Override

@@ -210,8 +210,8 @@
         <label for="username">닉네임 </label>
         <div class="input-wrapper">
             <input type="text" th:field="*{username}" id="username" th:errorclass="is-invalid"
-                   placeholder="최대 16자 까지 허용합니다." class="form-control">
-            <button id="duplicateUsernameCheckBt" type="button" class="btn btn-secondary">
+                   placeholder="최대 16자 까지 허용합니다." class="username form-control">
+            <button type="button" class="duplicateUsernameCheckBt btn btn-secondary">
                 중복확인
             </button>
             <div class="valid-feedback"> 사용 가능한 닉네임 입니다.</div>

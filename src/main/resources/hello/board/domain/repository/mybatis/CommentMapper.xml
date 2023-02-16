@@ -85,4 +85,8 @@
         delete from comment where group_id = #{commentId} and group_depth = 1
     </delete>
 
+    <delete id="deleteReplyByTargetId">
+        delete from comment where target_id = #{targetId} and group_depth = 1
+    </delete>
+
 </mapper>

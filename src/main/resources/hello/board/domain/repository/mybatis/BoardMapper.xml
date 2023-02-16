@@ -45,13 +45,14 @@
         where id = #{id}
     </select>
 
-    <select id="findByIdList" resultType="Board">
-        select * from board
-        where id in 
-        <foreach collection="idList" item="id" index="index" separator="," open="(" close=")">
-            #{id}
-        </foreach>
-    </select>
+<!--    IN 안에 중복 id 들어가면 하나밖에 반환을 안함 -->
+<!--    <select id="findByIdList" resultType="Board">-->
+<!--        select * from board-->
+<!--        where id in -->
+<!--        <foreach collection="idList" item="id" index="index" separator="," open="(" close=")">-->
+<!--            #{id}-->
+<!--        </foreach>-->
+<!--    </select>-->
 
     <!-- findAll 제목으로 검색용 -->
     <!-- concat(string1, string2 ...) 문자열 합치기 -->
@@ -126,7 +127,7 @@
 
     <!-- delete -->
     <delete id="delete">
-        delete from board where id = #{id} cascade
+        delete from board where id = #{id}
     </delete>
 
 

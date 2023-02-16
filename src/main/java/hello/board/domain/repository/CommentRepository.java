@@ -27,4 +27,6 @@ public interface CommentRepository {
     
     // member.username 바뀔때 동기화
     ResultDTO syncWriterAndTarget(Long memberId, String updateName);
+
+    int deleteReplyByTargetId(Long targetId);
 }

@@ -18,7 +18,6 @@ public interface BoardMapper {
 
     Board findById(Long id);
 
-    List<Board> findByIdList(@Param("idList") List<Long> idList);
 
     // 검색용으로 사용
 //    List<Board> findAll(BoardSerachCond cond);

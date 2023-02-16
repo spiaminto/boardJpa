@@ -77,6 +77,10 @@ public class MybatisCommentRepository implements CommentRepository {
         }
     }
 
+    public int deleteReplyByTargetId(Long targetId) {
+        return commentMapper.deleteReplyByTargetId(targetId);
+    }
+
     @Override
     public int delete(Long commentId) {
         // 답글 먼저삭제 (cascade)

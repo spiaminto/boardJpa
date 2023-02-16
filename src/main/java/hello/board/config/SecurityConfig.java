@@ -37,9 +37,13 @@ public class SecurityConfig {
         // 요청 인증 방식 설정
         http.authorizeRequests()
 
+                // 공지 작성 및 어드민 전용페이지(아직안만듦)
+                .antMatchers("/admin/**", "/board/write/notice/**", "/board/edit/notice/**", "/board/delete/notice/**" )
+                .access("hasRole('ROLE_ADMIN')")
+
                 // 로그인 필수
                 .antMatchers("/*/write/**", "/*/edit/**", "/*/delete/**", "/*/info/**", "/*/mypage/**")
-                    .access("hasRole('ROLE_USER')")
+                    .access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 
                 // 모두 허용
                 .anyRequest().permitAll()

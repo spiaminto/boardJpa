@@ -47,7 +47,7 @@ public class MemberController {
     @GetMapping("/add")
     public String addMember(Model model) {
         model.addAttribute("member", new Member());
-        return "/member/addForm";
+        return "member/addForm";
     }
 
     @PostMapping("/add")
@@ -56,7 +56,7 @@ public class MemberController {
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
             log.info("/add POST bindingResult.hasError");
-            return "/member/addForm";
+            return "member/addForm";
         }
 
         String encodedPassword = bCryptPasswordEncoder.encode(form.getPassword());
@@ -75,7 +75,7 @@ public class MemberController {
             return "redirect:/alert";
         }
 
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/board/list/all", "회원가입 완료"));
+        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/login", "회원가입 완료"));
 
         return "redirect:/alert";
     }
@@ -96,7 +96,7 @@ public class MemberController {
         model.addAttribute("member", principalDetails.getMember());
         model.addAttribute("isOauth2", "true");
 
-        return "/member/addForm";
+        return "member/addForm";
     }
 
     @PostMapping("/add/oauth2")
@@ -107,7 +107,7 @@ public class MemberController {
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
             log.info("/add/oauth2 POST bindingResult.hasError {}", bindingResult);
-            return "/member/addForm";
+            return "member/addForm";
         }
 
         Member member = principalDetails.getMember();
@@ -138,7 +138,7 @@ public class MemberController {
             model.addAttribute("isOauth2", "true");
         }
 
-        return "/member/infoForm";
+        return "member/infoForm";
     }
 
     @PostMapping("/edit")
@@ -149,7 +149,7 @@ public class MemberController {
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
             log.info("/edit POST bindingResult.hasError");
-            return "/member/infoForm";
+            return "member/infoForm";
         }
 
         Member currentMember = principalDetails.getMember();
@@ -208,7 +208,7 @@ public class MemberController {
 
         if (bindingResult.hasErrors()) {
             log.info("/edit POST bindingResult.hasError");
-            return "/member/infoForm";
+            return "member/infoForm";
         }
 
         Member currentMember = principalDetails.getMember();
@@ -269,7 +269,7 @@ public class MemberController {
         model.addAttribute("boardList", pagedBoard);
 
 
-        return "/member/myBoard";
+        return "member/myBoard";
     }
 
     // 내 댓글
@@ -284,15 +284,15 @@ public class MemberController {
         // 댓글 가져오기
         List<Comment> pagedComment = commentRepository.findPagedCommentWithMemberId(criteria, currentMember.getId());
 
-        List<Long> commentIdList = new ArrayList<>();
+        List<Long> boardIdList = new ArrayList<>();
         for (Comment comment : pagedComment) {
-            commentIdList.add(comment.getCommentId());
+            boardIdList.add(comment.getBoardId());
         }
 
         List<Board> boardList = new ArrayList<>();
-        if (!commentIdList.isEmpty()) {
+        if (!boardIdList.isEmpty()) {
             // 댓글이 달린 게시글 가져오기
-            boardList = boardRepository.findByIdList(commentIdList);
+            boardList = boardRepository.findByIdList(boardIdList);
         }
 
 
@@ -307,7 +307,26 @@ public class MemberController {
         model.addAttribute("commentList", pagedComment);
         model.addAttribute("boardList", boardList);
 
-        return "/member/myComment";
+        return "member/myComment";
+    }
+
+    @GetMapping("/delete")
+    public String deleteMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                               RedirectAttributes redirectAttributes) {
+        Long currentId = principalDetails.getMember().getId();
+
+        memberRepository.delete(currentId);
+
+        // board 와 comment 는 자동으로 삭제. comment.target 은 fk 아니라서 설정해야함
+        commentRepository.deleteReplyByTargetId(currentId);
+        
+        // 보험
+        principalDetails.getMember().setRole("ROLE_TEMP");
+
+        redirectAttributes.addFlashAttribute("redirectDTO",
+                new RedirectDTO("/logout", "회원 탈퇴 되었습니다."));
+
+        return "redirect:/alert";
     }
 
     @ResponseBody
@@ -348,10 +367,5 @@ public class MemberController {
         }
         return true;
     }
-
-
-    // 회원삭제 /delete/{id}
-    // 회원갱신 /update/{id, boardVO}
-    // 글 조회 /my-board/{writer}
 
 }

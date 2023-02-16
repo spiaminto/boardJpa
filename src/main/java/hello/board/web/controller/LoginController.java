@@ -34,7 +34,7 @@ public class LoginController {
     // /login GET, 사용자가 login 버튼 누름
     @GetMapping("/login")
     public String login(@ModelAttribute("loginForm") LoginForm loginForm) {
-        return "/login/loginForm";
+        return "login/loginForm";
     }
 
     // spring security 에서 잡은 로그인(임시)
@@ -57,7 +57,7 @@ public class LoginController {
             model.addAttribute("isCatched", "true");
         }
 
-        return "/login/loginForm";
+        return "login/loginForm";
     }
 
     /**

@@ -30,7 +30,6 @@ import java.util.List;
 @Controller
 // final, @NonNull 필드만 받는 생성자
 @RequiredArgsConstructor
-@RequestMapping("/board")
 public class BoardController {
 
     private final BoardRepository boardRepository;
@@ -42,6 +41,11 @@ public class BoardController {
     private Category category;
     private String categoryCode;
 
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/board/list/all";
+    }
+
     /**
      * 전체 글 List<Board> 를 페이징 하여 모델에 담아 /list 뷰 호출
      * 쿼리파라미터로 currentPage 를 받아 Criteria 에 맵핑한다. (setter 사용, 생성자 (아마) X )
@@ -50,7 +54,7 @@ public class BoardController {
      * url 패턴 ( {variable}: 변수, [...]: 비 필수 )
      * /board /{action} /{criteria.categoryCode} /[{board.Id}] ? currentPage=0 [ &option=option &keyword=keyword ]
      */
-    @GetMapping(value = {"/list/{categoryCode}", "/list", "/"})
+    @GetMapping(value = {"/board/list/{categoryCode}", "/board/list"})
     public String pagedList(@AuthenticationPrincipal PrincipalDetails principalDetails,
                             Model model,
                             @ModelAttribute("criteria") Criteria criteria) {
@@ -70,14 +74,7 @@ public class BoardController {
         model.addAttribute("pageMaker", pageMaker);
         model.addAttribute("boardList", pagedBoard);
 
-        // 로그인 중인 사용자 있음
-        /*
-        if (principalDetails != null) {
-            model.addAttribute("member", principalDetails.getMember());
-        }
-        */
-        
-        return "/board/list";
+        return "board/list";
     }
 
     /**
@@ -86,7 +83,7 @@ public class BoardController {
      * @param model
      * @return
      */
-    @GetMapping("/read/{categoryCode}/{boardId}")
+    @GetMapping("/board/read/{categoryCode}/{boardId}")
     public String read( @PathVariable Long boardId, Model model,
                        @AuthenticationPrincipal PrincipalDetails principalDetails,
                        @ModelAttribute("criteria") Criteria criteria) {
@@ -104,7 +101,7 @@ public class BoardController {
             model.addAttribute("member", principalDetails.getMember());
         }
 
-        return "/board/read";
+        return "board/read";
     }
 
     /**
@@ -112,11 +109,11 @@ public class BoardController {
      * @param model
      * @return
      */
-    @GetMapping("/write/{categoryCode}")
+    @GetMapping("/board/write/{categoryCode}")
     public String writeForm(Model model, @ModelAttribute Criteria criteria) {
         // th:object 로 커맨드 객체 받기위해?, bindingResult 와 관련성?
         model.addAttribute("board", new Board());
-        return "/board/writeForm";
+        return "board/writeForm";
     }
 
     /**
@@ -125,20 +122,20 @@ public class BoardController {
      * @param redirectAttributes    리다이렉트 파라미터 추가
      * @return
      */
-    @PostMapping("/write/{categoryCode}")
+    @PostMapping("/board/write/{categoryCode}")
     public String writeBoard(@AuthenticationPrincipal PrincipalDetails principalDetails,
                         @Validated @ModelAttribute("board") BoardSaveForm form,
                         BindingResult bindingResult, HttpServletRequest request,
                         @ModelAttribute("criteria") Criteria criteria,
                         RedirectAttributes redirectAttributes) {
 
-        if (form.getCategory() == null) {
-            bindingResult.rejectValue("category", "NotBlank.board.category");
+        if (form.getCategory() == Category.NOTICE && !request.isUserInRole("ROLE_ADMIN")) {
+            bindingResult.rejectValue("category", "Unauthorized.category");
         }
         // 검증 오류 발견
         if (bindingResult.hasErrors()) {
             log.info("/write POST bindingResult.hasErrors {}", bindingResult);
-            return "/board/writeForm";
+            return "board/writeForm";
         }
 
         // 현재 사용자 확인
@@ -174,7 +171,7 @@ public class BoardController {
      * @param model
      * @return
      */
-    @GetMapping("/edit/{categoryCode}/{boardId}")
+    @GetMapping("/board/edit/{categoryCode}/{boardId}")
     public String editForm(@PathVariable Long boardId, HttpServletRequest request, Model model,
                            RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -184,7 +181,7 @@ public class BoardController {
         // 현재 로그인한 사람, 수정하려는 글의 작성자 비교
         if (isSameWriter(principalDetails, findBoard)) {
             model.addAttribute("board",findBoard);
-            return "/board/editForm";
+            return "board/editForm";
         }
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
@@ -200,20 +197,20 @@ public class BoardController {
      * @param redirectAttributes
      * @return
      */
-    @PostMapping("/edit/{categoryCode}/{boardId}")
+    @PostMapping("/board/edit/{categoryCode}/{boardId}")
     public String editBoard(@PathVariable Long boardId,@Validated @ModelAttribute("board") BoardEditForm form,
                        BindingResult bindingResult, HttpServletRequest request,
                        @ModelAttribute Criteria criteria,
                        RedirectAttributes redirectAttributes) {
 
-        if (form.getCategory() == null) {
-            bindingResult.rejectValue("category", "NotBlank.board.category");
+        if (form.getCategory() == Category.NOTICE && !request.isUserInRole("ROLE_ADMIN")) {
+            bindingResult.rejectValue("category", "Unauthorized.category");
         }
 
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
             log.info("/edit POST bindingResult.hasErrors = {}", bindingResult);
-            return "/board/editForm";
+            return "board/editForm";
         }
 
         log.info("board.categoryString = {}, criteria.categoryString = {}", form.getCategory(), criteria.getCategoryCode());
@@ -244,7 +241,7 @@ public class BoardController {
      * @param boardId
      * @return
      */
-    @GetMapping("/delete/{categoryCode}/{boardId}")
+    @GetMapping("/board/delete/{categoryCode}/{boardId}")
     public String delete(@PathVariable Long boardId,
                          @AuthenticationPrincipal PrincipalDetails principalDetails,
                          HttpServletRequest request,
@@ -261,9 +258,6 @@ public class BoardController {
 
         int result = boardRepository.delete(boardId);
         if (result == 1) {log.info("boardRepository.delete({}) 성공", boardId);}
-
-        // 댓글 삭제 delete cascade
-        commentRepository.deleteByBoardId(boardId);
 
         // 이미지 삭제
         imageRepository.deleteImage(boardId);
@@ -282,6 +276,12 @@ public class BoardController {
      */
     public boolean isSameWriter(PrincipalDetails principalDetails, Board findBoard) {
         Member loginMember = principalDetails.getMember();
+        
+        //관리자
+        if (loginMember.getUsername().equals("admin")) {
+            return true;
+        }
+
         return findBoard.getMemberId().equals(loginMember.getId());
     }
 

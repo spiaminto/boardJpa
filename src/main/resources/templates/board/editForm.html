@@ -139,14 +139,13 @@
         </div>
 
         <div class="input-group input-wrapper">
-            <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="Default select example" required>
+            <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="categorySelect" th:errorclass="is-invalid" required>
                 <option value="" hidden>카테고리</option>
                 <option value="FREE">자유</option>
                 <option value="ISSUE">이슈</option>
                 <option value="ECONOMY">경제</option>
                 <option value="CS">문의</option>
-                <!--                if 관리자 -->
-                <option value="NOTICE">공지</option>
+                <option value="NOTICE" sec:authorize="hasRole('ROLE_ADMIN')">공지</option>
             </select>
             <!-- th:errorclass: 해당필드에 에러가 발생하면 설정된 클래스 추가 -->
             <!-- th:errors: 해당 필드에 에러가 발생하면 에러 메시지 내용으로 설정 -->

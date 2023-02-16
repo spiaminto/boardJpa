@@ -251,7 +251,9 @@
 
     <!-- 글쓰기 버튼 -->
     <div class="float-right" id="write">
-        <button type="button" class="btn btn-primary"
+        <button type="button" class="btn btn-primary" th:if="${criteria.categoryCode.equals('notice')}" sec:authorize="hasRole('ROLE_ADMIN')"
+                th:onclick="|location.href='@{/board/write/{categoryCode}(categoryCode=${criteria.getCategoryCode})}'|">글쓰기</button>
+        <button type="button" class="btn btn-primary" th:unless="${criteria.categoryCode.equals('notice')}"
                 th:onclick="|location.href='@{/board/write/{categoryCode}(categoryCode=${criteria.getCategoryCode})}'|">글쓰기</button>
     </div>
 

@@ -37,7 +37,7 @@
         }
 
         .title-feedback {
-            text-indent: 22%;
+            text-indent: 24%;
         }
 
         #form textarea {
@@ -98,6 +98,7 @@
 
             // submit 할때 이미지 uuid 추출 후 submit
             $("#submitBt").on("click", function (event) {
+
                 let imageUrl = "";
 
                 // <img> 에서 src 추출
@@ -109,7 +110,7 @@
                     imageUrl += splittedUrl[1];
                     imageUrl += ",";
                 })
-                console.log("imageUrl = " + imageUrl)
+                // console.log("imageUrl = " + imageUrl)
                 $("#uploadImageUrl").val(imageUrl);
             })
 
@@ -136,23 +137,23 @@
         </div>
 
         <div class="input-group input-wrapper">
-            <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="Default select example"  required>
+            <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="Default select example"  required th:errorclass="is-invalid">
                 <!-- option value="" 이면 브라우저 단에서 거름, 숨긴 기본값 -->
                 <option value="" selected hidden>카테고리</option>
                 <option value="FREE">자유</option>
                 <option value="ISSUE">이슈</option>
                 <option value="ECONOMY">경제</option>
                 <option value="CS">문의</option>
-<!--                if 관리자 -->
-                <option value="NOTICE">공지</option>
+                <option value="NOTICE" sec:authorize="hasRole('ROLE_ADMIN')">공지</option>
             </select>
             <!-- th:errorclass: 해당필드에 에러가 발생하면 설정된 클래스 추가 -->
             <!-- th:errors: 해당 필드에 에러가 발생하면 에러 메시지 내용으로 설정 -->
             <span class="input-group-text">제목 </span>
             <!-- input 태그의 value 는 기본값, textarea 태그는 value 없음. -->
-            <input class="form-control" type="text" id="title" name="title" th:field="*{title}" th:errorclass="is-inavlid">
+            <input class="form-control" type="text" id="title" name="title" th:field="*{title}" th:errorclass="is-invalid">
+            <div class="invalid-feedback title-feedback" th:errors="*{title}"> title 오류</div>
+            <div class="invalid-feedback" th:errors="*{category}"> category 오류</div>
         </div>
-        <div class="invalid-feedback title-feedback" th:errors="*{title}"> title 오류</div>
 
         <div class="input-group input-wrapper">
             <span class="input-group-text">작성자</span>

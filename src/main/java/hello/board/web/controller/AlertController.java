@@ -19,7 +19,7 @@ public class AlertController {
             redirectDTO.setMessage("alert 요청 오류");
             redirectDTO.setRedirectURL("/board/list");
         }
-        return "/alert";
+        return "alert";
     }
 
 }

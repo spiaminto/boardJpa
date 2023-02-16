@@ -48,6 +48,7 @@
         .submit-btn {
             margin: 0 auto;
         }
+
     </style>
     <script src="http://code.jquery.com/jquery.min.js"></script>
     <script>
@@ -67,6 +68,7 @@
             $(".info-form input").attr("disabled", true);
             $(".info-form button").css("display", "none")
             $(".info-form .edit-btn").css("display", "block");
+            $(".info-form .delete-btn").css("display", "block");
             $("#password").attr("placeholder", "");
 
             // 회원 정보 수정 버튼 누름
@@ -74,6 +76,7 @@
                 $(".info-form .editable").attr("disabled", false);
                 $(".info-form button").css("display", "block");
                 $(".info-form .edit-btn").css("display", "none");
+                $(".info-form .delete-btn").css("display", "none");
                 $("#password").attr("placeholder", "4 ~ 16자리까지 허용합니다.");
 
             })
@@ -196,6 +199,13 @@
                     alert("닉네임 중복 체크 해주세요");
                 }
             })
+
+            // 회원 탈퇴
+            $(".delete-btn").on("click", function () {
+                if (confirm("정말로 탈퇴 하시겠습니까?")) {
+                    location.replace("/member/delete");
+                }
+            })
         })
     </script>
 </head>
@@ -269,8 +279,9 @@
             <div class="invalid-feedback"> 유효한 이메일을 입력해 주세요 (최대 30자) </div>
         </div>
 
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-evenly">
             <button id="editBt" type="button" class="btn btn-primary edit-btn">정보 수정</button>
+            <button id="deleteBt" type="button" class="btn btn-primary delete-btn">회원 탈퇴</button>
             <button id="submitBt" type="submit" class="btn btn-primary submit-btn"> 회원 수정</button>
         </div>
 
@@ -309,8 +320,9 @@
             <div class="invalid-feedback"> 닉네임을 입력해 주세요 (최대 16 자)</div>
         </div>
 
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-evenly">
             <button id="oauth2EditBt" type="button" class="btn btn-primary edit-btn">정보 수정</button>
+            <button id="oauth2DeleteBt" type="button" class="btn btn-primary delete-btn">회원 탈퇴</button>
             <button id="oauth2SubmitBt" type="submit" class="btn btn-primary submit-btn"> 수정 완료</button>
         </div>
 

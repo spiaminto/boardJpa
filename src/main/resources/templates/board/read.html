@@ -191,7 +191,7 @@
                     let targetPosition = $(".comment[data-group='" + afterTargetId + "']").first().nextUntil(".other-comment").last();
 
                     // jquery 객체배열 인듯?
-                    console.log(targetPosition)
+                    // console.log(targetPosition)
 
                     // 첫번째 답글 -> 모댓글 다음에 부착
                     if (targetPosition.length == 0) {
@@ -205,7 +205,7 @@
             })
 
             // 게시글 삭제
-            $("#deleteNonSearch").on("click", function (event) {
+            $(".delete-non-search").on("click", function (event) {
                 let currentPage = $("#pageInfo").children().first().val();
                 let boardId = $("#info").children().first().data("boardid");
                 let categoryCode = $("#categoryCode").data("categorycode");
@@ -265,7 +265,7 @@
                 let params = $(this).parent().parent().serialize();
                 let paramsArray = $("#myCommentForm").serializeArray();
 
-                console.log("params: " + params);
+                // console.log("params: " + params);
 
                 $.ajax({
                     type: "post",
@@ -313,20 +313,18 @@
 
             // 댓글과 답글 수정 검사 및 수정폼 변경
             $(".comment-update").on("click", function (event) {
-                let myWriter = $("#myComment .myWriter").val();
+                let myMemberId = $("#myComment .comment-memberId").val();
+                let myWriter = $("#myComment .comment-writer").val();
 
                 // 타임리프로 other-comment 마다 #commentN (N=state.count) 로 id 부여
                 let commentId = $(this).data("id");
                 // 해당 id 로 탐색
-                let writer = $("#comment" + commentId + " .comment-writer").val();
+                let commentMemberId = $("#comment" + commentId + " .comment-memberId").val();
 
-                console.log("writer = " + writer + " mywriter = " + myWriter);
+                console.log("commentWriter = " + commentMemberId + " mywriter = " + myMemberId);
 
                 // 로그인 확인
                 if (myWriter == null) { alert("로그인 해 주세요"); return false; }
-
-                // 작성자 확인
-                if (writer != myWriter) { alert("수정하려는 댓글의 작성자가 아닙니다."); return false;}
 
                 // length > 1 == writing (true)
                 let isWriting = $(".comment .bg-primary").length;
@@ -336,6 +334,9 @@
                     alert("다른 작업을 완료 해 주세요")
                     return false;
                 }
+
+                // 작성자 확인
+                if (commentMemberId != myMemberId && myWriter != 'admin' ) { alert("수정하려는 댓글의 작성자가 아닙니다."); return false;}
 
                 let content = $("#comment" + commentId + " .comment-content").attr("placeholder");
                 $("#comment" + commentId + " .comment-content").val(content);
@@ -403,20 +404,20 @@
                 })
             })
 
-            // 댓글 삭제 검사 및 삭제
+            // 댓글의 X 버튼 눌럿을때 동작 (댓글/답글삭제, 답글 작성/수정취소)
             $(".comment-delete").on("click", function (event) {
                 event.preventDefault();
-                let targetWriter = $(this).prev().text();
-                let myWriter = $("#myComment .myWriter").val();
+                let commentMemberId = $(this).siblings(".comment-memberId").val();
+                let myMemberId = $("#myComment .comment-memberId").val();
+                let myWriter = $("#myComment .comment-writer").val();
                 let commentId = $(this).data("id");
 
-                if (myWriter == null) {
+                if (myMemberId == null) {
                     alert("로그인 해 주세요"); return;
                 }
 
-                // 답글 작성 취소
-                if ($(this).siblings(".myWriter").length > 0) {
-                    alert("답글 취소")
+                // 대댓글 작성 취소
+                if ($("#myCommentReply").length > 0) {
                     $(this).parent().parent().remove();
                     return false;
                 }
@@ -431,7 +432,7 @@
                     return false;
                 }
 
-                if (myWriter != targetWriter) {
+                if (myMemberId != commentMemberId && myWriter != 'admin') {
                     alert("삭제하려는 댓글의 작성자가 아닙니다."); return;
                 }
 
@@ -444,7 +445,6 @@
                     async: false,
                     url: "/comment/delete/" + commentId,
                     success: function (resp) {
-                        // $("#comment" + commentId).remove();
                         alert("댓글이 삭제되었습니다.");
                         location.reload();
                     },
@@ -465,7 +465,7 @@
             function makeReply (event) {
                 // event.stopPropagation();
 
-                let isWriting = $(this).parent().siblings("#myCommentReply").length;
+                let isWriting = $("#myCommentReply").length;
                 // 다른 답글을 작성중이면 이벤트 막기
                 if (isWriting != 0) {
                     alert("다른 작업을 완료해주세요")
@@ -503,7 +503,7 @@
                     // 다시 #mycommentForm 으로
                     .end()
                     .addClass("other-comment-reply")
-                    .find(".myWriter").before(
+                    .find(".comment-writer").before(
                         $(".other-comment-empty>.comment-reply-for").clone(true)
                             .text("@" + $(this).text())).end()
                     .find(".comment-username").after($(".other-comment-empty>.comment-delete").clone(true)).end()
@@ -559,28 +559,59 @@
         <textarea th:text="${board.content}" id="article">Content</textarea>
         <hr>
 
-        <!-- 검색중 -->
-        <div class="btn-group searching-nav" role="group"  th:if="${criteria.option != null}">
-            <button type="button" class="btn btn-primary" th:data-action="list">목록</button>
-            <button type="button" class="btn btn-primary" th:data-action="edit">수정</button>
-            <button type="button" class="btn btn-primary delete" th:data-action="delete">삭제</button>
+        <!-- 공지 제외 내부 네비 -->
+        <div class="read-nav" th:if="${!board.category.name().equals('NOTICE')}">
+            <!-- 검색중 -->
+            <div class="btn-group searching-nav" role="group"  th:if="${criteria.option != null}">
+                <button type="button" class="btn btn-primary" th:data-action="list">목록</button>
+                <button type="button" class="btn btn-primary" th:data-action="edit">수정</button>
+                <button type="button" class="btn btn-primary delete" th:data-action="delete">삭제</button>
+            </div>
+
+            <!-- 검색 안함 -->
+            <div class="btn-group" role="group" th:if="${criteria.option == null}">
+                <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
+                        th:onclick="|location.href='@{/board/list/{categoryCode}(categoryCode=${criteria.getCategoryCode()}, currentPage=${criteria.currentPage})}'|">목록
+                </button>
+                <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
+                        th:onclick="|location.href='@{/board/edit/{categoryCode}/{boardId}(categoryCode = ${criteria.getCategoryCode()}, boardId=${board.id}, currentPage=${criteria.currentPage})}'|">
+                    수정
+                </button>
+                <!-- 삭제 확인을 위해 onclick 비활성화 -->
+                <!-- th:onclick="|location.href='@{/board/delete/{boardId}(boardId=${board.id}, currentPage=${criteria.currentPage})}'|"-->
+                <button type="button" class="btn btn-primary delete delete-non-search">
+                    삭제
+                </button>
+            </div>
         </div>
 
-        <!-- 검색 안함 -->
-        <div class="btn-group" role="group" th:if="${criteria.option == null}">
-            <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
-                    th:onclick="|location.href='@{/board/list/{categoryCode}(categoryCode=${criteria.getCategoryCode()}, currentPage=${criteria.currentPage})}'|">목록
-            </button>
-            <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
-                    th:onclick="|location.href='@{/board/edit/{categoryCode}/{boardId}(categoryCode = ${criteria.getCategoryCode()}, boardId=${board.id}, currentPage=${criteria.currentPage})}'|">
-                수정
-            </button>
-            <!-- 삭제 확인을 위해 onclick 비활성화 -->
-            <!-- th:onclick="|location.href='@{/board/delete/{boardId}(boardId=${board.id}, currentPage=${criteria.currentPage})}'|"-->
-            <button type="button" id="deleteNonSearch" class="btn btn-primary delete">
-                삭제
-            </button>
+        <!-- 공지 내부 네비 -->
+        <div class="read-nav" th:if="${board.category.name().equals('NOTICE')}">
+            <!-- 검색중 -->
+            <div class="btn-group searching-nav" role="group"  th:if="${criteria.option != null}">
+                <button type="button" class="btn btn-primary" th:data-action="list">목록</button>
+                <button type="button" class="btn btn-primary" th:data-action="edit" sec:authorize="hasRole('ROLE_ADMIN')">수정</button>
+                <button type="button" class="btn btn-primary delete" sec:authorize="hasRole('ROLE_ADMIN')" th:data-action="delete">삭제</button>
+            </div>
+
+            <!-- 검색 안함 -->
+            <div class="btn-group" role="group" th:if="${criteria.option == null}">
+                <button type="button" class="btn btn-primary" onclick="location.href='/board/list'"
+                        th:onclick="|location.href='@{/board/list/{categoryCode}(categoryCode=${criteria.getCategoryCode()}, currentPage=${criteria.currentPage})}'|">목록
+                </button>
+                <button type="button" class="btn btn-primary" onclick="location.href='/board/list'" sec:authorize="hasRole('ROLE_ADMIN')"
+                        th:onclick="|location.href='@{/board/edit/{categoryCode}/{boardId}(categoryCode = ${criteria.getCategoryCode()}, boardId=${board.id}, currentPage=${criteria.currentPage})}'|">
+                    수정
+                </button>
+                <!-- 삭제 확인을 위해 onclick 비활성화 -->
+                <!-- th:onclick="|location.href='@{/board/delete/{boardId}(boardId=${board.id}, currentPage=${criteria.currentPage})}'|"-->
+                <button type="button" class="btn btn-primary delete delete-non-search" sec:authorize="hasRole('ROLE_ADMIN')">
+                    삭제
+                </button>
+            </div>
+
         </div>
+
     </div>
 
     <!-- 댓글 -->
@@ -618,7 +649,7 @@
         </div>
         <div id="myComment" sec:authorize="isAuthenticated()">
             <form id="myCommentForm" class="input-group" th:action="@{/comment/write}" method="post">
-                <input type="hidden" class="myWriter form-control" value="myWriter" name="writer" th:value="${member.username}">
+                <input type="hidden" class="comment-writer form-control" value="myWriter" name="writer" th:value="${member.username}">
                 <span class="input-group-text comment-username bg-primary text-white flex-fill" th:text="${member.username}">username</span>
                 <div class="input-group">
                     <textarea class="comment-content form-control form-control-sm" name="content" placeholder="댓글을 입력하세요" required maxlength="50"></textarea>

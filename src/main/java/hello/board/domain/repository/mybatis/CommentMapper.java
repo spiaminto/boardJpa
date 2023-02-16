@@ -34,6 +34,8 @@ public interface CommentMapper {
 
     int deleteReply(Long commentId);
 
+    int deleteReplyByTargetId(Long targetId);
+
     int deleteByBoardId(Long boardId);
 
 }

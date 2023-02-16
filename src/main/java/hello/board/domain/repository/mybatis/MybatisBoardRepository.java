@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -42,7 +43,12 @@ public class MybatisBoardRepository implements BoardRepository {
 
     @Override
     public List<Board> findByIdList(List<Long> idList) {
-        return boardMapper.findByIdList(idList);
+        List<Board> boardList = new ArrayList<>();
+        for (Long boardId :
+                idList) {
+            boardList.add(boardMapper.findById(boardId));
+        }
+        return boardList;
     }
 
     // 검색 + 페이징

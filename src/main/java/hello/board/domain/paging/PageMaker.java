@@ -31,6 +31,13 @@ public class PageMaker{
     // 전체글 / 페이지 갯수
     private int totalCount;
 
+    // count = 100, cpp = 10 cp = 1
+    // 91, 92, 3,4,5,6,7,8,9,100
+    // 81 82 83 ... 90
+    // 71 72 73     80
+    // count - cpp * (cp - 1) - i      count - cpp * (cp - 1) - 1       count - cpp * (cp - 1) - 0
+    // count - cpp * cp + cpp - 9
+
     // 시작 페이지 번호 / 끝 페이지 번호
     private int startPageNum;
     private int endPageNum;

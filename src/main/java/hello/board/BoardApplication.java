@@ -11,6 +11,11 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication
 public class BoardApplication {
 
+	// 출처 https://antdev.tistory.com/93
+	static {
+		System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(BoardApplication.class, args);
 	}

@@ -218,7 +218,7 @@
             <!-- BoardController.pagedList() 에서 Model 객체에 "pageMaker" 바인딩하여 전달됨 -->
             <tr th:each="item : ${commentList}"
                 th:with="currentPage=${param.currentPage == null} ? 1 : ${param.currentPage}">
-                <td id="commentNum" th:text="${item.commentId}">id</td>
+                <td id="commentNum" th:text="${pageMaker.totalCount - criteria.contentPerPage * (pageMaker.currentPage - 1) - itemStat.index}">id</td>
                 <!--검색안함-->
                 <td th:if="${criteria.option == null}">
                     <div>
@@ -232,7 +232,7 @@
                     <div>
                         <span>&nbsp; &nbsp; ⤷ &nbsp; &nbsp; </span>
                         <a id="readLink" href="list.html"
-                            th:href="@{|/board/read/${pageMaker.categoryCode}/${item.boardId}?currentPage=${currentPage}|}"
+                            th:href="@{|/board/read/${pageMaker.categoryCode}/${item.boardId}?currentPage=${currentPage}&selected=${item.commentId}|}"
                             th:text="${item.content}">comment.content</a>
                     </div>
                 </td>

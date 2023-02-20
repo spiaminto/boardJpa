@@ -25,6 +25,7 @@ public class Criteria {
     // 페이지 당 글 갯수
     private int contentPerPage;
 
+
     // 카테고리 url 용
     private String categoryCode;
 

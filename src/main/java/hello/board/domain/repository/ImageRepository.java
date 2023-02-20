@@ -13,7 +13,9 @@ public interface ImageRepository {
 
     List<Long> saveImageList(List<Image> imageList);
 
-    int deleteImage(long boardId);
+    int deleteImage(Long boardId);
+
+    int deleteImageAmazon(Long boardId);
 
     Image findById(Long id);
 
@@ -23,5 +25,7 @@ public interface ImageRepository {
 
     // 실제 submit 된 이미지 UUID 배열을 받아 DB 에서 동기화(?)
     void syncImage(Long boardId, String[] imageUuid);
+
+    void syncImageAmazon(Long boardId, String[] imageUuid);
     
 }

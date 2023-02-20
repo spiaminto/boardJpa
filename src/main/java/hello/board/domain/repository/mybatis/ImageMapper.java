@@ -21,6 +21,6 @@ public interface ImageMapper {
     int setBoardId(Long boardId);
 
     // 임시이미지 삭제용
-    int deleteImageByStoreImageName(@Param("boardId") Long boardId, @Param("storeImageName") String storeImageName);
+    int deleteImageByStoreImageName(@Param("storeImageName") String storeImageName);
 
 }

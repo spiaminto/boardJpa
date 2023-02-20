@@ -220,7 +220,7 @@
             <!-- BoardController.pagedList() 에서 Model 객체에 "pageMaker" 바인딩하여 전달됨 -->
             <tr th:each="item : ${boardList}"
                 th:with="currentPage=${param.currentPage == null} ? 1 : ${param.currentPage}">
-                <td id="boardNum" th:text="${item.id}">id</td>
+                <td id="boardNum" th:text="${pageMaker.totalCount - criteria.contentPerPage * (pageMaker.currentPage - 1) - itemStat.index}">id</td>
                 <!--검색안함-->
                 <td th:if="${criteria.option == null}">
                     <!-- if(Category == ALL) categoryCode = "" ;-->

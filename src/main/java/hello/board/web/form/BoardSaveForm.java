@@ -16,7 +16,7 @@ public class BoardSaveForm {
     @Size(max = 30)
     private String title;
     @NotBlank
-    @Size(max = 500)
+    @Size(max = 1000)
     private String content;
     private String writer;
 

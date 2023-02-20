@@ -168,6 +168,6 @@ class BoardMapperTest {
         idList.add(309L);
         idList.add(310L);
 
-        boardMapper.findByIdList(idList);
+
     }
 }

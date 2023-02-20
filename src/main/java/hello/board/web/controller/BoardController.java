@@ -84,8 +84,9 @@ public class BoardController {
      * @return
      */
     @GetMapping("/board/read/{categoryCode}/{boardId}")
-    public String read( @PathVariable Long boardId, Model model,
+    public String read(@PathVariable Long boardId, Model model,
                        @AuthenticationPrincipal PrincipalDetails principalDetails,
+                       @RequestParam(required = false, value = "selected") String commentId,
                        @ModelAttribute("criteria") Criteria criteria) {
 
         Board findBoard = boardRepository.findById(boardId);
@@ -95,6 +96,10 @@ public class BoardController {
 
         model.addAttribute(findBoard);
         model.addAttribute("commentList", commentList);
+
+        if (commentId != null) {
+            model.addAttribute("selectedCommentId", commentId);
+        }
 
         // comment 에서 member.username 사용해야됨.
         if (principalDetails != null) {
@@ -153,7 +158,8 @@ public class BoardController {
         }
 
         // 이미지 DB 저장(동기화)
-        imageRepository.syncImage(saveBoard.getId(), splittedImageName);
+//        imageRepository.syncImage(saveBoard.getId(), splittedImageName);
+        imageRepository.syncImageAmazon(saveBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                 "/board/read/" + criteria.getCategoryCode() + "/" + saveBoard.getId(), "게시글이 등록되었습니다.", request.getQueryString()
@@ -228,7 +234,8 @@ public class BoardController {
         }
 
         // 이미지 동기화
-        imageRepository.syncImage(updateBoard.getId(), splittedImageName);
+//        imageRepository.syncImage(updateBoard.getId(), splittedImageName);
+        imageRepository.syncImageAmazon(updateBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                 "board/read/" + criteria.getCategoryCode() + "/"  + updateBoard.getId(), "게시글이 수정되었습니다.", request.getQueryString()));
@@ -260,7 +267,8 @@ public class BoardController {
         if (result == 1) {log.info("boardRepository.delete({}) 성공", boardId);}
 
         // 이미지 삭제
-        imageRepository.deleteImage(boardId);
+//        imageRepository.deleteImage(boardId);
+        imageRepository.deleteImageAmazon(boardId);
 
         redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
                 "/board/list/" + criteria.getCategoryCode() ,"글이 삭제 되었습니다.", request.getQueryString()

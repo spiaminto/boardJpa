@@ -1,3 +1,4 @@
+
 plugins {
 	id 'org.springframework.boot' version '2.7.3'
 	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
@@ -45,8 +46,41 @@ dependencies {
 
 	// 타임리프에서 스프링시큐리티의 문법이나 형식을 지원하는 확장팩 라이브러리
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+	// amazon s3bucket 연계
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// plain 제거
+jar {
+	enabled = false
+}
+
+
+// bootJar 에 .platform 폴더 추가
+//bootJar {
+//	from('./.platform') { into '.platform' }
+//	from('./.ebextensions') { into '.ebextensions'}
+//}
+
+
+// chatGPT3 로 생성한 build =============================================================
+
+task buildAwsEb(type: Zip) {
+	from bootJar.outputs.files
+	from('.ebextensions') {
+		into '.ebextensions'
+	}
+	from('.platform') {
+		into '.platform'
+	}
+	archiveName 'myproject.zip'
+	destinationDir file('build/libs')
+}
+
+build.dependsOn bootJar
+build.dependsOn buildAwsEb

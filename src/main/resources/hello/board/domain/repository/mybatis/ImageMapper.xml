@@ -23,7 +23,7 @@
     </delete>
 
     <delete id="deleteImageByStoreImageName">
-        delete from image where boardId=#{boardId} and store_image_name = #{storeImageName}
+        delete from image where store_image_name = #{storeImageName}
     </delete>
 
     <update id="setBoardId">

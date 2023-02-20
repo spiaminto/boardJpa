@@ -102,15 +102,24 @@
                 let imageUrl = "";
 
                 // <img> 에서 src 추출
-                //"http://localhost:8080/images/request/da191b23-ef17-4059-b004-c4c78e125903.jpg"
+                // (로컬) "http://localhost:8080/images/request/da191b23-ef17-4059-b004-c4c78e125903.jpg"
+                // (아마존) "https://s3.ap-northeast-1.amazonaws.com/elasticbeanstalk-ap-northeast-1-655132712060/upload_image/c013e1c3-9733-4704-bb2d-76791c54a56e.jpg"
                 $(".ck-content img").each(function (index, item) {
 
-                    let splittedUrl = $(this).attr("src").split("est/");
+                    let imageSrc = $(this).attr("src");
+                    let splittedUrl = '';
+                    if (imageSrc.indexOf('localhost') != -1) {
+                        splittedUrl = imageSrc.split("request/");
+                    }
+                    if (imageSrc.indexOf('amazonaws') != -1) {
+                        splittedUrl = imageSrc.split("upload_image/");
+                    }
 
                     imageUrl += splittedUrl[1];
                     imageUrl += ",";
                 })
-                // console.log("imageUrl = " + imageUrl)
+                console.log("imageUrl = " + imageUrl)
+
                 $("#uploadImageUrl").val(imageUrl);
             })
 

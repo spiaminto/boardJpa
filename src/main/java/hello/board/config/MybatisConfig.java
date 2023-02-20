@@ -1,5 +1,6 @@
 package hello.board.config;
 
+import com.amazonaws.services.s3.AmazonS3;
 import hello.board.domain.repository.BoardRepository;
 import hello.board.domain.repository.CommentRepository;
 import hello.board.domain.repository.ImageRepository;
@@ -20,6 +21,8 @@ public class MybatisConfig {
     private final ImageMapper imageMapper;
     private final CommentMapper commentMapper;
 
+    private final AmazonS3 amazonS3;
+
 
     // 사용할 Repository 설정
     @Bean
@@ -27,7 +30,7 @@ public class MybatisConfig {
     }
 
     @Bean
-    public ImageRepository imageRepository() {return new MybatisImageRepository(imageMapper);
+    public ImageRepository imageRepository() {return new MybatisImageRepository(imageMapper, amazonS3);
     }
 
     @Bean

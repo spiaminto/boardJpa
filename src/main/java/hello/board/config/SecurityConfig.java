@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 
 @Configuration
 @EnableWebSecurity // 스프링 시큐리티 필터를 스프링 필터체인에 등록
-//@EnableWebSecurity(debug = true)
+//@EnableWebSecurity(debug = true)  // 스프링 시큐리티 로그
 @EnableGlobalMethodSecurity(securedEnabled = true)  // @Secured 어노테이션 사용 및 활성화
 @RequiredArgsConstructor
 // 스프링 시큐리티 필터

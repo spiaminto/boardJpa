@@ -2,12 +2,10 @@ package hello.board.web.controller;
 
 import hello.board.domain.comment.Comment;
 import hello.board.domain.repository.CommentRepository;
-import hello.board.web.RedirectDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 

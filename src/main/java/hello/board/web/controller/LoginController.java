@@ -28,8 +28,8 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 public class LoginController {
 
-    // 로그인 로직을 실행할 loginService
-    private final LoginService loginService;
+    // 로그인 로직을 실행할 loginService -> spring security 에서 처리
+//    private final LoginService loginService;
 
     // /login GET, 사용자가 login 버튼 누름
     @GetMapping("/login")

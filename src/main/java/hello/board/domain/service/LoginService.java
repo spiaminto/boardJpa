@@ -5,7 +5,7 @@ import hello.board.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 @RequiredArgsConstructor
 // 로그인 로직
 public class LoginService {

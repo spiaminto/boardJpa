@@ -1,8 +1,8 @@
 package hello.board.domain.repository.mybatis;
 
 import hello.board.domain.image.Image;
+import hello.board.domain.repository.ImageRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -23,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * 테스트는 아직 imageId <-> boardId 변환 안됫음
  */
-class MybatisImageRepositoryTest {
+class ImageRepositoryTest {
 
     @Autowired
-    MybatisImageRepository imageRepository;
+    ImageRepository imageRepository;
 
     Image image = new Image(9999L, "uploadName", UUID.randomUUID().toString() + ".jpg", "server/test/");
     Image image2 = new Image(9998L, "uploadName2", UUID.randomUUID().toString(), "server/test/");

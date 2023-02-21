@@ -2,39 +2,99 @@ package hello.board.domain.repository;
 
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
-import hello.board.domain.member.Member;
+import hello.board.domain.repository.ResultDTO;
+import hello.board.domain.repository.mybatis.BoardMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-public interface BoardRepository {
+@Repository
+@Slf4j
+public class BoardRepository {
 
-    Integer countTotalBoard(Criteria criteria);
+    private final BoardMapper boardMapper;
 
-    Integer countTotalBoardWithMemberId(Criteria criteria, Long memberId);
+    public BoardRepository(BoardMapper boardMapper) {
+        this.boardMapper = boardMapper;
+    }
 
-    void updateViewCount(long id);
 
-    // 일단은 글이 없는 경우는 없다고 가정.
-    Board findById(Long id);
+    public Integer countTotalBoard(Criteria criteria) {
+        return boardMapper.countTotalBoard(criteria);
+    }
 
-    // 내가쓴 댓글 로드할때 같이 로드할 board
-    List<Board> findByIdList(List<Long> idList);
-    
-    // 페이징 된 보드
-    List<Board> findPagedBoard(Criteria criteria);
+    public Integer countTotalBoardWithMemberId(Criteria criteria, Long memberId) {
+        return boardMapper.countTotalBoardWithMemberId(criteria, memberId);
+    }
 
-    List<Board> findPagedBoardWithMemberId(Criteria criteria, Long memberId);
 
-    List<Board> findPagedAndCategorizedBoard(Criteria criteria);
+    public void updateViewCount(long id) {
+        boardMapper.updateViewCount(id);
+    }
 
-    Board save(Board board);
 
-    Board update(Long id, Board updateParam);
+    public Board findById(Long id) {
+        return boardMapper.findById(id);
+    }
 
-    // 필요시 boolean 으로 수정
-    int delete(Long id);
 
-    // member.username 변화시 동기화
-    ResultDTO syncWriter(Long memberId, String updateName);
+    public List<Board> findByIdList(List<Long> idList) {
+        List<Board> boardList = new ArrayList<>();
+        for (Long boardId :
+                idList) {
+            boardList.add(boardMapper.findById(boardId));
+        }
+        return boardList;
+    }
 
+    // 검색 + 페이징
+
+    public List<Board> findPagedBoard(Criteria criteria) {
+        return boardMapper.findPagedBoard(criteria);
+    }
+
+
+    public List<Board> findPagedBoardWithMemberId(Criteria criteria, Long memberId) {
+        return boardMapper.findPagedBoardWithMemberId(criteria, memberId);
+    }
+
+
+    public List<Board> findPagedAndCategorizedBoard(Criteria criteria) {
+        return boardMapper.findPagedAndCategorizedBoard(criteria);
+    }
+
+
+    public Board save(Board board) {
+        board.setRegedate(LocalDateTime.now());
+        board.setUpdateDate(LocalDateTime.now());
+        int row = boardMapper.save(board);
+        if (row != 1) return null;
+        return board;
+    }
+
+
+    public Board update(Long id, Board updateParam) {
+        updateParam.setUpdateDate(LocalDateTime.now());
+        int row = boardMapper.update(id, updateParam);
+        if (row != 1) return null;
+        return findById(id);
+    }
+
+
+    public ResultDTO syncWriter(Long memberId, String updateName) {
+        try {
+            boardMapper.syncWriter(memberId, updateName);
+            return new ResultDTO(true);
+        } catch (Exception e) {
+            return new ResultDTO(false, e.toString(), e.getMessage(), "BoardMapper.syncWriter 오류");
+        }
+    }
+
+    // 필요시 반환
+    public int delete(Long id) throws RuntimeException {
+        return boardMapper.delete(id);
+    }
 }

@@ -11,7 +11,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 // 출처 https://velog.io/@rainbowweb/AWS-%EC%8A%A4%ED%94%84%EB%A7%81%EB%B6%80%ED%8A%B8-S3
-@Configuration
+// 스프링 부트에서 아마존 의존성을 추가하면, 자동으로 생성됨 -> 따라서 이파일은 필요없음
+// no usage
+//@Configuration
 public class AmazonS3Config {
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;

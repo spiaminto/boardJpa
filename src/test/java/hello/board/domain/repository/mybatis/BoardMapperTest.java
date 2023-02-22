@@ -3,20 +3,17 @@ package hello.board.domain.repository.mybatis;
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.enums.Category;
+import hello.board.repository.mybatis.BoardMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cglib.core.Local;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 // save 를 모든 테스트에서 사용
 
@@ -119,8 +116,8 @@ class BoardMapperTest {
     public void testUpdate() {
         
         Board updateParam = new Board("updateTitle",
-                "update",
-                "updateContent", Category.of("TEMP")
+                "update", 1L,
+                "updateContent", Category.of("TEMP"), LocalDateTime.now()
         );
         updateParam.setRegedate(LocalDateTime.now());
 

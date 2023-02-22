@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hello.board.repository.mybatis.ImageMapper">
+
+    <select id="findById" resultType="Image">
+        select boardId, store_image_name, upload_image_name, image_address from image
+        where imageId = #{imageId}
+    </select>
+
+    <select id="findByBoardId" resultType="Image">
+        select boardId, store_image_name, upload_image_name, image_address from image
+        where boardId = #{boardId}
+    </select>
+
+    <insert id="saveImage" useGeneratedKeys="true" keyProperty="imageId">
+        insert into image (boardId, store_image_name, upload_image_name, image_address)
+        values (#{boardId}, #{storeImageName}, #{uploadImageName}, #{imageAddress})
+    </insert>
+
+    <delete id="deleteImage">
+        delete from image where boardId=#{boardId}
+    </delete>
+
+    <delete id="deleteImageByStoreImageName">
+        delete from image where store_image_name = #{storeImageName}
+    </delete>
+
+    <update id="setBoardId">
+        update image
+        set boardId = #{boardId}
+        where boardId = 0
+    </update>
+
+</mapper>

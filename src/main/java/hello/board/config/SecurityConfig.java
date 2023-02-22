@@ -1,6 +1,6 @@
 package hello.board.config;
 
-import hello.board.web.auth.oauth.PrincipalOauth2UserService;
+import hello.board.auth.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

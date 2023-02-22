@@ -1,13 +1,6 @@
 package hello.board.config;
 
-import com.amazonaws.services.s3.AmazonS3;
-import hello.board.domain.repository.BoardRepository;
-import hello.board.domain.repository.CommentRepository;
-import hello.board.domain.repository.ImageRepository;
-import hello.board.domain.repository.MemberRepository;
-import hello.board.domain.repository.mybatis.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 //Application 에 import 하여 사용

@@ -1,7 +1,7 @@
 package hello.board.domain.repository.mybatis;
 
 import hello.board.domain.image.Image;
-import hello.board.domain.repository.ImageRepository;
+import hello.board.repository.ImageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,18 +39,18 @@ class ImageRepositoryTest {
         imageRepository.saveImage(image);
     }
 
-    @Test
-    void saveImageList() {
-        imageRepository.saveImageList(imageList);
-        for (Image image : imageList)
-            log.info(image.getImageId() + " image = {}", image.toString() );
-    }
+//    @Test
+//    void saveImageList() {
+//        imageRepository.saveImageList(imageList);
+//        for (Image image : imageList)
+//            log.info(image.getImageId() + " image = {}", image.toString() );
+//    }
 
-    @Test
-    void deleteImage() {
-        imageRepository.saveImage(image);
-        imageRepository.deleteImage(image.getBoardId());
-    }
+//    @Test
+//    void deleteImage() {
+//        imageRepository.saveImage(image);
+//        imageRepository.deleteImage(image.getBoardId());
+//    }
 
     @Test
     void findById() {
@@ -59,18 +59,22 @@ class ImageRepositoryTest {
         assertThat(findImage.equals(image));
     }
 
-    @Test
-    void findList() {
-        imageRepository.saveImageList(imageList);
-        List<Long> imageIds = new ArrayList<>();
-        for (Image image : imageList)
-            imageIds.add(image.getImageId());
-        imageRepository.findList(imageIds);
-    }
+//    @Test
+//    void findList() {
+//        for (Image image : imageList) {
+//            imageRepository.saveImage(image);
+//        }
+//        List<Long> imageIds = new ArrayList<>();
+//        for (Image image : imageList)
+//            imageIds.add(image.getImageId());
+//        imageRepository.findList(imageIds);
+//    }
 
     @Test
     void findByBoardId() {
-        imageRepository.saveImageList(imageList);
+        for (Image image : imageList) {
+            imageRepository.saveImage(image);
+        }
         imageRepository.findByBoardId(3L);
     }
 }

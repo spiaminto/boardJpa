@@ -37,6 +37,14 @@ public class Member {
         this.email = email;
     }
 
+    public Member(String loginId, String username, String password, String email, String role) {
+        this.loginId = loginId;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+    }
+
     // security 위해 만든 임시 생성자, 강사는 @Builder 통한 Builder패턴 사용
     public Member(String provider, String providerId, String forOauth2UserLoginId, String forOauth2UserUsername, String password, String email, String role) {
         this.provider = provider;

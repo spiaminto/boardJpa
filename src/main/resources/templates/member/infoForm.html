@@ -84,14 +84,17 @@
             let loginIdFlag = true;
             let usernameFlag = true;
 
-            // 변경 체크를 위한 초기값
-            let loginId = $("#loginId").val();
-            let username;
+            // 변경 체크를 위한 초기값 (origin -> 맨 초기값)
+            let loginIdOrigin = $("#loginId").val();
+            let loginId = loginIdOrigin;
+
+            let usernameOrigin;
             if ($(".isOauth2").val()) {
-                username = $("#oauth2Username").val();
+                usernameOrigin = $("#oauth2Username").val();
             } else {
-                username = $("#username").val();
+                usernameOrigin = $("#username").val();
             }
+            let username = usernameOrigin;
 
             // loginId 체크
             $("#duplicateLoginIdCheckBt").on("click", function () {
@@ -100,6 +103,11 @@
                 if (loginId == "" || loginId.length > 16) {
                     alert("유효한 아이디를 입력해 주세요.");
                     return false;
+                }
+
+                if (loginId == loginIdOrigin) {
+                    alert("사용 가능한 로그인id 입니다.")
+                    return;
                 }
 
                 $.ajax({
@@ -133,6 +141,11 @@
                 if (username == "" || username.length > 16) {
                     alert("유효한 닉네임을 입력해 주세요.");
                     return false;
+                }
+
+                if (username == usernameOrigin) {
+                    alert("사용 가능한 닉네임 잆니다.")
+                    return;
                 }
 
                 $.ajax({

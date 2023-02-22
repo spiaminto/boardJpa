@@ -68,6 +68,9 @@ commit 17
 commit 17.1
     히스토리 정리
 
+commit 18, 18.1
+    Repository 정리, Service 분리, Controller 정리, 이미지 저장이 스프링 프로필에 맞춰 동작하도록 수정
+
 
 
 

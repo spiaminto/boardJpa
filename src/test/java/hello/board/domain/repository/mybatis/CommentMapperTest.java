@@ -3,6 +3,7 @@ package hello.board.domain.repository.mybatis;
 import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.enums.Category;
+import hello.board.repository.mybatis.CommentMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

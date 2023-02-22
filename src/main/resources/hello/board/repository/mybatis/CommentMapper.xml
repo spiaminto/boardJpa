@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hello.board.repository.mybatis.CommentMapper">
+
+    <!--countTotalBoard-->
+    <select id="countTotalCommentWithMemberId" resultType="Integer">
+        select count(*) from comment
+        <where>
+            member_id = #{memberId}
+            <if test="criteria.category != null and criteria.category.name() != 'ALL'">
+                and category = #{criteria.category}
+            </if>
+            <if test="criteria.keyword != null and criteria.keyword != ''">
+                and ${criteria.option} like concat('%',#{criteria.keyword},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findByCommentId" resultType="Comment">
+        select * from comment where comment_id = #{commentId}
+    </select>
+
+    <select id="findByBoardId" resultType="Comment">
+        select * from comment where board_id = #{boardId}
+    </select>
+
+    <!-- mypage 에서 memberId 로 검색+페이징+카테고리화 된 comment 조회 -->
+    <select id="findPagedCommentWithMemberId" resultType="Comment">
+        select * from comment
+        <where>
+            member_id = #{memberId}
+            <if test="criteria.category != null and criteria.category.name() != 'ALL'">
+                and category = #{criteria.category}
+            </if>
+            <if test="criteria.keyword != null and criteria.keyword != ''">
+                and ${criteria.option} like concat('%',#{criteria.keyword},'%')
+            </if>
+        </where>
+        order by comment_id desc
+        limit #{criteria.startRowNum}, #{criteria.contentPerPage}
+    </select>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="comment_id">
+        insert into comment(board_id, member_id, target_id, target, writer, content, regDate, updateDate,
+                            group_id, group_order, group_depth, category)
+        values (#{boardId}, #{memberId}, #{targetId}, #{target}, #{writer}, #{content}, #{regDate}, #{updateDate},
+                #{groupId}, #{groupOrder}, #{groupDepth}, #{category})
+    </insert>
+
+    <update id="setGroupId">
+        update comment
+        set group_id = #{groupId}
+        where comment_id = #{commentId}
+    </update>
+
+    <update id="update">
+        update comment
+        set content = #{updateParam.content},
+            updateDate = #{updateParam.updateDate}
+        where comment_id = #{commentId}
+    </update>
+
+    <update id="syncWriter">
+        update comment
+        set writer = #{updateName}
+        where member_id = #{memberId}
+    </update>
+
+    <update id="syncTarget">
+        update comment
+        set target = #{updateName}
+        where target_id = #{memberId}
+    </update>
+
+    <delete id="delete">
+        delete from comment where comment_id = #{commentId}
+    </delete>
+
+    <delete id="deleteByBoardId">
+        delete from comment where board_id = #{boardId}
+    </delete>
+
+    <delete id="deleteReply">
+        delete from comment where group_id = #{commentId} and group_depth = 1
+    </delete>
+
+    <delete id="deleteReplyByTargetId">
+        delete from comment where target_id = #{targetId} and group_depth = 1
+    </delete>
+
+</mapper>

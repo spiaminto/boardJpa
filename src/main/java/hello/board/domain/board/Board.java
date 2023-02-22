@@ -27,11 +27,14 @@ public class Board {
     private Category category;
 
     // save(write)
-    public Board(String title, String writer, String content, Category category) {
+    public Board(String title, String writer, Long memberId, String content, Category category, LocalDateTime now) {
         this.title = title;
         this.writer = writer;
+        this.memberId = memberId;
         this.content = content;
         this.category = category;
+        this.regedate = now;
+        this.updateDate = now;
     }
 
     // update(edit)

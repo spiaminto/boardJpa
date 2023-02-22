@@ -295,6 +295,11 @@
                     data: params,
                     success: function (resp) {
 
+                        if (resp.result != "1") {
+                            alert("댓글 저장 중 오류가 발생했습니다.")
+                            return;
+                        }
+
                         // 답글이면 리로드
                         if (isreply) {
                             alert("답글이 등록되었습니다.")
@@ -394,6 +399,11 @@
                     data: {content: content},
                     success: function (resp) {
 
+                        if (resp.result != "1") {
+                            alert("댓글 수정 중 오류가 발생했습니다.")
+                            return;
+                        }
+
                         // 답글이면
                         if (isReply) {
                             alert("답글이 수정되었습니다.");
@@ -466,6 +476,12 @@
                     async: false,
                     url: "/comment/delete/" + commentId,
                     success: function (resp) {
+
+                        if (resp.result != "1") {
+                            alert("댓글 삭제 중 오류가 발생했습니다.")
+                            return;
+                        }
+
                         alert("댓글이 삭제되었습니다.");
                         location.reload();
                     },

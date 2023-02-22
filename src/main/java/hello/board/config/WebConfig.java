@@ -1,8 +1,7 @@
 package hello.board.config;
 
-import hello.board.web.interceptor.LogInterceptor;
-import hello.board.web.interceptor.LoginCheckInterceptor;
-import hello.board.web.interceptor.TempUserCheckInterceptor;
+import hello.board.interceptor.LogInterceptor;
+import hello.board.interceptor.TempUserCheckInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -48,7 +47,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/static/**", "/css/**", "/image/**",
-                        "https://maxcdn.bootstrapcdn.com/**");
+                        "https://maxcdn.bootstrapcdn.com/**", "/js/ckeditor5/**");
 
         registry.addInterceptor(new TempUserCheckInterceptor())
                 .order(2)

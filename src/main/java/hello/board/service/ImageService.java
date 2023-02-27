@@ -9,10 +9,10 @@ import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.image.Image;
 import hello.board.file.ImageStore;
+import hello.board.file.ImageStoreLocal;
 import hello.board.file.ImageStoreAmazon;
 import hello.board.repository.BoardRepository;
 import hello.board.repository.ImageRepository;
-import hello.board.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,19 +28,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ImageService {
     private final ImageRepository imageRepository;
-    private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final ImageStore imageStore;
-    private final ImageStoreAmazon imageStoreAmazon;
-    private final AmazonS3 amazonS3;
 
     // 스프링 active profile
     @Value("${spring.profiles.active}")
-    private String activeProfile;
+    private static String activeProfile;
 
     // amazon s3 접속 주소
     @Value("${cloud.aws.s3.bucket}")
     private String bucketDir;
+
+    @Value("${cloud.aws.s3.bucket.innerDir}}")
+    private String innerBucketDir;
 
     /**
      * ckEditor 에서 이미지 파일을 업로드 할때 로컬(아마존) 과 DB 에 이미지를 임시저장
@@ -48,12 +48,7 @@ public class ImageService {
      * @return 업로드한 이미지 파일로 구성한 Image
      */
     public Image saveImage(MultipartFile multipartFile) {
-        Image storedImage;
-        if (activeProfile.contains("S3")) {
-            storedImage = imageStoreAmazon.storeImage(multipartFile);
-        } else {
-            storedImage = imageStore.storeImage(multipartFile);
-        }
+        Image storedImage = imageStore.storeImage(multipartFile);
 
         Image savedImage = saveImageToDb(storedImage);
         log.info("store 된 이미지 {}, DB.save 된 이미지 {}", storedImage.getImageId(), savedImage.getImageId());
@@ -74,17 +69,17 @@ public class ImageService {
      */
     public boolean deleteImageByBoardId(Long boardId) {
         List<Image> deleteImageList = imageRepository.findByBoardId(boardId);
-        int result = 0;
-        if (activeProfile.contains("S3")) {
-            result = deleteImageFromAmazon(deleteImageList);
-        } else {
-            result = deleteImageFromLocal(deleteImageList);
-        }
+
+        int fileResult = deleteImageFile(deleteImageList);
         int dbResult = deleteImageFromDb(deleteImageList);
 
-        return result == dbResult ? true : false;
+        return fileResult == dbResult ? true : false;
     }
 
+    /**
+     * member 가 삭제될때, 해당 member 가 작성한 board 의 이미지 삭제
+     * @param memberId
+     */
     public void deleteImageByMemberId(Long memberId) {
         Criteria criteria = new Criteria();
         
@@ -110,58 +105,14 @@ public class ImageService {
         return count;
     }
 
-    /**
-     * 삭제할 이미지 리스트를 받아 로컬에서 파일을 삭제
-     * @param deleteImageList
-     * @return 삭제한 이미지 파일 갯수
-     */
-    public int deleteImageFromLocal(List<Image> deleteImageList) {
-        int count = 0;
-        List<File> fileList = new ArrayList<>();
-        for (Image image : deleteImageList) {
-            fileList.add(new File(image.getImageAddress()));
+    public int deleteImageFile(List<Image> deleteImageList) {
+        int result = 0;
+        if (imageStore instanceof ImageStoreAmazon) {
+            result = imageRepository.deleteImageFromAmazon(deleteImageList, bucketDir, innerBucketDir);
+        } else {
+            result = imageRepository.deleteImageFromLocal(deleteImageList);
         }
-        for (File file : fileList) {
-            boolean isDeleted = file.delete();
-            if (isDeleted) count++;
-        }
-
-//        log.info("로컬에서 삭제된 파일 = {}", count);
-        return count;
-    }
-
-    // 출처 https://docs.aws.amazon.com/ko_kr/AmazonS3/latest/userguide/delete-multiple-objects.html
-    /**
-     * 삭제할 이미지 리스트를 통해 아마존 S3 에서 이미지를 삭제
-     * @param deleteImageList
-     * @return 삭제된 이미지 갯수
-     */
-    public int deleteImageFromAmazon(List<Image> deleteImageList) {
-
-        // 아마존에 전달할 파일 정보 리스트
-        List<DeleteObjectsRequest.KeyVersion> keys = new ArrayList<>();
-
-        // deleteImageList 로 아마존 제거할 리스트 생성
-        for (Image image : deleteImageList) {
-            keys.add(new DeleteObjectsRequest.KeyVersion("upload_image/" + image.getStoreImageName()));
-        }
-
-        DeleteObjectsRequest multipleDeleteObjectsRequest = new DeleteObjectsRequest(bucketDir).withKeys(keys).withQuiet(false);
-        DeleteObjectsResult deleteObjectsResult = null;
-        // 아마존에서 제거
-        try {
-            deleteObjectsResult = amazonS3.deleteObjects(multipleDeleteObjectsRequest);
-//            log.info("AMAZON S3 {} 개 중 {} 개 제거 완료", deleteImageList.size(), deleteObjectsResult.getDeletedObjects().size());
-        } catch (AmazonServiceException e) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process it, so it returned an error response.
-            e.printStackTrace();
-        } catch (SdkClientException e) {
-            // Amazon S3 couldn't be contacted for a response, or the client couldn't parse the response from Amazon S3.
-            e.printStackTrace();
-        }
-
-        // 믿을수 있는 값인지는 잘 모르겠음...
-        return deleteObjectsResult.getDeletedObjects().size();
+        return result;
     }
 
     // 이미지 동기화
@@ -176,9 +127,11 @@ public class ImageService {
      */
     public void syncImage(Long boardId, String[] uploadedImageNames) {
 
+//        for (String uploadedImageName : uploadedImageNames) {log.info("uploadedImageName {}", uploadedImageName);}
+
         // boardId = 0 인 db 이미지에 boardId 부여
         int result = imageRepository.setBoardId(boardId);
-        log.info("동기화 처리 전 boardId = 0 인 image 갯수 = {} ", result);
+//        log.info("동기화 처리 전 boardId = 0 인 image 갯수 = {} ", result);
 
         // DB 에 등록된 이미지
         List<Image> imageDbList = imageRepository.findByBoardId(boardId);
@@ -200,13 +153,8 @@ public class ImageService {
             return;
         }
 
-        if (activeProfile.contains("S3")) {
-            // 아마존에서 파일 제거
-            result = deleteImageFromAmazon(deleteImageList);
-        } else {
-            // 로컬에서 파일 제거
-            result = deleteImageFromLocal(deleteImageList);
-        }
+        // 파일 제거
+        result = deleteImageFile(deleteImageList);
 
         // DB에서 제거
         int dbResult = deleteImageFromDb(deleteImageList);
@@ -242,8 +190,6 @@ public class ImageService {
         imageDbList.removeAll(uploadedImageList);
         return imageDbList;
     }
-
-
 
 
 }

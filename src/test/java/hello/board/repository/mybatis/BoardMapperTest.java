@@ -1,9 +1,8 @@
-package hello.board.domain.repository.mybatis;
+package hello.board.repository.mybatis;
 
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.enums.Category;
-import hello.board.repository.mybatis.BoardMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

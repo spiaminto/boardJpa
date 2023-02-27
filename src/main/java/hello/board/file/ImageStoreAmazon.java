@@ -22,11 +22,14 @@ import java.util.UUID;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ImageStoreAmazon {
+public class ImageStoreAmazon implements ImageStore{
 
     // s3 배포용
-    @Value("${cloud.aws.s3.bucket}/upload_image")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucketDir;
+
+    @Value("${cloud.aws.s3.bucket.innerDir}")
+    private String innerBucketDir;
 
     private final AmazonS3 amazonS3;
 
@@ -81,7 +84,7 @@ public class ImageStoreAmazon {
             log.info(multipartFile.getInputStream().toString().substring(0, 20));
 
             // CannedAccessControlList public 으로 설정해야 모두 접근가능
-            amazonS3.putObject(new PutObjectRequest(bucketDir, storeImageName, multipartFile.getInputStream(), metadata)
+            amazonS3.putObject(new PutObjectRequest(bucketDir, innerBucketDir + storeImageName, multipartFile.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
 
         } catch (AmazonServiceException e) {
@@ -94,7 +97,7 @@ public class ImageStoreAmazon {
         }
 
         // amazonS3 에 저장된 이미지의 url
-        String imageAddress = amazonS3.getUrl(bucketDir, storeImageName).toString();
+        String imageAddress = amazonS3.getUrl(bucketDir, innerBucketDir + storeImageName).toString();
 
         // DB 에 저장을 위한 Image 객체 (boardId = 0L)
         // 일단 임시로 request url 을 동일하게 설정했음

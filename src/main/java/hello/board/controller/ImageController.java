@@ -1,8 +1,8 @@
 package hello.board.controller;
 
 import hello.board.domain.image.Image;
+import hello.board.file.ImageStoreLocal;
 import hello.board.repository.ImageRepository;
-import hello.board.file.ImageStore;
 import hello.board.file.ImageStoreAmazon;
 import hello.board.service.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ImageController {
 
-    private final ImageStore imageStore;
+    private final ImageStoreLocal imageStoreLocal;
 
     private final ImageService imageService;
     private final ImageStoreAmazon imageStoreAmazon;

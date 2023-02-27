@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     // 이미지 요청 url
-    private String resourceRequestUrl = "/images/request/**";
+    private String resourceRequestUrl = "/images/local/request/**";
     // 이미지 로컬 요청 경로
     private String resourceLocation = "file:///C:/Users/felix/.Study/Spring_Practice/board_exfile/";
 

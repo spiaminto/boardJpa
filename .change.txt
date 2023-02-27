@@ -21,7 +21,7 @@ commit 5
 
 commit 6
     스프링 시큐리티 및 일반 로그인 적용, 로그인체크 인터셉터 비활성화
-    일반 session 에 로그인정보를 더이상 저장하지 않음, 비밀번호 암호화됨 등
+    일반 session 에 로그인정보를 더이상 직접 저장하지 않음, 비밀번호 암호화됨 등
     list 요소 크기 조정
 
 commit 7
@@ -38,7 +38,7 @@ commit 9
     /list 날짜 표시 변경
 
 commit 10
-    페이지네이션, 검색 카테고리 적용
+    페이지네이션 수정, 검색 카테고리 적용
 
 commit 11
     /board 관련 url 카테고리 추가 및 카테고리 기능 재적용
@@ -70,6 +70,9 @@ commit 17.1
 
 commit 18, 18.1
     Repository 정리, Service 분리, Controller 정리, 이미지 저장이 스프링 프로필에 맞춰 동작하도록 수정
+
+commit 19
+    ImageStore 및 이미지 저장 수정
 
 
 

@@ -1,6 +1,6 @@
 package hello.board.service;
 
-import hello.board.RedirectDTO;
+
 import hello.board.domain.board.Board;
 import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
@@ -13,10 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor

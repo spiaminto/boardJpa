@@ -32,6 +32,11 @@
     padding-left: 0;
 }
 
+/*
+fixedTop nav 랑 안겹치게 하는 클래스 옵션 pt-5 로 padding-top 5 주면 되는데 더 높게하려면
+    따로 지정해줘야 되는거 같아서 그냥 nav-css 에다가 60px 로 선언함
+<body class="pt-5">
+ */
 body {
     padding-top: 65px;
 }

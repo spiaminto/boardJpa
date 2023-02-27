@@ -1,15 +1,9 @@
 package hello.board.controller;
 
-import hello.board.domain.board.Board;
-import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.member.Member;
 import hello.board.domain.paging.PageMaker;
-import hello.board.repository.BoardRepository;
-import hello.board.repository.CommentRepository;
-import hello.board.repository.MemberRepository;
 import hello.board.repository.ResultDTO;
-import hello.board.RedirectDTO;
 import hello.board.auth.PrincipalDetails;
 import hello.board.form.MemberEditForm;
 import hello.board.form.MemberSaveForm;
@@ -20,7 +14,6 @@ import hello.board.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,8 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -65,13 +56,12 @@ public class MemberController {
 
         // 가입 실패
         if (!result.isSuccess()) {
-            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/member/add", result.getCustomMessage()));
-            return "redirect:/alert";
+            redirectAttributes.addFlashAttribute("alertMessage", result.getCustomMessage());
+            return "redirect:/member/add";
         }
 
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/login", "회원가입 완료"));
-
-        return "redirect:/alert";
+        redirectAttributes.addFlashAttribute("alertMessage", "회원가입 성공");
+        return "redirect:/login";
     }
 
     @GetMapping("/add/oauth2")
@@ -81,10 +71,8 @@ public class MemberController {
 
         // 비정상 요청
         if (!member.getRole().equals("ROLE_TEMP")) {
-            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                    "/board/list/all", "소셜가입_비정상 요청"
-            ));
-            return "redirect:/alert";
+            redirectAttributes.addFlashAttribute("alertMessage", "소셜가입 비정상 요청");
+            return new UrlBuilder().redirectHome();
         }
 
         model.addAttribute("member", principalDetails.getMember());
@@ -112,13 +100,12 @@ public class MemberController {
 
         // 가입 실패
         if (!result.isSuccess()) {
-            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/member/add", result.getCustomMessage()));
-            return "redirect:/alert";
+            redirectAttributes.addFlashAttribute("alertMessage", result.getCustomMessage());
+            return "redirect:/member/add";
         }
 
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO("/board/list/all", "소셜계정 회원가입 완료"));
-
-        return "redirect:/alert";
+        redirectAttributes.addFlashAttribute("alertMessage", "소셜계정 회원가입 성공");
+        return new UrlBuilder().redirectHome();
     }
 
     @GetMapping("/mypage/info")
@@ -157,18 +144,17 @@ public class MemberController {
 
         // syncUsername 실패
         if (resultMap == null) {
-            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                    "/member/mypage/info", "시스템 문제로 닉네임을 바꾸는데 실패했습니다."));
-            return "redirect:/alert";
+            redirectAttributes.addFlashAttribute("alertMessage", "시스템 문제로 닉네임을 바꾸는데 실패했습니다.");
+            return "redirect:/member/mypage/info";
         }
 
         // loginId, password 수정 -> 강제 로그아웃
         if ((boolean) resultMap.get("isLogout")) {
             log.info("/edit isLogout = true");
 
-            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                    "/logout", "로그인 정보가 변경되었습니다. 재로그인해 주세요."));
-            return "redirect:/alert";
+            redirectAttributes.addFlashAttribute("alertMessage", "로그인 정보가 변경되었습니다. 다시 로그인 해 주세요");
+            redirectAttributes.addFlashAttribute("isLogout", "true");
+            return new UrlBuilder().redirectHome();
         }
 
         Member updatedMember = (Member) resultMap.get("updatedMember");
@@ -176,11 +162,9 @@ public class MemberController {
         principalDetails.editMember(updatedMember.getUsername());
 
         //alert
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "/member/mypage/info", "멤버 정보가 변경되었습니다."
-        ));
+        redirectAttributes.addFlashAttribute("alertMessage", "회원 정보가 변경되었습니다.");
 
-        return "redirect:/alert";
+        return "redirect:/member/mypage/info";
     }
 
     @PostMapping("/edit/oauth2")
@@ -204,19 +188,16 @@ public class MemberController {
 
         // syncUsername 실패
         if (resultMap == null) {
-            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                    "/member/mypage/info", "시스템 문제로 닉네임을 바꾸는데 실패했습니다."));
-            return "redirect:/alert";
+            redirectAttributes.addFlashAttribute("alertMessage", "시스템 문제로 닉네임을 바꾸는데 실패했습니다.");
+            return "redirect:/member/mypage/info";
         }
 
         Member updatedMember = (Member) resultMap.get("updatedMember");
         // 시큐리티 세션 갱신
         principalDetails.editMember(updatedMember.getUsername());
 
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "/member/mypage/info", "멤버 정보가 변경되었습니다."
-        ));
-        return "redirect:/alert";
+        redirectAttributes.addFlashAttribute("alertMessage", "회원 정보가 변경되었습니다.");
+        return "redirect:/member/mypage/info";
 
     }
 
@@ -277,10 +258,10 @@ public class MemberController {
         // 보험
         principalDetails.getMember().setRole("ROLE_TEMP");
 
-        redirectAttributes.addFlashAttribute("redirectDTO",
-                new RedirectDTO("/logout", "회원 탈퇴 되었습니다."));
+        redirectAttributes.addFlashAttribute("alertMessage", "회원 탈퇴 되었습니다.");
+        redirectAttributes.addFlashAttribute("isLogout", "true");
 
-        return "redirect:/alert";
+        return new UrlBuilder().redirectHome();
     }
 
     @ResponseBody

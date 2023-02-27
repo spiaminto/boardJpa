@@ -12,3 +12,7 @@
     text-indent: 0.5em;
     font-size: 1.7em;
 }
+
+#globalAlertMessage {
+    display: none;
+}

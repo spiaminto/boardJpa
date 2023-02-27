@@ -161,6 +161,11 @@
     <script>
         $(function () {
 
+            let alertMessage = $("#globalAlertMessage").data("alertmessage");
+            if (alertMessage) {
+                alert(alertMessage);
+            }
+
             // CKeditor readonly
             ClassicEditor
                 .create( document.querySelector( '#article' ))
@@ -560,6 +565,8 @@
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
+
+    <div id="globalAlertMessage" th:data-alertmessage="${alertMessage}"></div>
 
     <div id="wrapper">
 

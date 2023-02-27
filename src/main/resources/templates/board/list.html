@@ -8,15 +8,6 @@
     <title>게시판</title>
     <style>
 
-
-
-        /*h1 {*/
-        /*    font-size: 3em;*/
-        /*    text-align: center;*/
-        /*    font-weight: bold;*/
-        /*    margin-top: 50px;*/
-        /*}*/
-
         #container {
             padding-top: 10px;
         }
@@ -91,8 +82,29 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/global.css}" href="/static/css/global.css">
     <script>
         $(document).ready(function () {
-            let searchForm = $("#searchForm");
 
+            let alertMessage = $("#globalAlertMessage").data("alertmessage");
+            let isLogout = $("#globalAlertMessage > #isLogout").data("islogout");
+
+            console.log("alertMessage = " + alertMessage + " isLogout = " + isLogout);
+
+            if (alertMessage) {
+                // 홈화면(/board/list/all) 추가동작
+                if (alertMessage == "oauth2_add") {
+                    if (confirm("해당 소셜 계정으로 가입된 회원이 없습니다. 가입 하시겠습니까?")) {
+                        location.replace("/member/add");
+                    } else {
+                        location.replace("/logout");
+                    }
+                }
+
+                alert(alertMessage);
+                if (isLogout) {
+                    location.replace("/logout");
+                }
+            }
+
+            let searchForm = $("#searchForm");
             $("#searchForm>button").on("click", function (event) {
                 event.preventDefault();
 
@@ -144,21 +156,17 @@
             })
         })
     </script>
-    <script th:inline="javascript">
-        // /*<![CDATA[*/
-
-        /*]]>*/
-    </script>
 </head>
 
-<!-- fixedTop nav 랑 안겹치게 하는 클래스 옵션 pt-5 로 padding-top 5 주면 되는데 더 높게하려면
-        따로 지정해줘야 되는거 같아서 그냥 nav-css 에다가 60px 로 선언함-->
-<!--<body class="pt-5">-->
 <body id="body">
 <div id="container" class="container">
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
+
+    <div id="globalAlertMessage" th:data-alertmessage="${alertMessage}">
+        <div id="isLogout" th:data-islogout="${isLogout}"></div>
+    </div>
 
     <div id="header">
         <h2 id="headerText" th:text="${criteria.category.getCategoryName() + ' 게시판'}">게시판</h2>

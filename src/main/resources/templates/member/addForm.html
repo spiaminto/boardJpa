@@ -52,6 +52,11 @@
     <script>
         $(document).ready(function () {
 
+            let alertMessage = $("#globalAlertMessage").data("alertmessage");
+            if (alertMessage) {
+                alert(alertMessage);
+            }
+
             let loginIdFlag = false;
             let usernameFlag = false;
 
@@ -175,6 +180,8 @@
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
+
+    <div id="globalAlertMessage" th:data-alertmessage="${alertMessage}"></div>
 
     <div>
         <h2 id="headerText"> 회원 가입 </h2>

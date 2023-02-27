@@ -74,6 +74,10 @@ commit 18, 18.1
 commit 19
     ImageStore 및 이미지 저장 수정
 
+commit 20
+    AlertController 관련 요소 삭제 및 alertMessage 표현 방식 변경
+    UrlBuilder 클래스 추가
+
 
 
 

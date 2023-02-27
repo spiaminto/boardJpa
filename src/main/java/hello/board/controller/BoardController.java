@@ -1,15 +1,9 @@
 package hello.board.controller;
 
 import hello.board.domain.board.Board;
-import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.enums.Category;
-import hello.board.domain.member.Member;
 import hello.board.domain.paging.PageMaker;
-import hello.board.repository.BoardRepository;
-import hello.board.repository.CommentRepository;
-import hello.board.repository.ImageRepository;
-import hello.board.RedirectDTO;
 import hello.board.auth.PrincipalDetails;
 import hello.board.form.BoardEditForm;
 import hello.board.form.BoardSaveForm;
@@ -131,12 +125,11 @@ public class BoardController {
         // 이미지 동기화
         imageService.syncImage(savedBoard.getId(), splittedImageName);
 
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "/board/read/" + criteria.getCategoryCode() + "/" + savedBoard.getId(), "게시글이 등록되었습니다.", request.getQueryString()
-        ));
+        redirectAttributes.addFlashAttribute("alertMessage", "게시글이 등록되었습니다.");
 
         // POST, Post Redirect Get
-        return "redirect:/alert";
+        return new UrlBuilder("/board/read/" + criteria.getCategoryCode())
+                .id(savedBoard.getId()).queryString(request.getQueryString()).buildRedirectUrl();
     }
 
     @GetMapping("/board/edit/{categoryCode}/{boardId}")
@@ -152,10 +145,10 @@ public class BoardController {
             return "board/editForm";
         }
 
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "/board/read/" + criteria.getCategoryCode() + "/"  + boardId, "수정하려는 글과 작성자가 다릅니다.", request.getQueryString()
-        ));
-        return "redirect:/alert";
+        redirectAttributes.addFlashAttribute("alertMessage", "수정하려는 글과 작성자가 다릅니다.");
+
+        return new UrlBuilder("/board/read/" + criteria.getCategoryCode())
+                .id(boardId).queryString(request.getQueryString()).buildRedirectUrl();
     }
 
     @PostMapping("/board/edit/{categoryCode}/{boardId}")
@@ -193,10 +186,10 @@ public class BoardController {
         // 이미지 동기화
         imageService.syncImage(updateBoard.getId(), splittedImageName);
 
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "board/read/" + criteria.getCategoryCode() + "/"  + updateBoard.getId(), "게시글이 수정되었습니다.", request.getQueryString()));
+        redirectAttributes.addFlashAttribute("alertMessage", "게시글이 수정되었습니다.");
 
-        return "redirect:/alert";
+        return new UrlBuilder("/board/read/" + criteria.getCategoryCode())
+                .id(updateBoard.getId()).queryString(request.getQueryString()).buildRedirectUrl();
     }
 
     @GetMapping("/board/delete/{categoryCode}/{boardId}")
@@ -208,10 +201,10 @@ public class BoardController {
         Board findBoard = boardService.findById(boardId);
 
         if (!boardService.isSameWriter(principalDetails.getMember(), findBoard)) {
-            redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                    "/board/read/" + criteria.getCategoryCode() + "/"  + boardId, "삭제하려는 글과 작성자가 다릅니다.", request.getQueryString()
-            ));
-            return "redirect:/alert";
+            redirectAttributes.addFlashAttribute("alertMessage", "삭제하려는 글과 작성자가 다릅니다.");
+            return new UrlBuilder("/board/read/" + criteria.getCategoryCode())
+                    .id(boardId).queryString(request.getQueryString()).buildRedirectUrl();
+
         }
 
         // board 삭제
@@ -222,10 +215,9 @@ public class BoardController {
         boolean isSuccess = imageService.deleteImageByBoardId(boardId);
         log.info("이미지 삭제 isSuccess = {}", isSuccess);
 
-        redirectAttributes.addFlashAttribute("redirectDTO", new RedirectDTO(
-                "/board/list/" + criteria.getCategoryCode() ,"글이 삭제 되었습니다.", request.getQueryString()
-        ));
-        return "redirect:/alert";
+        redirectAttributes.addFlashAttribute("alertMessage", "글이 삭제 되었습니다.");
+
+        return new UrlBuilder().redirectHome();
     }
 
 

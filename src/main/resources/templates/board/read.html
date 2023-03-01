@@ -59,9 +59,23 @@
             transition: background-color 1000ms linear;
         }
 
+        #commentContainer .comment-username:hover {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
         #commentContainer .other-comment-reply .comment-username {
             border-top-left-radius: 0;
+            cursor: pointer;
         }
+
+        #commentContainer .other-comment-reply .comment-username:hover{
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
 
         #commentContainer .comment-delete {
             display: block;
@@ -161,10 +175,12 @@
     <script>
         $(function () {
 
-            let alertMessage = $("#globalAlertMessage").data("alertmessage");
-            if (alertMessage) {
-                alert(alertMessage);
-            }
+            $(window).on("load", function () {
+                let alertMessage = $("#globalAlertMessage").data("alertmessage");
+                if (alertMessage) {
+                    alert(alertMessage);
+                }
+            })
 
             // CKeditor readonly
             ClassicEditor
@@ -183,7 +199,7 @@
             } );
 
             let selectedCommentId = $("#selectedCommentId").data("selectedcommentid");
-            console.log("selectedCommentId = " + selectedCommentId);
+            // console.log("selectedCommentId = " + selectedCommentId);
 
             // myComment 에서 넘어왔을때, comment highlight
             if (selectedCommentId) {
@@ -453,7 +469,7 @@
                 }
 
                 // 대댓글 작성 취소
-                if ($("#myCommentReply").length > 0) {
+                if ($(this).parent().prop("id") == "myCommentReplyForm") {
                     $(this).parent().parent().remove();
                     return false;
                 }
@@ -535,7 +551,7 @@
                 $("#myComment").clone(true)
                     .prop("id", "myCommentReply")
                     .children("#myCommentForm").prop("id", "myCommentReplyForm")
-                    .children(".comment-username").on("click", makeReply).end()
+                    .children(".comment-username").end()
                     .children(".comment-groupId").val(groupId).end()
                     .children(".comment-order").val(order).end()
                     .children(".comment-depth").val("1").end()

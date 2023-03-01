@@ -14,8 +14,8 @@
     </select>
 
     <insert id="saveImage" useGeneratedKeys="true" keyProperty="imageId">
-        insert into image (boardId, store_image_name, upload_image_name, image_address)
-        values (#{boardId}, #{storeImageName}, #{uploadImageName}, #{imageAddress})
+        insert into image (memberId, boardId, store_image_name, upload_image_name, image_address)
+        values (#{memberId}, #{boardId}, #{storeImageName}, #{uploadImageName}, #{imageAddress})
     </insert>
 
     <delete id="deleteImage">
@@ -29,7 +29,7 @@
     <update id="setBoardId">
         update image
         set boardId = #{boardId}
-        where boardId = 0
+        where boardId = 0 and memberId = #{memberId}
     </update>
 
 </mapper>

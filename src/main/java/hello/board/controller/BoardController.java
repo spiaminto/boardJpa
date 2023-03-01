@@ -123,7 +123,7 @@ public class BoardController {
 //        }
 
         // 이미지 동기화
-        imageService.syncImage(savedBoard.getId(), splittedImageName);
+        imageService.syncImage(savedBoard.getMemberId(), savedBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("alertMessage", "게시글이 등록되었습니다.");
 
@@ -184,7 +184,7 @@ public class BoardController {
 //        }
 
         // 이미지 동기화
-        imageService.syncImage(updateBoard.getId(), splittedImageName);
+        imageService.syncImage(updateBoard.getMemberId(), updateBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("alertMessage", "게시글이 수정되었습니다.");
 

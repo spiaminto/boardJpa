@@ -77,6 +77,10 @@ commit 19
 commit 20
     AlertController 관련 요소 삭제 및 alertMessage 표현 방식 변경
     UrlBuilder 클래스 추가
+    editMember, deleteMember 트랜잭션 처리
+
+commit 20.1
+    syncImage 동시 진행시 문제 수정
 
 
 

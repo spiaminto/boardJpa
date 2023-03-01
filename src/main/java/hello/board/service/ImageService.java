@@ -16,6 +16,7 @@ import hello.board.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,13 +48,11 @@ public class ImageService {
      * @param multipartFile
      * @return 업로드한 이미지 파일로 구성한 Image
      */
-    public Image saveImage(MultipartFile multipartFile) {
-        Image storedImage = imageStore.storeImage(multipartFile);
-
+    public Image saveImage(Long id, MultipartFile multipartFile) {
+        Image storedImage = imageStore.storeImage(id, multipartFile);
         Image savedImage = saveImageToDb(storedImage);
-        log.info("store 된 이미지 {}, DB.save 된 이미지 {}", storedImage.getImageId(), savedImage.getImageId());
 
-        // 예외처리
+        log.info("store 된 이미지 {}, DB.save 된 이미지 {}", storedImage.getImageId(), savedImage.getImageId());
 
         return savedImage;
     }
@@ -132,12 +131,13 @@ public class ImageService {
      * @param boardId
      * @param uploadedImageNames
      */
-    public void syncImage(Long boardId, String[] uploadedImageNames) {
+    public void syncImage(Long memberId, Long boardId, String[] uploadedImageNames) {
+        int result;
 
 //        for (String uploadedImageName : uploadedImageNames) {log.info("uploadedImageName {}", uploadedImageName);}
 
         // boardId = 0 인 db 이미지에 boardId 부여
-        int result = imageRepository.setBoardId(boardId);
+        result = imageRepository.setBoardId(memberId, boardId);
 //        log.info("동기화 처리 전 boardId = 0 인 image 갯수 = {} ", result);
 
         // DB 에 등록된 이미지

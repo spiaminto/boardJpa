@@ -51,7 +51,7 @@ public class ImageStoreAmazon implements ImageStore{
 
     // 단일 업로드 CKeditor
 
-    public Image storeImage(MultipartFile multipartFile) {
+    public Image storeImage(Long memberId, MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) return null;
         String contentType = "";
 
@@ -101,7 +101,7 @@ public class ImageStoreAmazon implements ImageStore{
 
         // DB 에 저장을 위한 Image 객체 (boardId = 0L)
         // 일단 임시로 request url 을 동일하게 설정했음
-        Image image = new Image(uploadImageName, storeImageName, imageAddress, imageAddress);
+        Image image = new Image(uploadImageName, storeImageName, imageAddress, imageAddress, memberId);
 
         // 사진 정보 담은 Image 객체 반환
         return image;

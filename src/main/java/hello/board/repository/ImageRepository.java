@@ -33,9 +33,8 @@ public class ImageRepository {
         return imageMapper.findByBoardId(id);
     }
 
-
-    public int setBoardId(Long boardId) {
-        return imageMapper.setBoardId(boardId);
+    public int setBoardId(Long memberId, Long boardId) {
+        return imageMapper.setBoardId(memberId, boardId);
     }
 
 

@@ -53,7 +53,7 @@ public class ImageStoreLocal implements ImageStore{
 
     // 단일 업로드 CKeditor
 
-    public Image storeImage(MultipartFile multipartFile) {
+    public Image storeImage(Long memberId, MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) return null;
 
         // uploadImageName: 업로드 사진 이름
@@ -76,7 +76,7 @@ public class ImageStoreLocal implements ImageStore{
         }
 
         // DB 에 저장을 위한 Image 객체 (boardId = 0L)
-        Image image = new Image(uploadImageName, storeImageName, imageAddress, imageRequestUrl);
+        Image image = new Image(uploadImageName, storeImageName, imageAddress, imageRequestUrl, memberId);
 
         // 사진 정보 담은 Image 객체 반환
         return image;

@@ -13,6 +13,7 @@ public class Image {
     private Long imageId;
     // boardId
     private Long boardId;
+    private Long memberId;
     // 업로드 사진명
     private String uploadImageName;
     // 서버저장 사진명
@@ -24,11 +25,12 @@ public class Image {
 
     // 업로드 진행중인 Image 는 boardId = null 과 구분하기위해 0L 로 설정.
     //  게시글 등록하면 boardId = 0 인 Image 를 찾아 수정
-    public Image(String uploadImageName, String storeImageName, String imageAddress, String imageRequestUrl) {
+    public Image(String uploadImageName, String storeImageName, String imageAddress, String imageRequestUrl, Long memberId) {
         this.uploadImageName = uploadImageName;
         this.storeImageName = storeImageName;
         this.imageAddress = imageAddress;
         this.imageRequestUrl = imageRequestUrl;
+        this.memberId = memberId;
         this.boardId = 0L;
     }
 

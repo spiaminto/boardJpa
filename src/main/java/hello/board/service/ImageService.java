@@ -80,14 +80,21 @@ public class ImageService {
      * member 가 삭제될때, 해당 member 가 작성한 board 의 이미지 삭제
      * @param memberId
      */
-    public void deleteImageByMemberId(Long memberId) {
+    public boolean deleteImageByMemberId(Long memberId) {
         Criteria criteria = new Criteria();
         
         // 글 갯수가 9999개 이상이면 전부 삭제되지 않음
         criteria.setContentPerPage(9999);
 
         List<Board> boardList = boardRepository.findPagedBoardWithMemberId(criteria, memberId);
-        boardList.forEach(board -> deleteImageByBoardId(board.getId()));
+
+        for (Board board : boardList) {
+            if (!deleteImageByBoardId(board.getId())) {
+                log.info("ImageServ.deleteImageByBoardId break at {}", board.getId());
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

@@ -65,14 +65,8 @@ public class BoardRepository {
         return boardMapper.delete(id);
     }
 
-
-    public ResultDTO syncWriter(Long memberId, String updateName) {
-        try {
-            boardMapper.syncWriter(memberId, updateName);
-            return new ResultDTO(true);
-        } catch (Exception e) {
-            return new ResultDTO(false, e.toString(), e.getMessage(), "BoardMapper.syncWriter 오류");
-        }
+    public int syncWriter(Long memberId, String updateName) {
+        return boardMapper.syncWriter(memberId, updateName);
     }
 
 }

@@ -11,8 +11,10 @@ import hello.board.repository.MemberRepository;
 import hello.board.repository.ResultDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
@@ -34,6 +36,7 @@ public class MemberService {
 
     /**
      * member 를 받아서 비밀번호를 암호화 하고 db 에 저장
+     *
      * @param member
      * @return 저장된 member
      */
@@ -48,31 +51,26 @@ public class MemberService {
 
     /**
      * 비밀번호를 암호화 한뒤 member 정보를 수정하고, member.username 을 동기화 한 뒤 로그아웃 여부를 결정
+     *
      * @param currentMember
      * @param updateParam
      * @return Map (member, isLogout)
      */
     public Map<String, Object> editMember(Member currentMember, Member updateParam) {
 
-        String beforePassword = currentMember.getPassword();
         String newRawPassword = updateParam.getPassword();
         boolean isLogout;
+        boolean isSuccess;
 
         String encodedPassword = bCryptPasswordEncoder.encode(updateParam.getPassword());
         updateParam.setPassword(encodedPassword);
 
-        if (updateParam.getProviderId() == null) {
-            memberRepository.update(currentMember.getId(), updateParam);
-        } else {
-            memberRepository.updateUsername(updateParam.getProviderId(), updateParam.getUsername());
-        }
+        // 멤버 변경 @Transactional
+        isSuccess = processEditAndSync(currentMember, updateParam);
 
-        // username 이 수정됨 -> username 동기화
-        if (!currentMember.getUsername().equals(updateParam.getUsername())) {
-            boolean syncSuccess = syncUserName(currentMember.getId(), currentMember.getUsername(), updateParam.getUsername());
-            if (!syncSuccess) {
-                return null;
-            }
+        // 멤버 변경 및 동기화 작업에서 실패
+        if (!isSuccess) {
+            return null;
         }
 
         if (!currentMember.getLoginId().equals(updateParam.getLoginId()) ||
@@ -98,27 +96,59 @@ public class MemberService {
 
     /**
      * username 을 boardRepo 와 commentRepo 에서 동기화
-     * @param memberId
-     * @param currentUsername
-     * @param udpateUsername
+     *
+     * @param currentMember
+     * @param updateParam
      * @return 모두 성공하면 true
      */
     // username 동기화, 성공시 true 반환
-    public boolean syncUserName(Long memberId, String currentUsername, String udpateUsername) {
-        ResultDTO boardResult = boardRepository.syncWriter(memberId, udpateUsername);
-        ResultDTO commentResult = commentRepository.syncWriterAndTarget(memberId, udpateUsername);
+    @Transactional
+    public boolean processEditAndSync(Member currentMember, Member updateParam) {
+        Long memberId = currentMember.getId();
+        String updateUsername = updateParam.getUsername();
+        Criteria criteria = new Criteria();
+        String option = "";
+        int origin = 0, result = 0;
+        // result 를 사용해서 변한 행 갯수를 받아도, catch 에서는 사용할 수 없다.(정확히는, 받기전에 catch)
 
-        // username 동기화 에러
-        if (!boardResult.isSuccess() || !commentResult.isSuccess()) {
-            if (!boardResult.isSuccess()) {
-                log.info("{} , {} -> {}, ResultDTO.exception = {}, ResultDTO.message = {}",
-                        boardResult.getCustomMessage(), currentUsername, udpateUsername,
-                        boardResult.getException(), boardResult.getMessage() );
+        // 특정 repository 작업에서 Exception 발생할 경우, 모든 작업을 롤백함.
+        try {
+
+            // edit
+            if (updateParam.getProviderId() == null) {
+                result = memberRepository.update(currentMember.getId(), updateParam);
             } else {
-                log.info("{} , {} -> {}, ResultDTO.exception = {}, ResultDTO.message = {}",
-                        commentResult.getCustomMessage(), currentUsername, udpateUsername,
-                        commentResult.getException(), commentResult.getMessage() );
+                result = memberRepository.updateUsername(updateParam.getProviderId(), updateParam.getUsername());
             }
+            log.info("member.update, result = {}", result);
+
+            if (result != 1) {
+                return false;
+            }
+
+            // sync username
+            if (!currentMember.getUsername().equals(updateParam.getUsername())) {
+                option = "board.syncWriter";
+                origin = boardRepository.countTotalBoardWithMemberId(criteria, memberId);
+                result = boardRepository.syncWriter(memberId, updateUsername);
+                log.info("option = {}, originalCount = {}, modifiedCount = {}", option, origin, result);
+
+                option = "comment.syncCommentWriter";
+                origin = commentRepository.countTotalCommentWithMemberId(criteria, memberId);
+                result = commentRepository.syncWriter(memberId, updateUsername);
+                log.info("option = {}, originalCount = {}, modifiedCount = {}", option, origin, result);
+
+                option = "comment.syncCommentTarget";
+                origin = commentRepository.countTotalTargetWithMemberId(memberId);
+                result = commentRepository.syncTarget(memberId, updateUsername);
+                log.info("option = {}, originalCount = {}, modifiedCount = {}", option, origin, result);
+            }
+
+        } catch (DataAccessException e) {
+            log.info("option = {}, originalCount = {}, Exception = {}, message = {}", option, origin, e, e.getMessage());
+            return false;
+        } catch (Exception e) {
+            log.info("option = {}, originalCount = {}, Exception = {}, message = {}", option, origin, e, e.getMessage());
             return false;
         }
         return true;
@@ -126,16 +156,34 @@ public class MemberService {
 
     /**
      * member 와, member.id = comment.memberId, comment.targetId, board.memberId 인 글들 삭제
+     *
      * @param id
      */
-    public void deleteMember(Long id) {
+    @Transactional
+    public boolean deleteMember(Long id) {
+        String option = "";
+        long origin = 0, result = 0;
 
-        // member.id = targetId 인 comment 삭제
-        commentRepository.deleteReplyByTargetId(id);
+        try {
+            // member.id = targetId 인 comment 삭제
+            option = "comment.deleteTargetById";
+            origin = commentRepository.countTotalTargetWithMemberId(id);
+            result = commentRepository.deleteReplyByTargetId(id);
+            log.info("option = {}, originalCount = {}, modifiedCount = {}", option, origin, result);
 
-        memberRepository.delete(id);
-        
-        // board 와 comment 는 on cascade 로 제거됨
+            result = 0;
+            option = "member.deleteMember";
+            result = memberRepository.delete(id);
+
+            // board 와 comment 는 on cascade 로 제거됨
+
+        } catch (DataAccessException e) {
+            log.info("option = {}, originalCount = {}, Exception = {}, message = {}", option, origin, e, e.getMessage());
+        } catch (Exception e) {
+            log.info("option = {}, originalCount = {}, Exception = {}, message = {}", option, origin, e, e.getMessage());
+        }
+
+        return result == 1;
     }
 
     /**

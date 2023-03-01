@@ -249,12 +249,18 @@ public class MemberController {
                                RedirectAttributes redirectAttributes) {
         Long currentId = principalDetails.getMember().getId();
 
-        // 이미지 삭제
-        imageService.deleteImageByMemberId(currentId);
+        // 멤버삭제 -> 이미지 삭제 : 이미지 삭제에서 에러나면, 멤버정보가 없는 이미지가 남음. 이는 내가 나중에 처리가능
+        // 이미지삭제 -> 멤버삭제 : 멤버삭제에서 오류나면, 이미지가 없는 멤버글만 잔뜩 남게됨.
 
         // 멤버 삭제
-        memberService.deleteMember(currentId);
-        
+        boolean isMemberDeleted = memberService.deleteMember(currentId);
+
+        if (isMemberDeleted) {
+            // 이미지 삭제
+            boolean isImageDeleted = imageService.deleteImageByMemberId(currentId);
+            log.info("MemberController.deleteMember() isImageDeleted = {}", isImageDeleted);
+        }
+
         // 보험
         principalDetails.getMember().setRole("ROLE_TEMP");
 

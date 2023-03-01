@@ -3,6 +3,7 @@ package hello.board.repository;
 import hello.board.domain.member.Member;
 import hello.board.repository.mybatis.MemberMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,6 @@ import java.util.Optional;
 
 @Repository
 @Slf4j
-@Transactional
 public class MemberRepository {
 
     private final MemberMapper memberMapper;
@@ -50,9 +50,8 @@ public class MemberRepository {
     }
 
 
-    public void update(Long id, Member updateParam) {
-        rowNum = memberMapper.update(id, updateParam);
-        log.info("update(), row = {}", rowNum);
+    public int update(Long id, Member updateParam) {
+        return memberMapper.update(id, updateParam);
     }
 
     public int updateEmail(String providerId, String email) {
@@ -64,8 +63,14 @@ public class MemberRepository {
     }
 
 
-    public void delete(Long id) {
-        memberMapper.delete(id);
+    public int delete(Long id) {
+
+        // For Test
+//        if (id == 1L) {
+//            throw new RuntimeException("Test Exception");
+//        }
+
+        return memberMapper.delete(id);
     }
 
 }

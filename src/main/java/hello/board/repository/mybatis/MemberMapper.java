@@ -18,7 +18,7 @@ public interface MemberMapper {
 
     int updateUsername(@Param("providerId") String providerId, @Param("username") String username);
 
-    void delete(Long id);
+    int delete(Long id);
 
     Member findById(Long id);
 

@@ -176,9 +176,9 @@
             $("#normalForm").on("submit", function (event) {
                 event.preventDefault();
 
-                console.log("$(loginId) " + $("#loginId").val() + " loginId " + loginId)
-                console.log("$(username) " + $("#username").val() + " username " + username)
-                console.log("idflag = " + loginIdFlag + " nameflag = " + usernameFlag)
+                // console.log("$(loginId) " + $("#loginId").val() + " loginId " + loginId)
+                // console.log("$(username) " + $("#username").val() + " username " + username)
+                // console.log("idflag = " + loginIdFlag + " nameflag = " + usernameFlag)
 
                 let password = $("#password").val();
 
@@ -204,7 +204,7 @@
             $("#oauth2Form").on("submit", function (event) {
                 event.preventDefault();
 
-                console.log("$(username) " + $("#oauth2Username").val() + " username " + username)
+                // console.log("$(username) " + $("#oauth2Username").val() + " username " + username)
 
                 // 값 변경 확인
                 if ($("#oauth2Username").val() != username) usernameFlag = false;

@@ -5,6 +5,7 @@ import hello.board.domain.criteria.Criteria;
 import hello.board.repository.mybatis.CommentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,10 @@ public class CommentRepository {
 
     public Integer countTotalCommentWithMemberId(Criteria criteria, Long memberId) {
         return commentMapper.countTotalCommentWithMemberId(criteria, memberId);
+    }
+
+    public Integer countTotalTargetWithMemberId(Long memberId) {
+        return commentMapper.countTotalTargetWithMemberId(memberId);
     }
 
     public Comment findByCommentId(Long commentId) {
@@ -48,21 +53,19 @@ public class CommentRepository {
         return rowNum;
     }
 
-    public ResultDTO syncWriterAndTarget(Long memberId, String updateName) {
-        boolean flag = false;
-        try {
-            commentMapper.syncWriter(memberId, updateName);
-            flag = true;
-            commentMapper.syncTarget(memberId, updateName);
-            return new ResultDTO(true);
-        } catch (Exception e) {
-            if (flag) {
-                return new ResultDTO(false, e.toString(), e.getMessage(), "commentMapper.syncTarget 오류");
-            } else {
-                return new ResultDTO(false, e.toString(), e.getMessage(), "commentMapper.syncWriter 오류");
-            }
+    public int syncWriter(Long memberId, String updateName) {
+        return commentMapper.syncWriter(memberId, updateName);
+    }
 
-        }
+
+    public int syncTarget(Long memberId, String udpateName) {
+
+//         ForTest
+//        if (memberId == 1L) {
+//            throw new RuntimeException("test exception");
+//        }
+
+        return commentMapper.syncTarget(memberId, udpateName);
     }
 
     public int deleteReplyByTargetId(Long targetId) {

@@ -20,6 +20,8 @@ public interface CommentMapper {
 
     Integer countTotalCommentWithMemberId(@Param("criteria")Criteria criteria, @Param("memberId")Long memberId);
 
+    Integer countTotalTargetWithMemberId(Long memberId);
+
     int save(Comment comment);
 
     int setGroupId(@Param("commentId") Long commentId, @Param("groupId") Long groupId);

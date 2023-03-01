@@ -45,22 +45,6 @@
         where id = #{id}
     </select>
 
-<!--    IN 안에 중복 id 들어가면 하나밖에 반환을 안함 -->
-<!--    <select id="findByIdList" resultType="Board">-->
-<!--        select * from board-->
-<!--        where id in -->
-<!--        <foreach collection="idList" item="id" index="index" separator="," open="(" close=")">-->
-<!--            #{id}-->
-<!--        </foreach>-->
-<!--    </select>-->
-
-    <!-- findAll 제목으로 검색용 -->
-    <!-- concat(string1, string2 ...) 문자열 합치기 -->
-<!--    <select id="findAll" resultType="Board">-->
-<!--        select id, title, content, writer, regedate, updateDate, viewCount from board-->
-<!--        where title like concat('%', #{keyword}, '%')-->
-<!--    </select>-->
-
     <!-- 페이징 처리된 select -->
     <!-- resultType = "hashmap" parameterType = "hashmap" 으로 List<Map<String, Object>> 로 받던데 이유 모르겟음-->
     <!-- 로그 확인 결과 starPageNum 멤버가 없음에도 getStarPageNum() 메서드의 영향인지 파라미터가 정상적으로 넘어감; -->
@@ -93,14 +77,6 @@
         order by id desc
         limit #{criteria.startRowNum}, #{criteria.contentPerPage}
     </select>
-
-
-<!--    &lt;!&ndash; findByWriter &ndash;&gt;-->
-<!--    <select id="findByWriter" resultType="Board">-->
-<!--        select id, title, content, writer, regedate, updateDate, viewCount from board-->
-<!--        where writer = #{writer}-->
-<!--        order by id desc-->
-<!--    </select>-->
 
     <!-- save, 자동생성(auto increment) key 사용 -->
     <insert id="save" useGeneratedKeys="true" keyProperty="id">

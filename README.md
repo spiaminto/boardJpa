@@ -1,4 +1,4 @@
-#board
+# board
 
 테스트용 loginId: testid, password: test  
 [프로젝트 바로가기](http://springboard-env.eba-x3sau5v7.ap-northeast-1.elasticbeanstalk.com/board/list/all)  
@@ -11,7 +11,7 @@ springboot 를 공부하면서 배운것, 알게된 것들을 확인하고 사�
 RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였습니다.  
 
 
-##해당 프로젝트는 다음의 기능을 구현하고 있습니다.  
+## 해당 프로젝트는 다음의 기능을 구현하고 있습니다.  
 
 
 * 글 작성,수정,삭제
@@ -29,7 +29,7 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
   * 글, 댓글, 회원정보 에 간단한 validation 이 적용되어있습니다.  
   
   
-##또한, 이 프로젝트는 다음의 서비스를 이용합니다.  
+## 또한, 이 프로젝트는 다음의 서비스를 이용합니다.  
 
 
 * Amazon Elastic Beanstalk

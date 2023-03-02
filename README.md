@@ -1,9 +1,9 @@
 # board
 
-테스트용 
-loginId: testid 
-password: test  
-## [프로젝트 바로가기](http://springboard-env.eba-x3sau5v7.ap-northeast-1.elasticbeanstalk.com/board/list/all)  
+테스트용  
+loginId: testid  
+password: test   
+[프로젝트 바로가기](http://springboard-env.eba-x3sau5v7.ap-northeast-1.elasticbeanstalk.com/board/list/all)  
 
 <br>
 

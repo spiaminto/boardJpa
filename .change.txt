@@ -82,6 +82,9 @@ commit 20
 commit 20.1
     syncImage 동시 진행시 문제 수정, 답글달기 피드백, 버그수정
 
+commit 20.2
+    db 수정
+
 
 
 

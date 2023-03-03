@@ -22,7 +22,7 @@
     <select id="countTotalBoardWithMemberId" resultType="Integer">
         select count(*) from board
         <where>
-            memberId = #{memberId}
+            member_id = #{memberId}
             <if test="criteria.category != null and criteria.category.name() != 'ALL'">
                 and category = #{criteria.category}
             </if>
@@ -35,7 +35,7 @@
     <!-- updateViewCount -->
     <update id="updateViewCount">
         update board
-        set viewCount = viewCount + 1
+        set view_count = view_count + 1
         where id = #{id}
     </update>
 
@@ -66,7 +66,7 @@
     <select id="findPagedBoardWithMemberId" resultType="Board">
         select * from board
         <where>
-            memberId = #{memberId}
+            member_id = #{memberId}
             <if test="criteria.category != null and criteria.category.name() != 'ALL'">
                 and category = #{criteria.category}
             </if>
@@ -80,8 +80,8 @@
 
     <!-- save, 자동생성(auto increment) key 사용 -->
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into board (title, content, writer, regedate, updateDate, memberId, category)
-        values (#{title}, #{content}, #{writer}, #{regedate}, #{updateDate}, #{memberId}, #{category})
+        insert into board (title, content, writer, reg_date, update_date, member_id, category)
+        values (#{title}, #{content}, #{writer}, #{regDate}, #{updateDate}, #{memberId}, #{category})
     </insert>
 
     <!-- update -->
@@ -90,7 +90,7 @@
         set title=#{updateParam.title},
             writer=#{updateParam.writer},
             content=#{updateParam.content},
-            updateDate=#{updateParam.updateDate},
+            update_date=#{updateParam.updateDate},
             category=#{updateParam.category}
         where id = #{id}
     </update>
@@ -98,7 +98,7 @@
     <update id="syncWriter">
         update board
         set writer = #{updateName}
-        where memberId = #{memberId}
+        where member_id = #{memberId}
     </update>
 
     <!-- delete -->

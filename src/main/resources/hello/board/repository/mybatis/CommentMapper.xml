@@ -49,7 +49,7 @@
     </select>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="comment_id">
-        insert into comment(board_id, member_id, target_id, target, writer, content, regDate, updateDate,
+        insert into comment(board_id, member_id, target_id, target, writer, content, reg_date, update_date,
                             group_id, group_order, group_depth, category)
         values (#{boardId}, #{memberId}, #{targetId}, #{target}, #{writer}, #{content}, #{regDate}, #{updateDate},
                 #{groupId}, #{groupOrder}, #{groupDepth}, #{category})
@@ -64,7 +64,7 @@
     <update id="update">
         update comment
         set content = #{updateParam.content},
-            updateDate = #{updateParam.updateDate}
+            update_date = #{updateParam.updateDate}
         where comment_id = #{commentId}
     </update>
 

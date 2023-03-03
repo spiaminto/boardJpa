@@ -59,7 +59,7 @@
             transition: background-color 1000ms linear;
         }
 
-        #commentContainer .comment-username:hover {
+        #commentContainer .other-comment .comment-username:hover {
             color: blue;
             text-decoration: underline;
             cursor: pointer;
@@ -604,7 +604,7 @@
             </li>
             <li>
                 <span>작성: </span>
-                <span th:text="${#temporals.format(board.regedate, 'yyyy-MM-dd HH:mm')}">작성시간</span>
+                <span th:text="${#temporals.format(board.regDate, 'yyyy-MM-dd HH:mm')}">작성시간</span>
             </li>
             <li>
                 <span>수정:</span>

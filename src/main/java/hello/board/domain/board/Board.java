@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 // #패키지 설계 로그인처리 1-2
 
@@ -18,7 +17,7 @@ public class Board {
     private String title;
     private String content;
     private String writer;
-    private LocalDateTime regedate;
+    private LocalDateTime regDate;
     private LocalDateTime updateDate;
 
     private long viewCount;
@@ -27,14 +26,14 @@ public class Board {
     private Category category;
 
     // save(write)
-    public Board(String title, String writer, Long memberId, String content, Category category, LocalDateTime now) {
+    public Board(String title, String writer, Long memberId, String content, Category category, LocalDateTime regDate) {
         this.title = title;
         this.writer = writer;
         this.memberId = memberId;
         this.content = content;
         this.category = category;
-        this.regedate = now;
-        this.updateDate = now;
+        this.regDate = regDate;
+        this.updateDate = regDate;
     }
 
     // update(edit)

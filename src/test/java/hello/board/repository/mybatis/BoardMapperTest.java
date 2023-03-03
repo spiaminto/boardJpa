@@ -118,7 +118,7 @@ class BoardMapperTest {
                 "update", 1L,
                 "updateContent", Category.of("TEMP"), LocalDateTime.now()
         );
-        updateParam.setRegedate(LocalDateTime.now());
+        updateParam.setRegDate(LocalDateTime.now());
 
         int row = boardMapper.update(10L, updateParam);
         log.info("effected row = {}", row);

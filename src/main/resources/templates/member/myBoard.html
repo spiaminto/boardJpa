@@ -237,8 +237,8 @@
                        th:text="${item.title}">title</a>
                 </td>
 
-                <td th:if="${item.isToday(item.regedate)}" th:text="${#temporals.format(item.regedate, 'HH:mm')}">regdate</td>
-                <td th:if="${!item.isToday(item.regedate)}" th:text="${#temporals.format(item.regedate, 'yy-MM-dd')}">regdate</td>
+                <td th:if="${item.isToday(item.regDate)}" th:text="${#temporals.format(item.regDate, 'HH:mm')}">regdate</td>
+                <td th:if="${!item.isToday(item.regDate)}" th:text="${#temporals.format(item.regDate, 'yy-MM-dd')}">regdate</td>
 
                 <td th:if="${item.isToday(item.updateDate)}" th:text="${#temporals.format(item.updateDate, 'HH:mm')}">updateDAte</td>
                 <td th:if="${!item.isToday(item.updateDate)}" th:text="${#temporals.format(item.updateDate, 'yy-MM-dd')}">updateDate</td>

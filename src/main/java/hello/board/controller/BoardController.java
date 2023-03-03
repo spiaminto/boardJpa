@@ -171,8 +171,7 @@ public class BoardController {
 
         // form -> board 맵핑
         Board updateParam = new Board(
-                form.getTitle(), form.getWriter(), form.getContent(), form.getRegedate(), form.getCategory());
-        updateParam.setUpdateDate(LocalDateTime.now());
+                form.getTitle(), form.getWriter(), form.getContent(), LocalDateTime.now(), form.getCategory());
        
         // 업데이트
         Board updateBoard = boardService.updateBoard(boardId, updateParam);

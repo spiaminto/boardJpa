@@ -4,13 +4,13 @@
 <mapper namespace="hello.board.repository.mybatis.MemberMapper">
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into member(provider, provider_id, loginId, username, password, email, role)
+        insert into member(provider, provider_id, login_id, username, password, email, role)
         VALUES (#{provider}, #{providerId}, #{loginId}, #{username}, #{password},#{email}, #{role})
     </insert>
 
     <update id="update">
         update member
-        set loginId=#{updateParam.loginId},
+        set login_id=#{updateParam.loginId},
             username=#{updateParam.username},
             password=#{updateParam.password},
             email=#{updateParam.email}
@@ -40,7 +40,7 @@
 
     <select id="findByLoginId" resultType="Member">
         select * from member
-        where loginId = #{loginId}
+        where login_id = #{loginId}
     </select>
 
     <!--굳이 password 까지 찾을 필요 있을까? (암호화함) -->

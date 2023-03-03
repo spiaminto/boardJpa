@@ -4,22 +4,22 @@
 <mapper namespace="hello.board.repository.mybatis.ImageMapper">
 
     <select id="findById" resultType="Image">
-        select boardId, store_image_name, upload_image_name, image_address from image
-        where imageId = #{imageId}
+        select board_id, store_image_name, upload_image_name, image_address from image
+        where image_id = #{imageId}
     </select>
 
     <select id="findByBoardId" resultType="Image">
-        select boardId, store_image_name, upload_image_name, image_address from image
-        where boardId = #{boardId}
+        select board_id, store_image_name, upload_image_name, image_address from image
+        where board_id = #{boardId}
     </select>
 
     <insert id="saveImage" useGeneratedKeys="true" keyProperty="imageId">
-        insert into image (memberId, boardId, store_image_name, upload_image_name, image_address)
+        insert into image (member_id, board_id, store_image_name, upload_image_name, image_address)
         values (#{memberId}, #{boardId}, #{storeImageName}, #{uploadImageName}, #{imageAddress})
     </insert>
 
     <delete id="deleteImage">
-        delete from image where boardId=#{boardId}
+        delete from image where board_id=#{boardId}
     </delete>
 
     <delete id="deleteImageByStoreImageName">
@@ -28,8 +28,8 @@
 
     <update id="setBoardId">
         update image
-        set boardId = #{boardId}
-        where boardId = 0 and memberId = #{memberId}
+        set board_id = #{boardId}
+        where board_id = 0 and member_id = #{memberId}
     </update>
 
 </mapper>

@@ -21,8 +21,6 @@ public class BoardEditForm {
     private String content;
     private String writer;
 
-    private LocalDateTime regedate;
-
     // DB 에 진짜로 저장할 이미지url
     private String imageName;
 

@@ -38,13 +38,17 @@ public class UrlBuilder {
     }
 
     public String redirectHome() {
-        return "redirect:/board/list/all";
+        return "redirect:/boards";
     }
 
     public UrlBuilder uri(String uri) {
         this.uri = uri;
         removeQueryString();
-        url = this.uri + "?" + queryString;
+        if (queryString != null && queryString.length() > 0) {
+            url = this.uri + "?" + queryString;
+        } else {
+            url = this.uri;
+        }
 
 //        log.info(".uri() url = " + url);
         return this;
@@ -62,6 +66,7 @@ public class UrlBuilder {
     }
 
     // id 는 무조건 나중에 붙이기 때문에 이렇게 만들었음.
+    // 일단 컨트롤 url 가 붙는경우 사용할 수 없음. 나중에 개선
     public UrlBuilder id(Long id) {
         removeQueryString();
         if (id != null) {

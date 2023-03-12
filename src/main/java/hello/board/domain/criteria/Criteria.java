@@ -13,10 +13,11 @@ import org.springframework.stereotype.Component;
  *
  *
  */
-@Component
+
+// Criteria 객체는 스프링에서 관리하지 않는다.
+//@Component
 @Slf4j
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 public class Criteria {
 
@@ -70,6 +71,15 @@ public class Criteria {
 
     public void setCategoryCode(String categoryCode) {
         if (categoryCode != null) {
+
+            // /board/id/edit POST 요청에서, category 필드 가 criteria 와 board 에 중복되서 그런지 스프링 바인딩 할때
+            // all,all 이런식으로 바인딩 되서 오류나길래 일단 이렇게 수정함.
+//            log.info("setCategoryCode(), categoryCode = {}", categoryCode);
+            int doSubstring = categoryCode.indexOf(',');
+            if (doSubstring > 0) {
+                categoryCode = categoryCode.substring(0, doSubstring);
+            }
+
             this.categoryCode = categoryCode;
             this.category = Category.of(categoryCode);
         }

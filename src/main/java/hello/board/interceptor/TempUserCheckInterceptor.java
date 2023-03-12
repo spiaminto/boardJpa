@@ -19,7 +19,7 @@ public class TempUserCheckInterceptor implements HandlerInterceptor {
         boolean isTemp = request.isUserInRole("ROLE_TEMP");
 
         if (isTemp) {
-                log.info("ROLE_TEMP 임시유저 요청");
+                log.info("ROLE_TEMP 임시유저 요청, requestUri = {}", request.getRequestURI());
                 
                 // ROLE_TEMP 이면 로그아웃 처리
                 response.sendRedirect("/logout");    

@@ -8,7 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ResultDTO {
 
-    // 일단은 DB 에러 처리용? <- 임시로 생성됨.
+    // 일단은 예외 처리용? <- 임시로 생성됨.
     private Board board;
 
     // 성공여부

@@ -33,6 +33,18 @@ public class ImageStoreAmazon implements ImageStore{
 
     private final AmazonS3 amazonS3;
 
+    // String createRequestUrl() -> 일단 생략
+
+    @Override
+    public String getServiceName() {
+        return "amazonS3";
+    }
+
+    // 파일 주소 (S3 주소)
+    public String createImageAddress(String storeImageName) {
+        return amazonS3.getUrl(bucketDir, innerBucketDir + storeImageName).toString();
+    }
+
     // 서버에 저장할 파일명 작성
     public String createStoreImageName(String originalImageName) {
         String uuid = UUID.randomUUID().toString();
@@ -86,21 +98,21 @@ public class ImageStoreAmazon implements ImageStore{
             // CannedAccessControlList public 으로 설정해야 모두 접근가능
             amazonS3.putObject(new PutObjectRequest(bucketDir, innerBucketDir + storeImageName, multipartFile.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
-
+            
+            // 아마존 doc 에 있던 예외처리 + IOEx
         } catch (AmazonServiceException e) {
-            e.printStackTrace();
+            log.info("storeImage exception = {}, message = {}", e, e.getMessage());
         } catch (SdkClientException e) {
-            e.printStackTrace();
+            log.info("storeImage exception = {}, message = {}", e, e.getMessage());
         } catch (IOException e) {
-            log.info("multipartFile.getInputStream() IOExeption");
+            log.info("storeImage exception = {}, message = {}", e, e.getMessage());
             e.printStackTrace();
         }
 
-        // amazonS3 에 저장된 이미지의 url
-        String imageAddress = amazonS3.getUrl(bucketDir, innerBucketDir + storeImageName).toString();
+        // amazonS3 에 저장된 이미지의 url, 저장 되고 나서 호출.
+        String imageAddress = createImageAddress(storeImageName);
 
-        // DB 에 저장을 위한 Image 객체 (boardId = 0L)
-        // 일단 임시로 request url 을 동일하게 설정했음
+        // DB 에 저장을 위한 Image 객체 (boardId = 0L), 일단 임시로 request url 을 동일하게 설정했음
         Image image = new Image(uploadImageName, storeImageName, imageAddress, imageAddress, memberId);
 
         // 사진 정보 담은 Image 객체 반환

@@ -81,7 +81,7 @@
                 $.ajax({
                     type: "get",
                     async: false,
-                    url: "/member/duplicateCheck",
+                    url: "/member/duplicate-check",
                     data: {loginId: loginId},
                     success: function (data) {
                         if (data == true) {
@@ -114,7 +114,7 @@
                 $.ajax({
                     type: "get",
                     async: false,
-                    url: "/member/duplicateCheck",
+                    url: "/member/duplicate-check",
                     data: {username: username},
                     success: function (data) {
                         if (data == true) {
@@ -240,7 +240,7 @@
     </form>
 
     <form th:if="${isOauth2 == 'true'}"
-          th:action="@{/member/add/oauth2}" action="/home" method="POST" th:object="${member}" id="oauth2Form" class="addForm form">
+          th:action="@{/member/add-oauth}" action="/home" method="POST" th:object="${member}" id="oauth2Form" class="addForm form">
 
         <label for="oAuth2Provider">사용할 소셜 로그인 서비스 </label>
         <div class="input-wrapper">

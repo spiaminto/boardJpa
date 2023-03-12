@@ -16,7 +16,6 @@ import java.util.Optional;
 public class MemberRepository {
 
     private final MemberMapper memberMapper;
-    int rowNum = 0;
 
     public MemberRepository(MemberMapper memberMapper) {
         this.memberMapper = memberMapper;
@@ -41,7 +40,7 @@ public class MemberRepository {
 
     public ResultDTO save(Member member) {
         try {
-            rowNum = memberMapper.save(member);
+            int rowNum = memberMapper.save(member);
             log.info("save(), row = {}", rowNum);
         } catch(DuplicateKeyException e) {
             return new ResultDTO(false, e.toString(), e.getMessage(), "로그인ID 와 이름 은 중복을 허용하지 않습니다.");

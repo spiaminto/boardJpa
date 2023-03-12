@@ -26,20 +26,19 @@ import java.util.Map;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/member")
 public class MemberController {
 
     private final MemberService memberService;
     private final ImageService imageService;
 
     // 회원가입 /add
-    @GetMapping("/add")
+    @GetMapping("member/add")
     public String addMember(Model model) {
         model.addAttribute("member", new Member());
         return "member/addForm";
     }
 
-    @PostMapping("/add")
+    @PostMapping("member/add")
     public String addMember(@Validated @ModelAttribute("member") MemberSaveForm form,
                       BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         // 검증 오류 발생
@@ -64,7 +63,7 @@ public class MemberController {
         return "redirect:/login";
     }
 
-    @GetMapping("/add/oauth2")
+    @GetMapping("/member/add-oauth")
     public String addOauth2Member(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                   RedirectAttributes redirectAttributes, Model model) {
         Member member = principalDetails.getMember();
@@ -81,7 +80,7 @@ public class MemberController {
         return "member/addForm";
     }
 
-    @PostMapping("/add/oauth2")
+    @PostMapping("member/add-oauth")
         public String addOauth2Member(@Validated @ModelAttribute("member") OAuth2MemberSaveForm form,
                                       BindingResult bindingResult,
                                       @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -101,38 +100,40 @@ public class MemberController {
         // 가입 실패
         if (!result.isSuccess()) {
             redirectAttributes.addFlashAttribute("alertMessage", result.getCustomMessage());
-            return "redirect:/member/add";
+            return "redirect:/member/add-oauth";
         }
 
         redirectAttributes.addFlashAttribute("alertMessage", "소셜계정 회원가입 성공");
         return new UrlBuilder().redirectHome();
     }
 
-    @GetMapping("/mypage/info")
-    public String infoForm(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    @GetMapping("/member/{memberId}")
+    public String infoForm(@PathVariable Long memberId,
                            Model model) {
-        Long id = principalDetails.getMember().getId();
-        model.addAttribute("member", memberService.findById(id));
+        Member findMember = memberService.findById(memberId);
+        model.addAttribute("member", findMember);
+        model.addAttribute("memberId", memberId);
 
         // OAuth2 로그인 유저인 경우
-        if (principalDetails.getMember().getProvider() != null) {
+        if (findMember.getProvider() != null) {
             model.addAttribute("isOauth2", "true");
         }
 
         return "member/infoForm";
     }
 
-    @PostMapping("/edit")
+    @PostMapping("/member/{memberId}/edit")
     public String editMember(@Validated @ModelAttribute("member") MemberEditForm memberEditForm,
                              BindingResult bindingResult, RedirectAttributes redirectAttributes,
-                             @AuthenticationPrincipal PrincipalDetails principalDetails
+                             @AuthenticationPrincipal PrincipalDetails principalDetails,
+                             @PathVariable Long memberId
                              ) {
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
             log.info("/edit POST bindingResult.hasError");
             return "member/infoForm";
         }
-        Member currentMember = principalDetails.getMember();
+        Member currentMember = memberService.findById(memberId);
 
         // MemberEditForm -> Member
         Member updateParam = new Member(
@@ -145,7 +146,7 @@ public class MemberController {
         // syncUsername 실패
         if (resultMap == null) {
             redirectAttributes.addFlashAttribute("alertMessage", "시스템 문제로 닉네임을 바꾸는데 실패했습니다.");
-            return "redirect:/member/mypage/info";
+            return new UrlBuilder("/member").id(memberId).buildRedirectUrl();
         }
 
         // loginId, password 수정 -> 강제 로그아웃
@@ -164,12 +165,13 @@ public class MemberController {
         //alert
         redirectAttributes.addFlashAttribute("alertMessage", "회원 정보가 변경되었습니다.");
 
-        return "redirect:/member/mypage/info";
+        return new UrlBuilder("/member").id(memberId).buildRedirectUrl();
     }
 
-    @PostMapping("/edit/oauth2")
+    @PostMapping("/member/{memberId}/edit-oauth")
     public String editOAuth2Member(@Validated @ModelAttribute("member")OAuth2MemberEditForm oAuth2MemberEditForm,
                                    @AuthenticationPrincipal PrincipalDetails principalDetails,
+                                   @PathVariable Long memberId,
                                    BindingResult bindingResult,
                                    RedirectAttributes redirectAttributes) {
 
@@ -177,7 +179,7 @@ public class MemberController {
             log.info("/edit POST bindingResult.hasError");
             return "member/infoForm";
         }
-        Member currentMember = principalDetails.getMember();
+        Member currentMember = memberService.findById(memberId);
 
         // oAuth2MemberEditForm -> Member
         Member updateParam = new Member("", oAuth2MemberEditForm.getUsername(), "", "");
@@ -189,7 +191,7 @@ public class MemberController {
         // syncUsername 실패
         if (resultMap == null) {
             redirectAttributes.addFlashAttribute("alertMessage", "시스템 문제로 닉네임을 바꾸는데 실패했습니다.");
-            return "redirect:/member/mypage/info";
+            return new UrlBuilder("/member").id(memberId).buildRedirectUrl();
         }
 
         Member updatedMember = (Member) resultMap.get("updatedMember");
@@ -197,17 +199,17 @@ public class MemberController {
         principalDetails.editMember(updatedMember.getUsername());
 
         redirectAttributes.addFlashAttribute("alertMessage", "회원 정보가 변경되었습니다.");
-        return "redirect:/member/mypage/info";
+        return new UrlBuilder("/member").id(memberId).buildRedirectUrl();
 
     }
 
     // 내 글
-    @GetMapping({"/mypage/myboard/{categoryCode}", "/mypage/myboard"})
-    public String myPage(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                         @ModelAttribute("criteria") Criteria criteria,
+    @GetMapping("/member/{memberId}/boards")
+    public String myPage(@ModelAttribute("criteria") Criteria criteria,
+                         @PathVariable Long memberId,
                          Model model) {
 
-        Member currentMember = principalDetails.getMember();
+        Member currentMember = memberService.findById(memberId);
 //        log.info(criteria.getCurrentPage() + criteria.getKeyword() + criteria.getOption() + criteria.getCategory());
 
         Map<String, Object> resultMap = memberService.myPage(criteria, currentMember.getId());
@@ -218,17 +220,18 @@ public class MemberController {
         // 페이지메이커, 글 목록 모델에 넣기
         model.addAttribute("pageMaker", pageMaker);
         model.addAttribute("boardList", resultMap.get("boardList"));
+        model.addAttribute("memberId", memberId);
 
         return "member/myBoard";
     }
 
     // 내 댓글
-    @GetMapping({"/mypage/mycomment/{categoryCode}", "/mypage/mycomment"})
-    public String myComment(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                         @ModelAttribute("criteria") Criteria criteria,
-                         Model model) {
+    @GetMapping("/member/{memberId}/comments")
+    public String myComment(@ModelAttribute("criteria") Criteria criteria,
+                           @PathVariable Long memberId,
+                           Model model) {
 
-        Member currentMember = principalDetails.getMember();
+        Member currentMember = memberService.findById(memberId);
 //        log.info(criteria.getCurrentPage() + criteria.getKeyword() + criteria.getOption() + criteria.getCategory());
 
         Map<String, Object> resultMap = memberService.myComment(criteria, currentMember.getId());
@@ -240,12 +243,14 @@ public class MemberController {
         model.addAttribute("pageMaker", pageMaker);
         model.addAttribute("commentList", resultMap.get("commentList"));
         model.addAttribute("boardList", resultMap.get("boardList"));
+        model.addAttribute("memberId", memberId);
 
         return "member/myComment";
     }
 
-    @GetMapping("/delete")
+    @PostMapping("/member/{memberId}/delete")
     public String deleteMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                               @PathVariable Long memberId,
                                RedirectAttributes redirectAttributes) {
         Long currentId = principalDetails.getMember().getId();
 
@@ -271,7 +276,7 @@ public class MemberController {
     }
 
     @ResponseBody
-    @GetMapping("/duplicateCheck")
+    @GetMapping("/member/duplicate-check")
     public boolean duplicateCheck(@RequestParam(value = "loginId", defaultValue = "") String loginId,
                                   @RequestParam(value = "username", defaultValue = "") String username) {
 

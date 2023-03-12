@@ -2,12 +2,14 @@ package hello.board.domain.enums;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public enum Category {
     ALL("all", "전체"),
     FREE("free", "자유"),
@@ -32,8 +34,8 @@ public enum Category {
     Category(String code, String categoryName) {this.code = code; this.categoryName = categoryName;}
 
     // 해당 of 메서드를 통해 String code 로 Category category 를 리턴한다.
-    public static Category of(String code) {
-        return Category.valueOf(CATEGORY_MAP.get(code));
+    public static Category of(String categoryCode) {
+        return Category.valueOf(CATEGORY_MAP.get(categoryCode));
     }
 
 }

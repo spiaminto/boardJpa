@@ -37,13 +37,19 @@ public class SecurityConfig {
         // 요청 인증 방식 설정
         http.authorizeRequests()
 
-                // 공지 작성 및 어드민 전용페이지(아직안만듦)
-                .antMatchers("/admin/**", "/board/write/notice/**", "/board/edit/notice/**", "/board/delete/notice/**" )
-                .access("hasRole('ROLE_ADMIN')")
+                // 공지 & 어드민 관련 -> 삭제됨
 
-                // 로그인 필수
-                .antMatchers("/*/write/**", "/*/edit/**", "/*/delete/**", "/*/info/**", "/*/mypage/**")
-                    .access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+                // 회원관련 로그인 제외 (우선순위 ↑)
+                .antMatchers("/member/add", "/member/add-oauth").permitAll()
+
+                // 글쓰기
+                .antMatchers("/board/write").authenticated()
+
+                // 글읽기
+                .antMatchers("/board/*").permitAll()
+
+                // 로그인 필수 (컨트롤url 이 있을떄)
+                .antMatchers("*/*/edit", "/*/*/delete").authenticated()
 
                 // 모두 허용
                 .anyRequest().permitAll()
@@ -58,12 +64,14 @@ public class SecurityConfig {
                 // GET /login, loginForm 불러오는 요청 커스텀
                 .loginPage("/loginForm")
 
-                // POST /login, 로그인 처리부 요청 커스텀. 해당url 로그인 요청은 UserDetailsService 로 처리
+                // 로그인 처리부 요청 커스텀(loginForm 의 action). 해당url 로그인 요청은 UserDetailsService 로 처리
+                // 기본값은 /login 이라는데, /login POST 요청하면 지원안한다고 에러남;
                 .loginProcessingUrl("/loginProc")
 
+                // 로그인 실패처리
                 .failureHandler(customFailureHandler)
 
-                .defaultSuccessUrl("/board/list/all")
+                .defaultSuccessUrl("/boards")
 
                 .and()
 
@@ -75,7 +83,7 @@ public class SecurityConfig {
 
                 .logoutUrl("/logout")
 
-                .logoutSuccessUrl("/board/list/all")
+                .logoutSuccessUrl("/boards")
 
                 .and()
 

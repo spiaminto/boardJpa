@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     // 이미지 요청 url
-    private String resourceRequestUrl = "/images/local/request/**";
+    private String resourceRequestUrl = "/local/image/**";
     // 이미지 로컬 요청 경로
     private String resourceLocation = "file:///C:/Users/felix/.Study/Spring_Practice/board_exfile/";
 
@@ -26,22 +26,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        /*
-        registry.addInterceptor(new LoginCheckInterceptor())
-                .order(2)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/static/**", "/images/**", "/css/**", "/js/**", "/image/**",
-                        "/comment/**",
-                        "/test/**",
-                        "/alert",
-                        "/board/list", "/board/read/*",
-                        "/member/add", "/member/duplicateCheck",
-                        "/logout", "/login",
-                        "/error",
-                        "/reset.css", "/favicon.ico",
-                        "https://maxcdn.bootstrapcdn.com/**");
-
-         */
 
         registry.addInterceptor(new LogInterceptor())
                 .order(1)
@@ -51,8 +35,9 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(new TempUserCheckInterceptor())
                 .order(2)
-                .addPathPatterns("/board/**", "/member/**", "/login/**", "/comment/**")
-                .excludePathPatterns("/member/add/oauth2", "/alert", "/login/check", "/member/duplicateCheck");
+                .addPathPatterns("/board/**", "/member/**", "/image/**", "/comment/**")
+                //                      체크하고     홈보내고       추가함
+                .excludePathPatterns("/login/check", "/boards", "/member/add-oauth", "/member/duplicate-check");
     }
 
 }

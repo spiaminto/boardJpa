@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
  * Controller (Service) -> Criteria -> Repository -> PageMaker
  */
 
-@Component
+// pageMaker 는 스프링에서 관리하지 않는다.
+//@Component
 @Slf4j
 @Data
-@NoArgsConstructor
 public class PageMaker{
 
     // 현재페이지, 페이지별 글갯수

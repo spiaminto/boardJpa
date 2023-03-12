@@ -3,22 +3,18 @@ package hello.board.repository;
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.repository.mybatis.BoardMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 @Slf4j
+@RequiredArgsConstructor
 public class BoardRepository {
 
     private final BoardMapper boardMapper;
-
-    public BoardRepository(BoardMapper boardMapper) {
-        this.boardMapper = boardMapper;
-    }
-
 
     public Integer countTotalBoard(Criteria criteria) {
         return boardMapper.countTotalBoard(criteria);

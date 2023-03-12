@@ -17,7 +17,6 @@ import java.util.List;
 public class CommentRepository {
 
     private final CommentMapper commentMapper;
-    int rowNum = 0;
 
     public Integer countTotalCommentWithMemberId(Criteria criteria, Long memberId) {
         return commentMapper.countTotalCommentWithMemberId(criteria, memberId);
@@ -41,14 +40,14 @@ public class CommentRepository {
 
     // DB 에 저장되는 commentID 를 전달하기 위해 Comment 리턴 (마이바티스에서 id 자동세팅)
     public Comment save(Comment comment) {
-        rowNum = commentMapper.save(comment);
+        int rowNum = commentMapper.save(comment);
         log.info("save() row = {}", rowNum);
 
         return comment;
     }
 
     public int update(Long commentId, Comment updateParam) {
-        rowNum = commentMapper.update(commentId, updateParam);
+        int rowNum = commentMapper.update(commentId, updateParam);
         log.info("update() row = {}", rowNum);
         return rowNum;
     }
@@ -73,13 +72,13 @@ public class CommentRepository {
     }
 
     public int delete(Long commentId) {
-        rowNum = commentMapper.delete(commentId);
+        int rowNum = commentMapper.delete(commentId);
         log.info("delete() row = {}", rowNum);
         return rowNum;
     }
 
     public int deleteReply(Long id) {
-        rowNum = commentMapper.deleteReply(id);
+        int rowNum = commentMapper.deleteReply(id);
         log.info("deleteReply() row = {}", rowNum);
         return rowNum;
     }

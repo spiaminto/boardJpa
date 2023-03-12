@@ -81,7 +81,8 @@
             ClassicEditor
                 .create( document.querySelector( '#content' ), {
                     ckfinder: {
-                        uploadUrl: "/image/upload"
+                        //POST
+                        uploadUrl: "/image"
                     },
                     licenseKey: '',
                 } )
@@ -94,6 +95,19 @@
                     console.warn( 'Build id: c8lmmc8yntlx-90lv8lh8innk' );
                     console.error( error );
                 } );
+
+            // 카테고리 기본값
+            let originValue = $("#categorySelect").data("origin");
+            let criValue = $("#categorySelect").data("cricategory");
+
+            // board.category 가 있으면 board.category, 없으면 criteria.category 사용
+            let defaultValue = originValue ? originValue : criValue
+
+            $("#categorySelect option").each(function () {
+                if ($(this).attr("value") == defaultValue) {
+                    $(this).attr("selected", true);
+                }
+            })
 
 
             // submit 할때 이미지 uuid 추출 후 submit
@@ -115,8 +129,7 @@
                         splittedUrl = imageSrc.split("upload_image/");
                     }
 
-                    imageUrl += splittedUrl[1];
-                    imageUrl += ",";
+                    imageUrl += splittedUrl[1] + ",";
                 })
                 console.log("imageUrl = " + imageUrl)
 
@@ -146,7 +159,8 @@
         </div>
 
         <div class="input-group input-wrapper">
-            <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="Default select example"  required th:errorclass="is-invalid">
+            <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="Default select example"
+                    th:data-cricategory="${criteria.category}" th:data-origin="${board.category}" required th:errorclass="is-invalid">
                 <!-- option value="" 이면 브라우저 단에서 거름, 숨긴 기본값 -->
                 <option value="" selected hidden>카테고리</option>
                 <option value="FREE">자유</option>

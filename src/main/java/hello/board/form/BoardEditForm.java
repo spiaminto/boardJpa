@@ -23,8 +23,10 @@ public class BoardEditForm {
 
     // DB 에 진짜로 저장할 이미지url
     private String imageName;
+    private Boolean isNotice;
 
     // Criteria.category 와 동시에 바인딩되는듯
     private Category category;
+    
 
 }

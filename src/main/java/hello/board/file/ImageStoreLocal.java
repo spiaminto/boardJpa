@@ -2,7 +2,6 @@ package hello.board.file;
 
 
 import hello.board.domain.image.Image;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,13 +19,20 @@ public class ImageStoreLocal implements ImageStore{
     @Value("C:/Users/felix/.Study/Spring_Practice/board_exfile")
     private String imageDir;
 
-    @Value("/images/local/request")
+    @Value("/local/image")
     private String imageUrl;
 
 
-    // 저장할 디렉토리 + 파일명
-    public String getImageAddress(String storeImageName) {return imageDir + "/" + storeImageName;}
-    public String getImageAddressForCk(String storeImageName) {return imageUrl + "/" + storeImageName;}
+    @Override
+    public String getServiceName() {
+        return "local";
+    }
+
+    // 파일주소: 저장할 디렉토리 + 파일명
+    public String createImageAddress(String storeImageName) {return imageDir + "/" + storeImageName;}
+
+    // 요청주소 : WebConfig 에 재정의된 resourceHandler 에서 변환
+    public String createImageRequestUrl(String storeImageName) {return imageUrl + "/" + storeImageName;}
 
     // 서버에 저장할 파일명 작성
     public String createStoreImageName(String originalImageName) {
@@ -61,9 +67,9 @@ public class ImageStoreLocal implements ImageStore{
         // 서버에 저장할 사진 이름 (uuid + ext)
         String storeImageName = createStoreImageName(uploadImageName);
         // 저장할 경로 + storeImageName + ext
-        String imageAddress = getImageAddress(storeImageName);
+        String imageAddress = createImageAddress(storeImageName);
         // 저장할 요청경로 (직접요청 불가)
-        String imageRequestUrl = getImageAddressForCk(storeImageName);
+        String imageRequestUrl = createImageRequestUrl(storeImageName);
 
         try {
             // File(경로) 로 파일 쓰기 + IOException

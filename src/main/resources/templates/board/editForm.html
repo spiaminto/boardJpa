@@ -76,7 +76,8 @@
             ClassicEditor
                 .create( document.querySelector( '#content' ), {
                     ckfinder: {
-                        uploadUrl: "/image/upload"
+                        // POST
+                        uploadUrl: "/image"
                     },
                     licenseKey: '',
                 } )
@@ -96,7 +97,15 @@
              * 파라미터 신경 쓸 필요 없음.
              */
 
-            // submit 할때 이미지 uuid 추출 후 submit
+            let originValue = $("#categorySelect").data("origin");
+            // 카테고리 기본값
+            $("#categorySelect option").each(function () {
+                if ($(this).attr("value") == originValue) {
+                    $(this).attr("selected", true);
+                }
+            })
+
+            // submit 할때 이미지 uuid 추출 후 submit, 공지 플래그 설정
             $("#editBt").on("click", function (event) {
                 let imageUrl = "";
 
@@ -114,11 +123,14 @@
                         splittedUrl = imageSrc.split("upload_image/");
                     }
 
-                    imageUrl += splittedUrl[1];
-                    imageUrl += ",";
+                    imageUrl += splittedUrl[1] + ",";
                 })
                 console.log("imageUrl = " + imageUrl)
                 $("#uploadImageUrl").val(imageUrl);
+
+                // 공지플래그 설정
+                let isNotice = originValue == "NOTICE" ? true : false;
+                $("#isNotice").val(isNotice);
             })
 
         })
@@ -131,6 +143,7 @@
     </nav>
 
     <!-- th:action : 옵션 생략시 요청 url 그대로 재요청 + method="post" -->
+    <!--            : 옵션 생략시 url 뒤에 파라미터도 그대로 붙여서 재요청함 -->
     <!-- th:object : 컨트롤러에서 넘어온 커맨드 객체 (/edit GET 처리에서 모델로 넘긴 객체) -->
     <!--  커맨드객체 : Spring 이 URL 파라미터, POST Form Data 형태의 파라미터를
                         특정 클래스로 자동으로 바인딩 하고 반환되는 객체 -->
@@ -146,7 +159,7 @@
         </div>
 
         <div class="input-group input-wrapper">
-            <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="categorySelect" th:errorclass="is-invalid" required>
+            <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="categorySelect" th:errorclass="is-invalid" th:data-origin="${board.category}" required>
                 <option value="" hidden>카테고리</option>
                 <option value="FREE">자유</option>
                 <option value="ISSUE">이슈</option>
@@ -182,10 +195,14 @@
         <!-- onsubmit 실제로 업로드할 이미지 요청 url 에서 uuid 뽑아서 값으로 설정 -->
         <input type="hidden" name="imageName" value="" id="uploadImageUrl">
 
+        <!-- 공지글이였는지 확인 -->
+        <input type="hidden" id="isNotice" name="isNotice" value="">
+
         <!-- pageInfo -->
         <input class="page_info" type="hidden" th:name="currentPage" th:value="${criteria.currentPage}" name="currentPage" value="1">
-        <input class="page_info" type="hidden" th:name="option" th:value="${criteria.option}" name="option" value="option">
-        <input class="page_info" type="hidden" th:name="keyword" th:value="${criteria.keyword}" name="keyword" value="keyword">
+        <input class="page_info" type="hidden" th:name="categoryCode" th:value="${criteria.categoryCode}">
+        <input class="page_info searching" type="hidden" th:name="option" th:value="${criteria.option}" name="option" value="option">
+        <input class="page_info searching" type="hidden" th:name="keyword" th:value="${criteria.keyword}" name="keyword" value="keyword">
     </form>
 
 </div>

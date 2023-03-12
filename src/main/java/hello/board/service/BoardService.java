@@ -22,7 +22,6 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-    private final ImageRepository imageRepository;
 
     public int countTotalBoard(Criteria criteria) {
         return boardRepository.countTotalBoard(criteria);

@@ -39,10 +39,11 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
         // loginId 가져옴
         String loginId = request.getParameter("loginId");
+
         // null
         String queryString = request.getQueryString();
 
-        // queryString 은 없는데 파라미터는 가져옴?
+        // queryString 은 없는데 파라미터는 가져오네?
 //        log.info("queryString = {}, loginID = {}", queryString, loginId);
 
         String errorMessage;

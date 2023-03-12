@@ -85,10 +85,6 @@
             margin-bottom: 0;
         }
 
-        #naverLoginBt {
-
-        }
-
     </style>
     <!-- javascript 에서 thymeleaf 변수 접근하는 script -->
     <script th:inline="javascript">
@@ -114,6 +110,13 @@
         if (message == "editLoginInfo") {
             alert("로그인 정보가 변경되었습니다. 다시 로그인 해 주세요.")
         }
+
+        window.addEventListener("load", function () {
+            let alertMessage = document.getElementById("globalAlertMessage").dataset.alertmessage;
+            if (alertMessage) {
+                alert(alertMessage);
+            }
+        })
     </script>
 </head>
 <body>
@@ -121,6 +124,8 @@
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
+
+    <div id="globalAlertMessage" th:data-alertmessage="${alertMessage}"></div>
 
     <h2>로그인</h2>
 

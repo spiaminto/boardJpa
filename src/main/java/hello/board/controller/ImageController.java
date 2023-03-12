@@ -29,14 +29,13 @@ public class ImageController {
     private final ImageService imageService;
 
     // ck editor 는 여러 이미지를 동시에 올려도, uploadImage() 를 이미지 마다 따로 실행한다.
-    @PostMapping("/image/upload")
+    @PostMapping("/image")
     public Map<String, Object> uploadImage(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                            MultipartHttpServletRequest request) throws IOException {
 
         Long memberId = principalDetails.getMember().getId();
 
         // name : upload 는 ckeditor 기본 설정인듯.
-        List<MultipartFile> uploadImageList = request.getFiles("upload");
         MultipartFile uploadImage = request.getFile("upload");
 
         Image savedImage = imageService.saveImage(memberId, uploadImage);

@@ -1,26 +1,20 @@
 package hello.board.service;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsResult;
+
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.image.Image;
 import hello.board.file.ImageStore;
-import hello.board.file.ImageStoreLocal;
-import hello.board.file.ImageStoreAmazon;
+
 import hello.board.repository.BoardRepository;
 import hello.board.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +25,6 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final BoardRepository boardRepository;
     private final ImageStore imageStore;
-
-    // 스프링 active profile
-    @Value("${spring.profiles.active}")
-    private static String activeProfile;
 
     // amazon s3 접속 주소
     @Value("${cloud.aws.s3.bucket}")
@@ -68,6 +58,11 @@ public class ImageService {
      */
     public boolean deleteImageByBoardId(Long boardId) {
         List<Image> deleteImageList = imageRepository.findByBoardId(boardId);
+
+        if (deleteImageList.isEmpty()) {
+            log.info("deleteImageByBoardId, deleteImageList.size = {}", deleteImageList.size());
+            return true;
+        }
 
         int fileResult = deleteImageFile(deleteImageList);
         int dbResult = deleteImageFromDb(deleteImageList);
@@ -113,7 +108,9 @@ public class ImageService {
 
     public int deleteImageFile(List<Image> deleteImageList) {
         int result = 0;
-        if (imageStore instanceof ImageStoreAmazon) {
+
+        // 구현체를 전부 불러 빈 네임으로 필터링 할수도.
+        if (imageStore.getServiceName().equals("amazonS3")) {
             result = imageRepository.deleteImageFromAmazon(deleteImageList, bucketDir, innerBucketDir);
         } else {
             result = imageRepository.deleteImageFromLocal(deleteImageList);

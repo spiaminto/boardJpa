@@ -34,17 +34,12 @@ public class BoardController {
     private final ImageService imageService;
 
 
-    /*
-    url 패턴 ( {variable}: 변수, [...]: 비 필수 )
-    /board /{action} /{criteria.categoryCode} /[{board.Id}] ? currentPage=0 [ &option=option &keyword=keyword ]
-     */
-
-    @GetMapping("/")
+    @RequestMapping("/")
     public String index() {
-        return "redirect:/board/list/all";
+        return "redirect:/boards";
     }
 
-    @GetMapping(value = {"/board/list/{categoryCode}", "/board/list"})
+    @GetMapping("/boards")
     public String pagedList(Model model, @ModelAttribute("criteria") Criteria criteria) {
 
         // 글 가져오기
@@ -63,13 +58,15 @@ public class BoardController {
         return "board/list";
     }
 
-    @GetMapping("/board/read/{categoryCode}/{boardId}")
+    @GetMapping("/board/{boardId}")
     public String read(@PathVariable Long boardId, Model model,
                        @AuthenticationPrincipal PrincipalDetails principalDetails,
                        @RequestParam(required = false, value = "selected") String commentId,
                        @ModelAttribute("criteria") Criteria criteria) {
 
         Map result = boardService.readBoard(boardId);
+
+//        log.info("{}{}{}{}", criteria.getCurrentPage(), criteria.getCategory(), criteria.getOption(), criteria.getKeyword());
 
         model.addAttribute("board", result.get("board"));
         model.addAttribute("commentList", result.get("commentList"));
@@ -86,23 +83,20 @@ public class BoardController {
         return "board/read";
     }
 
-    @GetMapping("/board/write/{categoryCode}")
+    @GetMapping("/board/write")
     public String writeForm(Model model, @ModelAttribute Criteria criteria) {
         // th:object 로 커맨드 객체 받기위해?, bindingResult 와 관련성?
         model.addAttribute("board", new Board());
         return "board/writeForm";
     }
 
-    @PostMapping("/board/write/{categoryCode}")
+    @PostMapping("/board/write")
     public String writeBoard(@AuthenticationPrincipal PrincipalDetails principalDetails,
                         @Validated @ModelAttribute("board") BoardSaveForm form,
                         BindingResult bindingResult, HttpServletRequest request,
                         @ModelAttribute("criteria") Criteria criteria,
                         RedirectAttributes redirectAttributes) {
 
-        if (form.getCategory() == Category.NOTICE && !request.isUserInRole("ROLE_ADMIN")) {
-            bindingResult.rejectValue("category", "Unauthorized.category");
-        }
         // 검증 오류 발견
         if (bindingResult.hasErrors()) {
             log.info("/write POST bindingResult.hasErrors {}", bindingResult);
@@ -128,36 +122,43 @@ public class BoardController {
         redirectAttributes.addFlashAttribute("alertMessage", "게시글이 등록되었습니다.");
 
         // POST, Post Redirect Get
-        return new UrlBuilder("/board/read/" + criteria.getCategoryCode())
+        return new UrlBuilder("/board")
                 .id(savedBoard.getId()).queryString(request.getQueryString()).buildRedirectUrl();
     }
 
-    @GetMapping("/board/edit/{categoryCode}/{boardId}")
+    @GetMapping("/board/{boardId}/edit")
     public String editForm(@PathVariable Long boardId, HttpServletRequest request, Model model,
                            RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal PrincipalDetails principalDetails,
                            @ModelAttribute Criteria criteria) {
         Board findBoard = boardService.findById(boardId);
 
-        // 현재 로그인한 사람, 수정하려는 글의 작성자 비교
-        if (boardService.isSameWriter(principalDetails.getMember(), findBoard)) {
-            model.addAttribute("board",findBoard);
-            return "board/editForm";
+        // 현재 로그인한 유저 != 글 작성자
+        if (!boardService.isSameWriter(principalDetails.getMember(), findBoard)) {
+            redirectAttributes.addFlashAttribute("alertMessage", "수정하려는 글과 작성자가 다릅니다.");
+
+            return new UrlBuilder("/board")
+                    .id(boardId).queryString(request.getQueryString()).buildRedirectUrl();
         }
 
-        redirectAttributes.addFlashAttribute("alertMessage", "수정하려는 글과 작성자가 다릅니다.");
-
-        return new UrlBuilder("/board/read/" + criteria.getCategoryCode())
-                .id(boardId).queryString(request.getQueryString()).buildRedirectUrl();
+        model.addAttribute("board",findBoard);
+        return "board/editForm";
     }
 
-    @PostMapping("/board/edit/{categoryCode}/{boardId}")
+    @PostMapping("/board/{boardId}/edit")
     public String editBoard(@PathVariable Long boardId,@Validated @ModelAttribute("board") BoardEditForm form,
-                       BindingResult bindingResult, HttpServletRequest request,
+                       BindingResult bindingResult, HttpServletRequest request, Model model,
                        @ModelAttribute Criteria criteria,
                        RedirectAttributes redirectAttributes) {
 
-        if (form.getCategory() == Category.NOTICE && !request.isUserInRole("ROLE_ADMIN")) {
+        log.info("isNotice {}", form.getIsNotice());
+
+        // edit 의 경우, write 와 다르게 글에서 직접 /edit 로 들어올 수 있어 처리함(닉으로 한번 검사하긴 함)
+        if (form.getIsNotice() && !request.isUserInRole("ROLE_ADMIN")) {
+            // 바꾼 카테고리 다시 복원
+            form.setCategory(Category.NOTICE);
+            model.addAttribute("board", form);
+            // 예외 발생
             bindingResult.rejectValue("category", "Unauthorized.category");
         }
 
@@ -187,11 +188,11 @@ public class BoardController {
 
         redirectAttributes.addFlashAttribute("alertMessage", "게시글이 수정되었습니다.");
 
-        return new UrlBuilder("/board/read/" + criteria.getCategoryCode())
+        return new UrlBuilder("/board")
                 .id(updateBoard.getId()).queryString(request.getQueryString()).buildRedirectUrl();
     }
 
-    @GetMapping("/board/delete/{categoryCode}/{boardId}")
+    @PostMapping("/board/{boardId}/delete")
     public String delete(@PathVariable Long boardId,
                          @AuthenticationPrincipal PrincipalDetails principalDetails,
                          HttpServletRequest request,
@@ -201,7 +202,7 @@ public class BoardController {
 
         if (!boardService.isSameWriter(principalDetails.getMember(), findBoard)) {
             redirectAttributes.addFlashAttribute("alertMessage", "삭제하려는 글과 작성자가 다릅니다.");
-            return new UrlBuilder("/board/read/" + criteria.getCategoryCode())
+            return new UrlBuilder("/board")
                     .id(boardId).queryString(request.getQueryString()).buildRedirectUrl();
 
         }
@@ -214,9 +215,11 @@ public class BoardController {
         boolean isSuccess = imageService.deleteImageByBoardId(boardId);
         log.info("이미지 삭제 isSuccess = {}", isSuccess);
 
+        log.info(request.getQueryString());
+
         redirectAttributes.addFlashAttribute("alertMessage", "글이 삭제 되었습니다.");
 
-        return new UrlBuilder().redirectHome();
+        return new UrlBuilder().uri("/boards").queryString(request.getQueryString()).buildRedirectUrl();
     }
 
 

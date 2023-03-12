@@ -118,7 +118,7 @@
                 $.ajax({
                     type: "get",
                     async: false,
-                    url: "/member/duplicateCheck",
+                    url: "/member/duplicate-check",
                     data: {loginId: loginId},
                     success: function (data) {
                         if (data == true) {
@@ -156,7 +156,7 @@
                 $.ajax({
                     type: "get",
                     async: false,
-                    url: "/member/duplicateCheck",
+                    url: "/member/duplicate-check",
                     data: {username: username},
                     success: function (data) {
                         if (data == true) {
@@ -221,7 +221,8 @@
             // 회원 탈퇴
             $(".delete-btn").on("click", function () {
                 if (confirm("정말로 탈퇴 하시겠습니까?")) {
-                    location.replace("/member/delete");
+                    let memberId = $("#userInfo").data("memberid");
+                    $("#memberDelete").attr("action", "/member/" + memberId + "/delete").submit();
                 }
             })
         })
@@ -243,23 +244,23 @@
 
     <ul  id="myPageNav" class="nav nav-pills nav-justified">
         <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/member/mypage/myboard">내 게시글</a>
+            <a class="nav-link" aria-current="page" th:href="@{|/member/${memberId}/boards|}">내 게시글</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/member/mypage/mycomment" >내 댓글</a>
+            <a class="nav-link" th:href="@{|/member/${memberId}/comments|}" >내 댓글</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/member/mypage/info" >내 정보</a>
+            <a class="nav-link" th:href="@{|/member/${memberId}|}" >내 정보</a>
         </li>
     </ul>
 
 
-    <div id="userInfo">
+    <div id="userInfo" th:data-memberid="${member.id}">
 
     <!-- 로그인ID 와 닉네임은 중복체크를 위해 클라이언트 단에서 유효성 검사를 하긴 함
           -> 새로고침 날아감 때문에 패스워드도 그냥 유효성 검사 함 -->
     <form th:if="${isOauth2 != 'true'}"
-          th:action="@{/member/edit}" action="/home" method="POST"
+          th:action="@{/member/{memberId}/edit(memberId=${member.id})}" action="/home" method="POST"
           th:object="${member}" id="normalForm" class="info-form form">
 
         <label for="loginId" class="col">로그인 ID </label>
@@ -312,7 +313,7 @@
 
 
     <form th:if="${isOauth2 == 'true'}"
-          th:action="@{/member/edit/oauth2}" action="/home" method="POST"
+          th:action="@{/member/{memberId}/edit-oauth(memberId=${member.id})}" action="/home" method="POST"
           th:object="${member}" id="oauth2Form" class="info-form form">
 
         <label for="oAuth2Provider">사용중인 소셜 로그인 서비스 </label>
@@ -355,6 +356,8 @@
 
     <!------------------------------------------------------------------------------->
 
+    <form id="memberDelete" method="POST">
+    </form>
 
 
 

@@ -15,22 +15,19 @@ import java.util.*;
 @Slf4j
 // 생성자 주입
 @RequiredArgsConstructor
-@RequestMapping("/comment")
 public class CommentController {
 
     private final CommentService commentService;
 
-    private Map<String, Object> resp;
-
     @ResponseBody
-    @PostMapping("/write")
+    @PostMapping("/comment")
     public Map<String, Object> writeComment(@ModelAttribute Comment comment) {
         comment.setRegDate(LocalDateTime.now());
         comment.setUpdateDate(LocalDateTime.now());
 
         Comment savedComment = commentService.saveComment(comment);
 
-        resp = new HashMap<>();
+        Map<String, Object> resp = new HashMap<>();
 
         // 저장성공
         if (savedComment != null) {
@@ -54,7 +51,7 @@ public class CommentController {
     }
 
     @ResponseBody
-    @PostMapping("/edit/{commentId}")
+    @PostMapping("/comment/{commentId}")
     public Map<String, Object> updateComment(@RequestParam("content") String content,
                                  @PathVariable("commentId") Long commentId) {
         Comment updateParam = new Comment();
@@ -64,7 +61,7 @@ public class CommentController {
         Comment updatedComment = commentService.updateComment(commentId, updateParam);
 
 
-        resp = new HashMap<>();
+        Map<String, Object> resp = new HashMap<>();
 
         // 수정성공
         if (updatedComment != null) {
@@ -78,11 +75,11 @@ public class CommentController {
     }
 
     @ResponseBody
-    @GetMapping("/delete/{commentId}")
+    @PostMapping("/comment/{commentId}/delete")
     public Map<String,Object> deleteComment(@PathVariable("commentId") Long commentId) {
         int result = commentService.deleteComment(commentId);
 
-        resp = new HashMap<>();
+        Map<String, Object> resp = new HashMap<>();
 
         if (result == 1) {
             resp.put("result", "1");

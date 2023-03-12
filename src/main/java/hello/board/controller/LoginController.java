@@ -22,6 +22,7 @@ public class LoginController {
 //    private final LoginService loginService;
 
     // /login GET, 사용자가 login 버튼 누름
+    // 왜 /loginForm 과 분리? => 사용자의 요청과 스프링 내부요청 구분 및 로그인 피드백. 메모참고 
     @GetMapping("/login")
     public String login(@ModelAttribute("loginForm") LoginForm loginForm) {
         return "login/loginForm";

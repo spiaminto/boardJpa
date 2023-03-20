@@ -88,13 +88,14 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             log.info("OAuth2User 회원가입, OAuth2UserInfo={}", oAuth2UserInfo);
 
             // 임시로 생성한 멤버를 리턴 -> Authentication 객체에 담기나, 회원가입 X
-            returnMember = new Member(oAuth2UserInfo.getProvider(),
-                    oAuth2UserInfo.getProviderId(),
-                    forOauth2UserLoginId,
-                    forOauth2UserUsername,
-                    "forOauth2UserPassword",
-                    oAuth2UserInfo.getEmail(),
-                    "ROLE_TEMP" );
+            returnMember = Member.builder()
+                    .provider(oAuth2UserInfo.getProvider())
+                    .providerId(returnMember.getProviderId())
+                    .loginId(forOauth2UserLoginId)
+                    .username(forOauth2UserUsername)
+                    .password("forOauth2UserPassword")
+                    .email(oAuth2UserInfo.getEmail())
+                    .role("ROLE_TEMP").build();
         }
 
         return new PrincipalDetails(returnMember, oAuth2User.getAttributes());

@@ -34,7 +34,7 @@ public class MemberController {
     // 회원가입 /add
     @GetMapping("member/add")
     public String addMember(Model model) {
-        model.addAttribute("member", new Member());
+        model.addAttribute("member", Member.builder().build());
         return "member/addForm";
     }
 
@@ -47,9 +47,12 @@ public class MemberController {
             return "member/addForm";
         }
 
-        Member member = new Member(
-                form.getLoginId(), form.getUsername(), form.getPassword(), form.getEmail(), "ROLE_USER"
-        );
+        Member member = Member.builder()
+                .loginId(form.getLoginId())
+                .username(form.getUsername())
+                .password(form.getPassword())
+                .email(form.getEmail())
+                .role("ROLE_USER").build();
 
         ResultDTO result = memberService.addMember(member);
 
@@ -92,8 +95,7 @@ public class MemberController {
         }
 
         Member member = principalDetails.getMember();
-        member.setRole("ROLE_USER");
-        member.setUsername(form.getUsername());
+        member.setOauth2ActualMember(form.getUsername());
 
         ResultDTO result = memberService.addMember(member);
 
@@ -136,9 +138,11 @@ public class MemberController {
         Member currentMember = memberService.findById(memberId);
 
         // MemberEditForm -> Member
-        Member updateParam = new Member(
-                memberEditForm.getLoginId(), memberEditForm.getUsername(), memberEditForm.getPassword(), memberEditForm.getEmail()
-        );
+        Member updateParam = Member.builder()
+                .loginId(memberEditForm.getLoginId())
+                .username(memberEditForm.getUsername())
+                .password(memberEditForm.getPassword())
+                .email(memberEditForm.getEmail()).build();
 
         // 멤버 수정
         Map<String, Object> resultMap = memberService.editMember(currentMember, updateParam);
@@ -182,8 +186,10 @@ public class MemberController {
         Member currentMember = memberService.findById(memberId);
 
         // oAuth2MemberEditForm -> Member
-        Member updateParam = new Member("", oAuth2MemberEditForm.getUsername(), "", "");
-        updateParam.setProviderId(oAuth2MemberEditForm.getProviderId());
+
+        Member updateParam = Member.builder()
+                .username(oAuth2MemberEditForm.getUsername())
+                .providerId(oAuth2MemberEditForm.getProviderId()).build();
 
         // 수정
         Map<String, Object> resultMap = memberService.editMember(currentMember, updateParam);
@@ -252,6 +258,7 @@ public class MemberController {
     public String deleteMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                @PathVariable Long memberId,
                                RedirectAttributes redirectAttributes) {
+        // pathVariable 로 들어온 memberId 는 위험할듯.
         Long currentId = principalDetails.getMember().getId();
 
         // 멤버삭제 -> 이미지 삭제 : 이미지 삭제에서 에러나면, 멤버정보가 없는 이미지가 남음. 이는 내가 나중에 처리가능
@@ -267,7 +274,7 @@ public class MemberController {
         }
 
         // 보험
-        principalDetails.getMember().setRole("ROLE_TEMP");
+        principalDetails.getMember().setTempMember();
 
         redirectAttributes.addFlashAttribute("alertMessage", "회원 탈퇴 되었습니다.");
         redirectAttributes.addFlashAttribute("isLogout", "true");

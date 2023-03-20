@@ -3,7 +3,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="hello.board.repository.mybatis.BoardMapper">
 
-    <!-- 넘어온 프로퍼티 #{attr}, 넘어온 프로퍼티를 column 이름으로 쓰려면 ${attr} -->
+    <!-- 파라미터를 #{param} 과 ${param} 사용
+        #{param} 는 파라미터 바인딩 으로, param = ? ('param') 으로 바인딩.
+        ${param} 은 replace 로, param = ? (param) 으로 대체 -> column 이름 등으로 사용가능 but SQL injection 방어불가
+        -->
 
     <!--countTotalBoard-->
     <select id="countTotalBoard" resultType="Integer">

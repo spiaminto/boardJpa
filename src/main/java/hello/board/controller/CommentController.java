@@ -1,6 +1,7 @@
 package hello.board.controller;
 
 import hello.board.domain.comment.Comment;
+import hello.board.form.CommentSaveForm;
 import hello.board.repository.CommentRepository;
 import hello.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,22 @@ public class CommentController {
 
     @ResponseBody
     @PostMapping("/comment")
-    public Map<String, Object> writeComment(@ModelAttribute Comment comment) {
-        comment.setRegDate(LocalDateTime.now());
-        comment.setUpdateDate(LocalDateTime.now());
+    public Map<String, Object> writeComment(@ModelAttribute("comment") CommentSaveForm form) {
 
+        // CommentSaveForm -> Comment
+        Comment comment = Comment.builder()
+                .boardId(form.getBoardId())
+                .memberId(form.getMemberId())
+                .targetId(form.getTargetId())
+                .target(form.getTarget())
+                .writer(form.getWriter())
+                .content(form.getContent())
+                .category(form.getCategory())
+                .regDate(LocalDateTime.now()).updateDate(LocalDateTime.now())
+                .groupId(form.getGroupId())
+                .groupOrder(form.getGroupOrder()).groupDepth(form.getGroupDepth())
+                .build();
+        
         Comment savedComment = commentService.saveComment(comment);
 
         Map<String, Object> resp = new HashMap<>();
@@ -54,9 +67,10 @@ public class CommentController {
     @PostMapping("/comment/{commentId}")
     public Map<String, Object> updateComment(@RequestParam("content") String content,
                                  @PathVariable("commentId") Long commentId) {
-        Comment updateParam = new Comment();
-        updateParam.setContent(content);
-        updateParam.setUpdateDate(LocalDateTime.now());
+
+        Comment updateParam = Comment.builder()
+                    .content(content)
+                    .updateDate(LocalDateTime.now()).build();
 
         Comment updatedComment = commentService.updateComment(commentId, updateParam);
 
@@ -77,6 +91,9 @@ public class CommentController {
     @ResponseBody
     @PostMapping("/comment/{commentId}/delete")
     public Map<String,Object> deleteComment(@PathVariable("commentId") Long commentId) {
+        
+        // 검증해야됨
+        
         int result = commentService.deleteComment(commentId);
 
         Map<String, Object> resp = new HashMap<>();

@@ -88,6 +88,9 @@ commit 20.2
 commit 21
     싱글톤 주의점 수정, StoreImage 주입 수정, http api 개선, 공지사항 처리 변경
 
+commit 22
+    CommentSaveForm 추가, @Builder 적용 및 도메인 수정, 일부 의존성 추가
+
 
 
 

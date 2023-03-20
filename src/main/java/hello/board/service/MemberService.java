@@ -36,7 +36,6 @@ public class MemberService {
 
     /**
      * member 를 받아서 비밀번호를 암호화 하고 db 에 저장
-     *
      * @param member
      * @return 저장된 member
      */

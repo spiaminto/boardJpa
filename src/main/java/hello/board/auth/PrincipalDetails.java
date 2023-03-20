@@ -52,10 +52,10 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         return member.getUsername();
     }
 
-    // 유저네임 변경
-    private void setUsername(String username) { member.setUsername(username); }
+    // 유저네임 변경 (private)
+    private void setUsername(String username) { member.setOauth2Username(username); }
 
-    // 유저 정보 변경 등의 이유로 PrincipalDetails 의 Member 를 갱신해야할때
+    // 유저 정보 변경 등의 이유로 PrincipalDetails 의 Member 를 갱신해야할때 (현재는 username 만)
     public void editMember(String username) { setUsername(username); }
 
     public String getEmail() {

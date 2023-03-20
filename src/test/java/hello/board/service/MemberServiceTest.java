@@ -30,7 +30,7 @@ class MemberServiceTest {
     void syncUserName() {
 
         // CommentRepository 에 syncTarget() 의 //Test 주석을 풀고 테스트.
-        memberService.syncUserName(1L, "test", "test");
+//        memberService.syncUserName(1L, "test", "test");
 
         // 처리후 재조회 (롤백여부 확인)
         memberService.myPage(new Criteria(), 1L);

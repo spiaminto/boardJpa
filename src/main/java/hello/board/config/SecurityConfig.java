@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .antMatchers("/board/*").permitAll()
 
                 // 로그인 필수 (컨트롤url 이 있을떄)
-                .antMatchers("*/*/edit", "/*/*/delete").authenticated()
+                .antMatchers("/*/*/edit", "/*/*/delete").authenticated()
 
                 // 모두 허용
                 .anyRequest().permitAll()

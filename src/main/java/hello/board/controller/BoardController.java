@@ -85,8 +85,8 @@ public class BoardController {
 
     @GetMapping("/board/write")
     public String writeForm(Model model, @ModelAttribute Criteria criteria) {
-        // th:object 로 커맨드 객체 받기위해?, bindingResult 와 관련성?
-        model.addAttribute("board", new Board());
+        // 커맨드 객체 용 빈객체
+        model.addAttribute("board", Board.builder().build());
         return "board/writeForm";
     }
 
@@ -103,10 +103,16 @@ public class BoardController {
             return "board/writeForm";
         }
 
-        // form -> board
-        Board board = new Board(form.getTitle(), form.getWriter(), principalDetails.getMember().getId(),
-                form.getContent(), form.getCategory(), LocalDateTime.now());
-        
+        // form -> board 맵핑
+        Board board = Board.builder()
+                .title(form.getTitle())
+                .writer(form.getWriter())
+                .content(form.getContent())
+                .category(form.getCategory())
+                .memberId(principalDetails.getMember().getId())
+                .regDate(LocalDateTime.now()).updateDate(LocalDateTime.now())
+                .build();
+
         // 저장
         Board savedBoard = boardService.saveBoard(board);
         
@@ -170,9 +176,12 @@ public class BoardController {
 
         log.info("board.categoryString = {}, criteria.categoryString = {}", form.getCategory(), criteria.getCategoryCode());
 
-        // form -> board 맵핑
-        Board updateParam = new Board(
-                form.getTitle(), form.getWriter(), form.getContent(), LocalDateTime.now(), form.getCategory());
+        Board updateParam = Board.builder()
+                .title(form.getTitle())
+                .writer(form.getWriter())
+                .content(form.getContent())
+                .category(form.getCategory())
+                .updateDate(LocalDateTime.now()).build();
        
         // 업데이트
         Board updateBoard = boardService.updateBoard(boardId, updateParam);

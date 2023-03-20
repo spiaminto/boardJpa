@@ -27,6 +27,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	implementation 'org.springframework.boot:spring-boot-devtools'
+
 	//MyBatis 추가 (spring 이 버전관리 안해주므로 버전 기입)
 	// 추가로 application.properties 에서 mybatis 설정 해줘야 된다.
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
@@ -49,6 +51,9 @@ dependencies {
 
 	// amazon s3bucket 연계
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// 자바9 이상에서 제거된 javax-api 종속성 추가 (아마존에서 사용하는듯)
+	implementation 'javax.xml.bind:jaxb-api:2.2.4'
 }
 
 tasks.named('test') {

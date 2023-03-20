@@ -26,8 +26,9 @@ class CommentMapperTest {
 
     @Autowired
     CommentMapper commentMapper;
-    Comment testComment = new Comment(98L, "asdf", "댓글");
-    Comment testComment2 = new Comment(98L, "asdfasdf", "댓글2");
+
+    Comment testComment = Comment.builder().boardId(98L).writer("asdf").content("테스트댓글").build();
+    Comment testComment2 = Comment.builder().boardId(98L).writer("asdfasdf").content("테스트댓글2").build();
 
 
     @Test
@@ -54,8 +55,12 @@ class CommentMapperTest {
     @Test
     void findByCommentId() {
         // groupId set 이 repository 에 있는데 mapper 로 테스트 하는건 아닌듯.
-        Comment testComment3 = new Comment(1L, 1L, "test",
-                "String content", 289L, 5555, 0, Category.ALL);
+        Comment testComment3 = Comment.builder()
+                .boardId(1L).memberId(1L)
+                .writer("test").content("testComment3")
+                .groupId(289L).groupOrder(0).groupDepth(0)
+                .category(Category.ALL).build();
+
         commentMapper.save(testComment3);
         Optional<Comment> first = commentMapper.findByBoardId(1L).stream().findFirst();
         if (first.isPresent()) {
@@ -91,7 +96,8 @@ class CommentMapperTest {
     void update() {
         commentMapper.save(testComment);
 
-        Comment updateParam = new Comment(98L, "asdf", "updated");
+        Comment updateParam = Comment.builder()
+                        .boardId(98L).writer("asdf").content("updated").build();
 
         commentMapper.update(testComment.getCommentId(), updateParam);
 

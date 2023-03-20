@@ -1,60 +1,58 @@
 package hello.board.domain.member;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@NoArgsConstructor
+@Getter @ToString
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Member {
 
     private Long id;
-
-    private String loginId;
-
-    private String username;
-
+    private String loginId;     // UNIQUE
+    private String username;    // UNIQUE
     private String password;
 
     // for google oauth2
     private String email;
-    private String picture;
-
-    // oauth provider 구분, google
-    private String provider;
-
-    // google Pk (최대 255자의 대소문자 구분 ASCII 문자 길이)
-    private String providerId;
-
-    //security 를 위해 임시생성
     private String role;
 
-    // save, normal Edit
-    public Member(String loginId, String username, String password, String email) {
-        this.loginId = loginId;
+    private String provider;        // oauth provider 구분
+    private String providerId;       // provider Pk (google = 최대 255자의 대소문자 구분 ASCII 문자 길이)
+
+    private String picture;     // 일단 사용X
+
+    /**
+     * Oauth2 Temp Member 를 정식 가입용 Member 로 교체
+     */
+    public void setOauth2ActualMember(String username) {
+        this.role = "ROLE_USER";
+        this.username = "username";
+    }
+
+    /**
+     * Oauth2 Member 의 username 을 set(변경)
+     * @param username
+     */
+    public void setOauth2Username(String username) {
         this.username = username;
-        this.password = password;
-        this.email = email;
     }
 
-    public Member(String loginId, String username, String password, String email, String role) {
-        this.loginId = loginId;
-        this.username = username;
+    /**
+     * 암호화된 password set 용. 보완필요
+     * @param password
+     */
+    public void setPassword(String password) {
         this.password = password;
-        this.email = email;
-        this.role = role;
     }
 
-    // security 위해 만든 임시 생성자, 강사는 @Builder 통한 Builder패턴 사용
-    public Member(String provider, String providerId, String forOauth2UserLoginId, String forOauth2UserUsername, String password, String email, String role) {
-        this.provider = provider;
-        this.providerId = providerId;
-        this.loginId = forOauth2UserLoginId;
-        this.username = forOauth2UserUsername;
-        this.password = password;
-        this.email = email;
-        this.role = role;
-
+    /**
+     * 현재 Member 의 권한을 Temp 로 교체 (현재는 탈퇴 보험용)
+     */
+    public void setTempMember() {
+        this.role = "ROLE_TEMP";
     }
+
+
 
 }

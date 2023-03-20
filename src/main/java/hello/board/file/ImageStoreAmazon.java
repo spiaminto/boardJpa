@@ -89,11 +89,13 @@ public class ImageStoreAmazon implements ImageStore{
                 break;
         }
 
+
         try {
             ObjectMetadata metadata = new ObjectMetadata();
+            // 아마존 파일 까보니 metadata 를 반드시 지정하라고 적혀있음.
             metadata.setContentType(contentType);
-
-            log.info(multipartFile.getInputStream().toString().substring(0, 20));
+            // contentLength 지정안하면 콘솔에 메시지뜸.
+            metadata.setContentLength(multipartFile.getSize());
 
             // CannedAccessControlList public 으로 설정해야 모두 접근가능
             amazonS3.putObject(new PutObjectRequest(bucketDir, innerBucketDir + storeImageName, multipartFile.getInputStream(), metadata)
@@ -113,7 +115,12 @@ public class ImageStoreAmazon implements ImageStore{
         String imageAddress = createImageAddress(storeImageName);
 
         // DB 에 저장을 위한 Image 객체 (boardId = 0L), 일단 임시로 request url 을 동일하게 설정했음
-        Image image = new Image(uploadImageName, storeImageName, imageAddress, imageAddress, memberId);
+        Image image = Image.builder()
+                .uploadImageName(uploadImageName)
+                .storeImageName(storeImageName)
+                .imageAddress(imageAddress)
+                .imageRequestUrl(imageAddress)
+                .memberId(memberId).build();
 
         // 사진 정보 담은 Image 객체 반환
         return image;

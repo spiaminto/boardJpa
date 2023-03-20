@@ -82,7 +82,12 @@ public class ImageStoreLocal implements ImageStore{
         }
 
         // DB 에 저장을 위한 Image 객체 (boardId = 0L)
-        Image image = new Image(uploadImageName, storeImageName, imageAddress, imageRequestUrl, memberId);
+        Image image = Image.builder()
+                .uploadImageName(uploadImageName)
+                .storeImageName(storeImageName)
+                .imageAddress(imageAddress)
+                .imageRequestUrl(imageRequestUrl)
+                .memberId(memberId).build();
 
         // 사진 정보 담은 Image 객체 반환
         return image;

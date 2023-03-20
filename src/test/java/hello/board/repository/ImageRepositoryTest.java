@@ -25,10 +25,15 @@ class ImageRepositoryTest {
     @Autowired
     ImageRepository imageRepository;
 
-    Image image = new Image(9999L, "uploadName", UUID.randomUUID().toString() + ".jpg", "server/test/");
-    Image image2 = new Image(9998L, "uploadName2", UUID.randomUUID().toString(), "server/test/");
-    Image image3 = new Image(9997L, "uploadName2", UUID.randomUUID().toString(), "server/test/");
-    Image image4 = new Image(9996L, "uploadName3", UUID.randomUUID().toString(), "/server/test2/");
+    //    Image image = new Image(9999L, "uploadName", UUID.randomUUID().toString() + ".jpg", "server/test/");
+    Image image = Image.builder().uploadImageName("uploadName").storeImageName(UUID.randomUUID() + "jpg")
+        .imageAddress("/server/test/").build();
+    Image image2 = Image.builder().uploadImageName("uploadName2").storeImageName(UUID.randomUUID() + "jpg")
+            .imageAddress("/server/test/").build();
+    Image image3 = Image.builder().uploadImageName("uploadName3").storeImageName(UUID.randomUUID() + "jpg")
+            .imageAddress("/server/test/").build();
+    Image image4 = Image.builder().uploadImageName("uploadName4").storeImageName(UUID.randomUUID() + "jpg")
+            .imageAddress("/server/test/").build();
     List<Image> imageList = Arrays.asList(image, image2, image3, image4);
 
     @Test

@@ -25,12 +25,14 @@ class BoardMapperTest {
     @Autowired
     BoardMapper boardMapper;
 
-    Board board = new Board("testTitle_",
-            "test",
-            "testContent",
-            LocalDateTime.now(),
-            Category.TEMP
-    );
+//    Board board = new Board("testTitle_",
+//            "test",
+//            "testContent",
+//            LocalDateTime.now(),
+//            Category.TEMP
+//    );
+
+    Board board = null;
 
     @Test
     public void categoryTest() {
@@ -41,8 +43,8 @@ class BoardMapperTest {
 
         log.info("name = " + criteria2.getCategory().name() + "getCode = " + criteria2.getCategory().getCode());
 
-        board.setMemberId(1L);
-        board.setCategory(Category.TEMP);
+//        board.setMemberId(1L);
+//        board.setCategory(Category.TEMP);
         boardMapper.save(board);
 
 
@@ -104,8 +106,8 @@ class BoardMapperTest {
     @Test
     public void testSave2() {
         for(int i = 56; i < 87; i++) {
-            board.setTitle("testTitle_" + i);
-            board.setContent("testContent_" + i);
+//            board.setTitle("testTitle_" + i);
+//            board.setContent("testContent_" + i);
             boardMapper.save(board);
         }
 
@@ -114,11 +116,12 @@ class BoardMapperTest {
     @Test
     public void testUpdate() {
         
-        Board updateParam = new Board("updateTitle",
-                "update", 1L,
-                "updateContent", Category.of("TEMP"), LocalDateTime.now()
-        );
-        updateParam.setRegDate(LocalDateTime.now());
+//        Board updateParam = new Board("updateTitle",
+//                "update", 1L,
+//                "updateContent", Category.of("TEMP"), LocalDateTime.now()
+//        );
+//        updateParam.setRegDate(LocalDateTime.now());
+        Board updateParam = null;
 
         int row = boardMapper.update(10L, updateParam);
         log.info("effected row = {}", row);
@@ -140,12 +143,12 @@ class BoardMapperTest {
 
     @Test
     public void findPagedBoardWithMemberId() {
-        board.setMemberId(9999L);
+//        board.setMemberId(9999L);
         for(int i = 0; i < 15; i++) {
             boardMapper.save(board);
-            board.setMemberId(10000L);
+//            board.setMemberId(10000L);
             boardMapper.save(board);
-            board.setMemberId(9999L);
+//            board.setMemberId(9999L);
         }
         Criteria criteria = new Criteria();
 

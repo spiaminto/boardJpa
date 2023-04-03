@@ -120,7 +120,11 @@
                         splittedUrl = imageSrc.split("request/");
                     }
                     if (imageSrc.indexOf('amazonaws') != -1) {
-                        splittedUrl = imageSrc.split("upload_image/");
+                        if (imageSrc.indexOf('upload_image_test/') != -1) {
+                            splittedUrl = imageSrc.split("upload_image_test/");
+                        } else {
+                            splittedUrl = imageSrc.split("upload_image/");
+                        }
                     }
 
                     imageUrl += splittedUrl[1] + ",";

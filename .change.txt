@@ -91,6 +91,10 @@ commit 21
 commit 22
     CommentSaveForm 추가, @Builder 적용 및 도메인 수정, 일부 의존성 추가
 
+commit 23
+    배포변경점 3, 의존성추가, logback 설정 및 로그 파일작성
+
+
 
 
 

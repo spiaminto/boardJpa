@@ -30,7 +30,7 @@ public class ImageService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketDir;
 
-    @Value("${cloud.aws.s3.bucket.innerDir}}")
+    @Value("${cloud.aws.s3.bucket.innerDir}")
     private String innerBucketDir;
 
     /**
@@ -42,7 +42,7 @@ public class ImageService {
         Image storedImage = imageStore.storeImage(id, multipartFile);
         Image savedImage = saveImageToDb(storedImage);
 
-        log.info("store 된 이미지 {}, DB.save 된 이미지 {}", storedImage.getImageId(), savedImage.getImageId());
+        log.info("[temp] store 된 이미지 {}, DB.save 된 이미지 {}", storedImage.getImageId(), savedImage.getImageId());
 
         return savedImage;
     }
@@ -139,17 +139,17 @@ public class ImageService {
 
         // DB 에 등록된 이미지
         List<Image> imageDbList = imageRepository.findByBoardId(boardId);
-//        for (Image image : imageDbList) {log.info("ImageList {}", image);}
+        for (Image image : imageDbList) {log.info("ImageList {}", image);}
 
         // 실제 업로드된 이미지 리스트
         List<Image> uploadedImageList = makeUploadedImageList(uploadedImageNames, imageDbList);
-//        for (Image image : uploadedImageList) {log.info("uploadedImageList {}" , image);}
+        for (Image image : uploadedImageList) {log.info("uploadedImageList {}" , image);}
 
         // 제거될 이미지리스트
         List<Image> deleteImageList = makeDeleteImageList(imageDbList, uploadedImageList);
-//        for (Image image : deleteImageList) {log.info("deleteImageList= {}" , image);}
+        for (Image image : deleteImageList) {log.info("deleteImageList= {}" , image);}
 
-        log.info("실제로 업로드 된 이미지 수 = {}, 제거될 이미지 수 = {}", uploadedImageList.size(), deleteImageList.size());
+        log.info("임시저장 이미지 개수= {}, 실제 업로드 이미지 개수 = {}, 제거될 이미지 개수 = {}", result, uploadedImageList.size(), deleteImageList.size());
 
         // 제거할 이미지가 없음
         if (deleteImageList.isEmpty()) {
@@ -191,7 +191,7 @@ public class ImageService {
      * @return 삭제할 리스트
      */
     public List<Image> makeDeleteImageList(List<Image> imageDbList, List<Image> uploadedImageList) {
-        imageDbList.removeAll(uploadedImageList);
+        imageDbList.removeAll(uploadedImageList);       // equals()
         return imageDbList;
     }
 

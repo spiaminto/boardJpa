@@ -4,18 +4,19 @@
 <mapper namespace="hello.board.repository.mybatis.ImageMapper">
 
     <select id="findById" resultType="Image">
-        select board_id, store_image_name, upload_image_name, image_address from image
+        select board_id, member_id, image_id, store_image_name, upload_image_name, image_address from image
         where image_id = #{imageId}
     </select>
 
     <select id="findByBoardId" resultType="Image">
-        select board_id, store_image_name, upload_image_name, image_address from image
+        select board_id, member_id, image_id, store_image_name, upload_image_name, image_address from image
         where board_id = #{boardId}
     </select>
 
     <insert id="saveImage" useGeneratedKeys="true" keyProperty="imageId">
-        insert into image (member_id, board_id, store_image_name, upload_image_name, image_address)
-        values (#{memberId}, #{boardId}, #{storeImageName}, #{uploadImageName}, #{imageAddress})
+    <!-- board_id 를 null 로 입력하면 DEFAULT 가 활성화 되지 않는다.-->
+        insert into image (member_id, store_image_name, upload_image_name, image_address)
+        values (#{memberId}, #{storeImageName}, #{uploadImageName}, #{imageAddress})
     </insert>
 
     <delete id="deleteImage">

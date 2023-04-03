@@ -5,9 +5,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Slf4j
-public class LogInterceptor implements HandlerInterceptor {
+public class HttpLogInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -15,11 +16,12 @@ public class LogInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
         String queryString = request.getQueryString();
         String method = request.getMethod();
+        String session = request.getSession(false) == null ? "null" : request.getSession().getId();
 
         if (queryString == null) {
-            log.info("{} {}", method, requestURI);
+            log.info("{} {} session = {}", method, requestURI, session);
         } else {
-            log.info("{} {}?{}", method, requestURI, queryString);
+            log.info("{} {}?{} session = {}", method, requestURI, queryString, session);
         }
 
         // 다음 인터셉터 진행

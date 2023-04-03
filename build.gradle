@@ -54,6 +54,12 @@ dependencies {
 
 	// 자바9 이상에서 제거된 javax-api 종속성 추가 (아마존에서 사용하는듯)
 	implementation 'javax.xml.bind:jaxb-api:2.2.4'
+
+	// aop 의존성 추가
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	// log4jdbc , jdbc url 수정 및 application.properties 설정 추가
+	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 }
 
 tasks.named('test') {

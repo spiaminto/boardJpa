@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 // webConfig.class 에서 등록
+// SpringSecurity 의존하면서 사용하지 않게됨.
 @Slf4j
 public class LoginCheckInterceptor implements HandlerInterceptor {
 

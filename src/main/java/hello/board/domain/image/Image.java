@@ -3,6 +3,7 @@ package hello.board.domain.image;
 import lombok.*;
 
 @Getter @ToString
+//@EqualsAndHashCode      // ImageService.makeDeleteImageList()
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder

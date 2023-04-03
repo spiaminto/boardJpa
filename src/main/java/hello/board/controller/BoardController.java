@@ -39,6 +39,11 @@ public class BoardController {
         return "redirect:/boards";
     }
 
+    @GetMapping("/boards/ex")
+    public String errorTest() {
+        throw new IllegalStateException();
+    }
+
     @GetMapping("/boards")
     public String pagedList(Model model, @ModelAttribute("criteria") Criteria criteria) {
 

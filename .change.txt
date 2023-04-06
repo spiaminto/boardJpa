@@ -92,7 +92,11 @@ commit 22
     CommentSaveForm 추가, @Builder 적용 및 도메인 수정, 일부 의존성 추가
 
 commit 23
-    배포변경점 3, 의존성추가, logback 설정 및 로그 파일작성
+    배포변경점 3, 의존성추가, LogTraceAspect 추가, logback 설정 및 로그 파일작성
+
+commit 24
+    배포 변경점3 나머지(로깅관련), LogTraceAspect 수정, 이미지 용량 제한.
+    프론트에서 write/edit 시 이미지 갯수, 글자수 제한.
 
 
 

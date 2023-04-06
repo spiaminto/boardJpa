@@ -17,8 +17,10 @@ public class BoardEditForm {
     @Size(max = 30)
     private String title;
     @NotBlank
-    @Size(max = 1000)
+    @Size(max = 1500, message = "Content 제한량 초과")
     private String content;
+
+    private String contentLength;
     private String writer;
 
     // DB 에 진짜로 저장할 이미지url

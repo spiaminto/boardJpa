@@ -139,15 +139,15 @@ public class ImageService {
 
         // DB 에 등록된 이미지
         List<Image> imageDbList = imageRepository.findByBoardId(boardId);
-        for (Image image : imageDbList) {log.info("ImageList {}", image);}
+//        for (Image image : imageDbList) {log.info("ImageList {}", image);}
 
         // 실제 업로드된 이미지 리스트
         List<Image> uploadedImageList = makeUploadedImageList(uploadedImageNames, imageDbList);
-        for (Image image : uploadedImageList) {log.info("uploadedImageList {}" , image);}
+//        for (Image image : uploadedImageList) {log.info("uploadedImageList {}" , image);}
 
         // 제거될 이미지리스트
         List<Image> deleteImageList = makeDeleteImageList(imageDbList, uploadedImageList);
-        for (Image image : deleteImageList) {log.info("deleteImageList= {}" , image);}
+//        for (Image image : deleteImageList) {log.info("deleteImageList= {}" , image);}
 
         log.info("임시저장 이미지 개수= {}, 실제 업로드 이미지 개수 = {}, 제거될 이미지 개수 = {}", result, uploadedImageList.size(), deleteImageList.size());
 

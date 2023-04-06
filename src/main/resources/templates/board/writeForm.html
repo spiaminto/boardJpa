@@ -77,24 +77,55 @@
     <script>
         $(function () {
 
+            let CurrentEditor;
+
             // CKeditor
             ClassicEditor
                 .create( document.querySelector( '#content' ), {
                     ckfinder: {
                         //POST
-                        uploadUrl: "/image"
+                        uploadUrl: "/image",
+                        options: {
+                            resourceType: 'Images'
+                        }
                     },
                     licenseKey: '',
                 } )
                 .then( editor => {
                     window.editor = editor;
-
+                    CurrentEditor = editor;
+                    // editor.model.document.on('change:data', function () {
+                    //     countContent(editor.getData())
+                    // })
                 } )
                 .catch( error => {
                     console.error( 'CKeditor 에러' );
                     console.warn( 'Build id: c8lmmc8yntlx-90lv8lh8innk' );
                     console.error( error );
                 } );
+
+            // 현재 페이지의 content 길이, img 갯수 count
+            function countContent(editorContent) {
+                let result = new Map();
+                result.set("isExceeded", false);
+
+                let imgCount = editorContent.split('<img').length - 1;
+                //  태그제거, 공백제거, 연속공백제거, 줄바꿈제거
+                let textContent = editorContent.replace(/(<([^>]+)>)/ig,"").trim().replace(/  +/g,"").replace(/&nbsp;/gi,"")
+                result.set("contentLength", textContent.length);
+
+                // console.log("editorContent = " + editorContent + ", editorContentLength = " + editorContent.length);
+                // console.log("imageCount = " + imgCount);
+                // console.log("textContent = " + textContent);
+
+                if (textContent.length > 300) {
+                    result.set("isExceeded", true).set("option", "length").set("count", textContent.length);
+                } else if (imgCount > 5) {
+                    result.set("isExceeded", true).set("option", "img").set("count", imgCount);
+                }
+
+                return result;
+            }
 
             // 카테고리 기본값
             let originValue = $("#categorySelect").data("origin");
@@ -112,6 +143,18 @@
 
             // submit 할때 이미지 uuid 추출 후 submit
             $("#submitBt").on("click", function (event) {
+
+
+                let countResult = countContent(CurrentEditor.getData());
+                $("#contentLength").val(countResult.get("contentLength"));
+                if (countResult.get("isExceeded")) {
+                    if (countResult.get("option") == "length") {
+                        alert("글자수는 최대 300자 까지 허용합니다. 현재 글자수 : " + countResult.get("count"));
+                    } else {
+                        alert("이미지는 최대 5장 까지 허용합니다. 현재 이미지 수 : " + countResult.get("count"));
+                    }
+                    return false;
+                }
 
                 let imageUrl = "";
 
@@ -192,10 +235,14 @@
         <div class="input-wrapper">
             <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="is-invalid"></textarea>
             <div class="invalid-feedback" th:errors="*{content}"> content 오류</div>
+            <div id="word-count"></div>
         </div>
 
         <!-- onsubmit 실제로 업로드할 이미지 요청 url 에서 uuid 뽑아서 값으로 설정 -->
         <input type="hidden" name="imageName" value="" id="uploadImageUrl">
+
+        <!-- content 의 실제 글자수 -->
+        <input type="hidden" name="contentLength" value="" id="contentLength">
 
         <p id="submitBtWrapper"><input type="submit" id="submitBt" name="submit" value="등록" class="btn btn-primary"></p>
     </form>

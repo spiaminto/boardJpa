@@ -11,6 +11,8 @@ import hello.board.service.BoardService;
 import hello.board.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,8 +42,15 @@ public class BoardController {
     }
 
     @GetMapping("/boards/ex")
-    public String errorTest() {
-        throw new IllegalStateException();
+    public String errorTest(@RequestParam(required = false) String param) {
+        throw new IllegalStateException("예시용 Exception");
+    }
+
+    // for amazon loadBalancer healthCheck
+    @RequestMapping("/boards/healthcheck")
+    @ResponseBody
+    public ResponseEntity<String> healthCheck() {
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
     @GetMapping("/boards")

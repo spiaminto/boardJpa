@@ -72,6 +72,7 @@
     <script>
         $(function () {
 
+            let CurrentEditor;
             // CKeditor
             ClassicEditor
                 .create( document.querySelector( '#content' ), {
@@ -83,13 +84,35 @@
                 } )
                 .then( editor => {
                     window.editor = editor;
-
+                    CurrentEditor = editor;
                 } )
                 .catch( error => {
                     console.error( 'CKeditor 에러' );
                     console.warn( 'Build id: c8lmmc8yntlx-90lv8lh8innk' );
                     console.error( error );
                 } );
+
+            // 현재 페이지의 content 길이, img 갯수 count
+            function countContent(editorContent) {
+                let result = new Map();
+                result.set("isExceeded", false);
+
+                let imgCount = editorContent.split('<img').length - 1;
+                //  태그제거, 공백제거, 연속공백제거, 줄바꿈제거
+                let textContent = editorContent.replace(/(<([^>]+)>)/ig,"").trim().replace(/  +/g,"").replace(/&nbsp;/gi,"")
+
+                // console.log("editorContent = " + editorContent + ", editorContentLength = " + editorContent.length);
+                // console.log("imageCount = " + imgCount);
+                // console.log("textContent = " + textContent);
+
+                if (textContent.length > 300) {
+                    result.set("isExceeded", true).set("option", "length").set("count", textContent.length);
+                } else if (imgCount > 5) {
+                    result.set("isExceeded", true).set("option", "img").set("count", imgCount);
+                }
+
+                return result;
+            }
 
             // write 와 다르게 edit 는 검색/페이지네이션 결과를 같이 서버에 보내야함
             /**
@@ -107,6 +130,18 @@
 
             // submit 할때 이미지 uuid 추출 후 submit, 공지 플래그 설정
             $("#editBt").on("click", function (event) {
+
+                let countResult = countContent(CurrentEditor.getData());
+                $("#contentLength").val(countResult.get("contentLength"));
+                if (countResult.get("isExceeded")) {
+                    if (countResult.get("option") == "length") {
+                        alert("글자수는 최대 300자 까지 허용합니다. 현재 글자수 : " + countResult.get("count"));
+                    } else {
+                        alert("이미지는 최대 5장 까지 허용합니다. 현재 이미지 수 : " + countResult.get("count"));
+                    }
+                    return false;
+                }
+
                 let imageUrl = "";
 
                 // <img> 에서 src 추출
@@ -201,6 +236,9 @@
 
         <!-- 공지글이였는지 확인 -->
         <input type="hidden" id="isNotice" name="isNotice" value="">
+
+        <!-- content 의 실제 글자수 -->
+        <input type="hidden" name="contentLength" value="" id="contentLength">
 
         <!-- pageInfo -->
         <input class="page_info" type="hidden" th:name="currentPage" th:value="${criteria.currentPage}" name="currentPage" value="1">

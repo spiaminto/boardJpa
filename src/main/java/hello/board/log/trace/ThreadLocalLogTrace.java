@@ -3,6 +3,8 @@ package hello.board.log.trace;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 // 참고)
 /*
 // LogTrace 의 실행 흐름 예시는 대략 이렇다.
@@ -40,21 +42,26 @@ public class ThreadLocalLogTrace implements LogTrace {
 
     @Override
     public void end(TraceStatus status) {
-        complete(status, null);
+        complete(status, null, null);
     }
 
     @Override
-    public void exception(TraceStatus status, Exception e) {
-        complete(status, e);
+    public void exception(TraceStatus status, Exception e, Object[] params) {
+        complete(status, e, params);
     }
 
 
-    private void complete(TraceStatus status, Exception e) {
+    private void complete(TraceStatus status, Exception e, Object[] params) {
         TraceId traceId = status.getTraceId();
         if (e == null) {
             log.info("[{}] {}{}", traceId.getId(), addSpace(COMPLETE_PREFIX, traceId.getLevel()), status.getMessage());
         } else {
-            log.info("[{}] {}{} ex={}", traceId.getId(), addSpace(EX_PREFIX, traceId.getLevel()), status.getMessage(), e.toString());
+            // exception 발생 시 파라미터를 같이 출력
+            StringBuilder sb = new StringBuilder();
+            for (Object param : params) {
+                sb.append(param);
+            }
+            log.info("[{}] {}{} [ex] = {} [params] = {}", traceId.getId(), addSpace(EX_PREFIX, traceId.getLevel()), status.getMessage(), e.toString(), sb);
         }
 
         releaseTraceId();

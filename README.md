@@ -52,7 +52,7 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
 <br>
 
 ### 로깅
- @Aspect 로 로그를 찍고, logback 라이브러리를 이용하여 로그 출력을 커스텀 하고, 파일로 작성합니다.
+ @Aspect 로 로그를 찍고, logback 라이브러리를 이용하여 로그 출력을 커스텀 하고, 파일로 작성합니다.<br>
  파일로 작성된 로그를 Amazon cloudwatch 로 실시간 스트리밍 합니다.
  <br>
 <br>

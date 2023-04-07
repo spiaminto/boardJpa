@@ -21,8 +21,7 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
 <br>
 
 * 글 작성,수정,삭제
- <img width="400" alt="APPHOME" src="https://user-images.githubusercontent.com/122969954/230583227-345c7165-5e56-453a-b832-200eb4f07bf0.png">
- <img width="400" alt="APPWRITE" src="https://user-images.githubusercontent.com/122969954/230583252-4d7093e5-9dd6-426e-86b8-c0b1fd91c868.png">
+ <img width="400" alt="APPHOME" src="https://user-images.githubusercontent.com/122969954/230583227-345c7165-5e56-453a-b832-200eb4f07bf0.png"><img width="400" alt="APPWRITE" src="https://user-images.githubusercontent.com/122969954/230583252-4d7093e5-9dd6-426e-86b8-c0b1fd91c868.png">
   * 글 목록은 기본적인 페이징, 검색, 카테고리 처리가 적용되어 있습니다.  
   * 글 쓰기에는 위지윅에디터(ckeditor5) 적용되어 있습니다.
   
@@ -41,8 +40,7 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
   * 현재 naver 를 통한 소셜가입은 불가능 합니다. (네이버에서 허용안됨)
   
 * 유효성 검사
-<img width="400" alt="APPVAL1" src="https://user-images.githubusercontent.com/122969954/230583240-e5706f93-273c-43a3-bc7c-7bbe184cf910.png">
-<img width="400" alt="APPVAL2" src="https://user-images.githubusercontent.com/122969954/230583241-c68edb70-9672-4ab7-9388-c5cfe3fa89bb.png">
+<img width="400" alt="APPVAL1" src="https://user-images.githubusercontent.com/122969954/230583240-e5706f93-273c-43a3-bc7c-7bbe184cf910.png"><img width="400" alt="APPVAL2" src="https://user-images.githubusercontent.com/122969954/230583241-c68edb70-9672-4ab7-9388-c5cfe3fa89bb.png">
   * 글, 댓글, 회원정보 에 간단한 validation 이 적용되어있습니다.
   
 * 로깅

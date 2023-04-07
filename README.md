@@ -37,12 +37,13 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
   
 ### 회원 가입,수정,탈퇴
 <img width="50%" alt="APPLOGIN" src="https://user-images.githubusercontent.com/122969954/230583236-749c8fa3-ab50-409e-a802-b0262cff2f7a.png">
- 로그인은 spring security 라이브러리를 이용합니다.  
- oauth2-client 라이브러리를 이용한 소셜로그인/가입 기능을 포함 합니다. 가입은 별도의 form 을 통해 가입합니다.  
+ 로그인은 spring security 라이브러리를 이용합니다. 
+ oauth2-client 라이브러리를 이용한 소셜로그인/가입 기능을 포함 합니다. 가입은 별도의 form 을 통해 가입합니다. 
  현재 naver 를 통한 소셜가입은 불가능 합니다. (네이버에서 허용안됨)
   
 ### 유효성 검사
 <img width="44%" alt="APPVAL2" src="https://user-images.githubusercontent.com/122969954/230583241-c68edb70-9672-4ab7-9388-c5cfe3fa89bb.png"><img width="44%" alt="APPVAL1" src="https://user-images.githubusercontent.com/122969954/230583240-e5706f93-273c-43a3-bc7c-7bbe184cf910.png">
+
  글, 댓글, 회원정보 에 간단한 validation 이 적용되어있습니다.
   
 ### 로깅

@@ -11,6 +11,9 @@
 프론트는 thymeleaf 와 jquery, 백은 spring(boot) 를 이용하여 작성했습니다.
 RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였습니다.  
 
+아래의 이미지들은 클릭하면 커집니다.
+<br>
+
 ## 기능 요약
 
 #### ㅇ 글 조회, 작성, 수정, 삭제

@@ -48,7 +48,7 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
 ### 유효성 검사
 <img width="44%" alt="APPVAL2" src="https://user-images.githubusercontent.com/122969954/230583241-c68edb70-9672-4ab7-9388-c5cfe3fa89bb.png"><img width="44%" alt="APPVAL1" src="https://user-images.githubusercontent.com/122969954/230583240-e5706f93-273c-43a3-bc7c-7bbe184cf910.png">
 
- 글, 댓글, 회원정보 에 간단한 validation 이 적용되어있습니다.
+ 글, 댓글, 회원정보 에 beanvalidation 을 이용한 간단한 validation 이 적용되어있습니다.
 <br>
 
 ### 로깅

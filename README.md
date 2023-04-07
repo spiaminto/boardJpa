@@ -21,7 +21,8 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
 <br>
 
 * 글 작성,수정,삭제
- <img width="400" alt="APPHOME" src="https://user-images.githubusercontent.com/122969954/230583227-345c7165-5e56-453a-b832-200eb4f07bf0.png"><img width="400" alt="APPWRITE" src="https://user-images.githubusercontent.com/122969954/230583252-4d7093e5-9dd6-426e-86b8-c0b1fd91c868.png">
+ <img height="600" alt="APPHOME" src="https://user-images.githubusercontent.com/122969954/230583227-345c7165-5e56-453a-b832-200eb4f07bf0.png"><img height="600" alt="APPWRITE" src="https://user-images.githubusercontent.com/122969954/230583252-4d7093e5-9dd6-426e-86b8-c0b1fd91c868.png">
+ 
   * 글 목록은 기본적인 페이징, 검색, 카테고리 처리가 적용되어 있습니다.  
   * 글 쓰기에는 위지윅에디터(ckeditor5) 적용되어 있습니다.
   

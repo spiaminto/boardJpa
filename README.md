@@ -64,16 +64,15 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
 ### Amazon Elastic Beanstalk
 <img width="50%" alt="EBHOME" src="https://user-images.githubusercontent.com/122969954/230583282-53fe5ccd-bd6a-4c2b-aba6-b136b2e596a3.png">
  프로젝트를 배포, 관리하기 위해 사용했습니다.  
- Amazon RDS 의 인스턴스에 연결하여 해당 DB 를 사용합니다.
- Amazon CloudWatch 에 커스텀 된 로그를 스트리밍 하게 설정했습니다.  
- #
-  taillog, bundlelog 요청 시 기본 로그에 애플리케이션의 logback 에서 작성한 로그파일도 같이 보여주도록 설정하였습니다.
+ Amazon RDS 의 인스턴스에 연결하여 해당 DB 를 사용합니다.<br>
+ Amazon CloudWatch 에 커스텀 된 로그를 스트리밍 하게 설정했습니다.  <br>
+  taillog, bundlelog 요청 시 기본 로그에 애플리케이션의 logback 에서 작성한 로그파일도 같이 보여주도록 설정하였습니다.<br>
 <br>
 
 ### Amazon S3
 <img width="50%" alt="S3HOME" src="https://user-images.githubusercontent.com/122969954/230583309-0973e9e3-e702-470e-a064-b48fa9a42453.png">
- 이미지 파일을 클라우드 스토리지에 업로드 하기 위해 사용했습니다.  
- 로컬 테스트는 /upload_image_test , 배포된 애플리케이션 에서는 /upload_image 로 이미지 파일을 업로드 합니다.
+ 이미지 파일을 클라우드 스토리지에 업로드 하기 위해 사용했습니다.  <br>
+ 로컬 테스트는 /upload_image_test , 배포된 애플리케이션 에서는 /upload_image 로 이미지 파일을 업로드 합니다.<br>
 <br>
 
 ### Amazon RDS

@@ -1,6 +1,6 @@
 # board
 
-테스트용 ID: sample / PW: sample  
+__테스트용 ID: sample / PW: sample__
 ### 링크 : [프로젝트 바로가기](http://springboard-env.eba-x3sau5v7.ap-northeast-1.elasticbeanstalk.com/boards)  
 
 공부하면서 배운것, 알게된  것들을 확인하고 사용해보기 위해 만든 프로젝트 입니다. 

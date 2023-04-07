@@ -49,7 +49,7 @@ oauth2-client 라이브러리를 이용한 소셜로그인/가입 기능을 포�
   
 ### 이용한 서비스
 
-####Amazon Elastic Beanstalk
+#### ㅇ Amazon Elastic Beanstalk
 <img width="50%" alt="EBHOME" src="https://user-images.githubusercontent.com/122969954/230583282-53fe5ccd-bd6a-4c2b-aba6-b136b2e596a3.png">
 
  프로젝트를 배포, 관리하기 위해 사용했습니다. Amazon RDS 의 인스턴스에 연결하여 해당 DB 를 사용합니다.   

@@ -14,38 +14,45 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
 아래의 이미지들은 클릭하면 커집니다.
 <br>
 
-## 기능 요약
+## 기능 
 
 #### ㅇ 글 조회, 작성, 수정, 삭제
 
 <img width="44%" alt="APPWRITE" src="https://user-images.githubusercontent.com/122969954/230583252-4d7093e5-9dd6-426e-86b8-c0b1fd91c868.png"> <img width="44%" alt="APPHOME" src="https://user-images.githubusercontent.com/122969954/230583227-345c7165-5e56-453a-b832-200eb4f07bf0.png">
 
-글 목록은 기본적인 페이징, 검색, 카테고리 처리가 적용되어 있습니다.  
+글 목록은 전체 글 목록, 내가 쓴 글 목록 을 카테고리 별로 확인 할 수 있으며, 페이징과 검색 기능도 구현하였습니다.  
 글 쓰기에는 위지윅에디터(ckeditor5) 적용되어 있습니다.
+
   
 #### ㅇ 이미지 업로드
 <img width="50%" alt="APPIMAGE" src="https://user-images.githubusercontent.com/122969954/230591439-e8c95f69-3304-4066-9c41-ea92ddc72cb0.png">
  ckeditor5 의 이미지 업로드 기능을 이용합니다.
- Amazon S3 서비스를 이용하여 클라우드 스토리지에 업로드합니다.  
+ 업로드 요청된 이미지 파일을 Amazon S3 클라우드 스토리지에 업로드하고, 업로드한 이미지의 정보를 DB 에 저장합니다.  
+ 이미지 파일의 용량은 파일당 3MB 로 제한했으며, 5장을 초과하여 업로드 할 수 없도록 하였습니다.
 
 #### ㅇ 댓글, 대댓글 작성,수정,삭제
 <img width="50%" alt="APPCOMMENT" src="https://user-images.githubusercontent.com/122969954/230583219-462ba81b-6ccb-48db-9b00-2084885208fd.png">
 
- ajax 를 이용해 댓글, 대댓글 기능을 구현했습니다.  
+ ajax 를 이용해 댓글, 대댓글(댓글의 댓글) 기능을 구현했습니다. 
+ 대댓글은 대댓글의 대상이 되는 댓글의 닉네임이 표시되도록 하였습니다.
+ 내가 쓴 댓글 목록을 확인 할 수 있으며, 해당 댓글의 글로 바로 이동하고, 댓글을 누를 경우 페이지 이동후 해당 댓글까지 자동으로 스크롤 합니다.
 
 #### ㅇ 회원 가입,수정,탈퇴
 <img width="50%" alt="APPLOGIN" src="https://user-images.githubusercontent.com/122969954/230583236-749c8fa3-ab50-409e-a802-b0262cff2f7a.png">
 
  로그인은 spring security 라이브러리를 이용합니다.  
-oauth2-client 라이브러리를 이용한 소셜로그인/가입 기능을 포함 합니다. 가입은 별도의 form 을 통해 가입합니다.현재 naver 를 통한 소셜가입은 불가능 합니다. (네이버에서 허용안됨)
+oauth2-client 라이브러리를 이용한 소셜로그인/가입 기능을 포함 합니다.  
+소셜가입은, 각 서비스에서 사용정보 동의를 받으면, 해당 정보를 바탕으로 별도의 회원가입 폼으로 이동하여 가입을 진행합니다.
+네이버 로그인 서비스는 검수를 받지 않으면 개발자 계정 외의 가입이 불가능하여, 현재는 사용할 수 없습니다. (개발자 본인의 계정으로 테스트는 하였습니다.)  
+다음 로그인 서비스는 검수를 받지 않으면 카카오 계정 제공을 필수로 설정할 수 없어, 일단 주의 메시지를 띄우도록 하였습니다.
 
 #### ㅇ 유효성 검사
 <img width="44%" alt="APPVAL2" src="https://user-images.githubusercontent.com/122969954/230583241-c68edb70-9672-4ab7-9388-c5cfe3fa89bb.png"><img width="44%" alt="APPVAL1" src="https://user-images.githubusercontent.com/122969954/230583240-e5706f93-273c-43a3-bc7c-7bbe184cf910.png">
 
- 글, 댓글, 회원정보 에 간단한 validation 이 적용되어있습니다.
+ beanvalidation, 자바스크립트 등을 이용하여 글, 댓글, 회원정보 에 간단한 validation 이 적용되어있습니다.
 
 #### ㅇ 로깅
- @Aspect 로 로그를 찍고, logback 라이브러리를 이용하여 로그 출력을 커스텀 하고, 파일로 작성합니다.
+ @Aspect 등 으로 로그를 찍고, logback 라이브러리를 이용하여 로그 출력을 커스텀 하고, 파일로 작성합니다.
  파일로 작성된 로그를 Amazon cloudwatch 로 실시간 스트리밍 합니다. 아래의 cloudwatch 사용 부분을 참고해 주세요.
   
 ## 이용한 서비스
@@ -68,7 +75,7 @@ taillog, bundlelog 요청 시 기본 로그에 애플리케이션의 logback 에
 <img width="50%" alt="RDSHOME" src="https://user-images.githubusercontent.com/122969954/230583295-843f4dcf-4ad8-4150-bd3c-2f328f3debad.png">
 
  로컬 DB 와 배포된 애플리케이션의 DB 를 분리하고, 온라인에서 DB 를 이용하기 위해 사용했습니다. MySql WorkBench 를 통해 연결하여 사용했습니다.
-<br>
+
 
 ### ㅇ Amazon CloudWatch
 <img width="50%" alt="CWLOG" src="https://user-images.githubusercontent.com/122969954/230583259-9e501d97-a926-4b83-bb6a-5f94cd4345f9.png">

@@ -17,7 +17,7 @@ public class BoardEditForm {
     @Size(max = 30)
     private String title;
     @NotBlank
-    @Size(max = 1500, message = "Content 제한량 초과")
+    @Size(max = 2200, message = "Content 제한량 초과")
     private String content;
 
     private String contentLength;

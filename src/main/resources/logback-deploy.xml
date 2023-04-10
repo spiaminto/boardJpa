@@ -44,11 +44,12 @@
     <property name="LOG_DIR" value="/var/log/board/" />
 
 
-    <!-- CONSOLE 콘솔 로그-->
+    <!-- CONSOLE 콘솔 로그,
+        배포용은 컬러링 X, 기본적으로 시간이 찍힘. SSS 만 안찍혀서 뒤만 남김. -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                aCON %highlight(%-5level) %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %green(%30logger{1}) - %msg%n
+                CO %-5level %d{HH:mm:ss.SSS} [%.7thread]: %30logger{1}- %msg%n
             </Pattern>
         </layout>
     </appender>
@@ -59,7 +60,7 @@
         <file>${LOG_DIR}syslog.log</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                aSYS %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger - %msg%n
+                SY %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread]: %30logger{1}- %msg%n
             </Pattern>
         </layout>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -73,7 +74,7 @@
         <file>${LOG_DIR}applog.log</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                aApp %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{5} - %msg%n
+                AP %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%.7thread]: %30logger{1}- %msg%n
             </Pattern>
         </layout>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -95,7 +96,7 @@
         <!-- 로그 작성 (encoder)-->
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                aERR %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{5} %n[message] %msg%n
+                ER %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread]: %30logger{1} %n [message] - %msg%n
             </Pattern>
         </layout>
         <!-- 새 파일 작성 정책 -->
@@ -110,7 +111,7 @@
         <file>${LOG_DIR}sqllog.log</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                aSQL %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{5} - %msg%n
+                SQ %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread]: %30logger{1}- %msg%n
             </Pattern>
         </layout>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

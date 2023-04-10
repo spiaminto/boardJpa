@@ -43,7 +43,7 @@ public class BoardController {
 
     @GetMapping("/boards/ex")
     public String errorTest(@RequestParam(required = false) String param) {
-        throw new IllegalStateException("예시용 Exception");
+        throw new IllegalStateException("Example Exception with Param");
     }
 
     // for amazon loadBalancer healthCheck
@@ -238,7 +238,7 @@ public class BoardController {
         boolean isSuccess = imageService.deleteImageByBoardId(boardId);
         log.info("이미지 삭제 isSuccess = {}", isSuccess);
 
-        log.info(request.getQueryString());
+//        log.info(request.getQueryString());
 
         redirectAttributes.addFlashAttribute("alertMessage", "글이 삭제 되었습니다.");
 

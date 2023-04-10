@@ -14,7 +14,7 @@ public class BoardSaveForm {
     private String title;
     @NotBlank
     // 이미지5장 기준 약 900~1000 자 정도 예약사용.
-    @Size(max = 1500, message = "Content 제한량 초과")
+    @Size(max = 2200, message = "Content 제한량 초과")
     private String content;
 
     private String contentLength;

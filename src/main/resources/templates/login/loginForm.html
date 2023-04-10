@@ -112,10 +112,25 @@
         }
 
         window.addEventListener("load", function () {
+
+            // alert
             let alertMessage = document.getElementById("globalAlertMessage").dataset.alertmessage;
             if (alertMessage) {
                 alert(alertMessage);
             }
+
+            // 카카오 이벤트
+            document.getElementById("kakaoLoginBt").addEventListener("click", function () {
+
+                // 카카오 계정 confirm, No 시 이벤트 취소
+                if (!confirm("선택 항목인 카카오 계정 이용에 동의해주셔야 정상적인 서비스 이용이 가능합니다")) {
+                    return false;
+                }
+
+                location.href='/oauth2/authorization/kakao';
+            })
+
+
         })
     </script>
 </head>
@@ -164,13 +179,14 @@
             <div id="oAuth2LoginBtWrapper">
                 <button type="button" onclick="location.href='/oauth2/authorization/google'"
                         class="btn">
-                    <img th:src="@{/image/google_small.png}" src="/static/image/google_small.png" width="90px" height="40px" alt="구글">
+                    <img th:src="@{/static-image/google_small.png}" src="/static/static-image/google_small.png" width="90px" height="40px" alt="구글">
                 </button>
                 <button id="naverLoginBt" type="button" onclick="location.href='/oauth2/authorization/naver'" class="btn">
-                    <img th:src="@{/image/naver_small.png}" src="/static/image/naver_small.png.png" alt="네이버" width="100px" height="40px">
+                    <img th:src="@{/static-image/naver_small.png}" src="/static/static-image/naver_small.png" alt="네이버" width="100px" height="40px">
                 </button>
-                <button id="kakaoLoginBt" type="button" onclick="location.href='/oauth2/authorization/kakao'" class="btn">
-                    <img th:src="@{/image/kakao_small.png}" src="/static/image/kakao_small.png.png" alt="카카오"  width="100px" height="40px">
+                <!-- 카카오는 이메일 사용이 필수가 아님 -->
+                <button id="kakaoLoginBt" type="button" class="btn">
+                    <img th:src="@{/static-image/kakao_small.png}" src="/static/static-image/kakao_small.png" alt="카카오" width="100px" height="40px">
                 </button>
             </div>
         </div>

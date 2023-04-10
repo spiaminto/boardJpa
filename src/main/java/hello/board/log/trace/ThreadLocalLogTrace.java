@@ -3,7 +3,6 @@ package hello.board.log.trace;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 
 // 참고)
 /*
@@ -61,7 +60,7 @@ public class ThreadLocalLogTrace implements LogTrace {
             for (Object param : params) {
                 sb.append(param);
             }
-            log.info("[{}] {}{} [ex] = {} [params] = {}", traceId.getId(), addSpace(EX_PREFIX, traceId.getLevel()), status.getMessage(), e.toString(), sb);
+            log.info("[{}] {}{} [ex] = {} [params] = {}", traceId.getId(), addSpace(EX_PREFIX, traceId.getLevel()), status.getMessage(), e, sb);
         }
 
         releaseTraceId();

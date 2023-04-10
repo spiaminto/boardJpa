@@ -72,8 +72,8 @@
     <script>
         $(function () {
 
+// CK editor
             let CurrentEditor;
-            // CKeditor
             ClassicEditor
                 .create( document.querySelector( '#content' ), {
                     ckfinder: {
@@ -92,7 +92,7 @@
                     console.error( error );
                 } );
 
-            // 현재 페이지의 content 길이, img 갯수 count
+// 현재 페이지의 content 길이, img 갯수 count
             function countContent(editorContent) {
                 let result = new Map();
                 result.set("isExceeded", false);
@@ -105,7 +105,7 @@
                 // console.log("imageCount = " + imgCount);
                 // console.log("textContent = " + textContent);
 
-                if (textContent.length > 300) {
+                if (textContent.length > 1000) {
                     result.set("isExceeded", true).set("option", "length").set("count", textContent.length);
                 } else if (imgCount > 5) {
                     result.set("isExceeded", true).set("option", "img").set("count", imgCount);
@@ -114,28 +114,29 @@
                 return result;
             }
 
-            // write 와 다르게 edit 는 검색/페이지네이션 결과를 같이 서버에 보내야함
+// write 와 다르게 edit 는 검색/페이지네이션 결과를 같이 서버에 보내야함
             /**
              * 애초에 th:action 이 요청 url + 쿼리 파라미터 까지 전부 다 action 으로 넣어주는듯.
              * 파라미터 신경 쓸 필요 없음.
              */
 
+// 카테고리 기본값
             let originValue = $("#categorySelect").data("origin");
-            // 카테고리 기본값
             $("#categorySelect option").each(function () {
                 if ($(this).attr("value") == originValue) {
                     $(this).attr("selected", true);
                 }
             })
 
-            // submit 할때 이미지 uuid 추출 후 submit, 공지 플래그 설정
+// submit
             $("#editBt").on("click", function (event) {
 
+                // 글자수 이미지수 검사
                 let countResult = countContent(CurrentEditor.getData());
                 $("#contentLength").val(countResult.get("contentLength"));
                 if (countResult.get("isExceeded")) {
                     if (countResult.get("option") == "length") {
-                        alert("글자수는 최대 300자 까지 허용합니다. 현재 글자수 : " + countResult.get("count"));
+                        alert("글자수는 최대 1000자 까지 허용합니다. 현재 글자수 : " + countResult.get("count"));
                     } else {
                         alert("이미지는 최대 5장 까지 허용합니다. 현재 이미지 수 : " + countResult.get("count"));
                     }
@@ -223,7 +224,8 @@
         </div>
 
         <div class="input-wrapper">
-            <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="is-invalid"></textarea>
+            <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="is-invalid"
+                      placeholder="글자는 최대 1000자, 이미지는 최대 5 장 까지 허용합니다."></textarea>
             <div class="invalid-feedback" th:errors="*{content}"> content 오류</div>
         </div>
 

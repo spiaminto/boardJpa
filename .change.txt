@@ -98,6 +98,13 @@ commit 24
     배포 변경점3 나머지(로깅관련), LogTraceAspect 수정, 이미지 용량 제한.
     프론트에서 write/edit 시 이미지 갯수, 글자수 제한.
 
+commit 24.1
+    write/edit 시 이미지, 글자제한 변경. 배포변경점 3.1. 이미지 경로수정.
+
+commit 24.2
+    파일정리, readme 작성, 버그수정
+
+
 
 
 

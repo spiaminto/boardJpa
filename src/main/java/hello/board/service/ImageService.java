@@ -102,7 +102,7 @@ public class ImageService {
             count += imageRepository.deleteImageByStoreImageName(image.getStoreImageName());
         }
 
-//        log.info("DB {} 개 중 {} 개 제거 완료", deleteImageList.size(), count);
+        log.info("DB {} 개 중 {} 개 제거 완료", deleteImageList.size(), count);
         return count;
     }
 

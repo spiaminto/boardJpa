@@ -27,7 +27,7 @@ public class Member {
      */
     public void setOauth2ActualMember(String username) {
         this.role = "ROLE_USER";
-        this.username = "username";
+        this.username = username;
     }
 
     /**

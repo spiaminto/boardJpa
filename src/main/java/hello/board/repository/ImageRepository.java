@@ -89,7 +89,7 @@ public class ImageRepository {
         // 아마존에서 제거
         try {
             deleteObjectsResult = amazonS3.deleteObjects(multipleDeleteObjectsRequest);
-//            log.info("AMAZON S3 {} 개 중 {} 개 제거 완료", deleteImageList.size(), deleteObjectsResult.getDeletedObjects().size());
+            log.info("AMAZON S3 {} 개 중 {} 개 제거 완료", deleteImageList.size(), deleteObjectsResult.getDeletedObjects().size());
         } catch (AmazonServiceException e) {
             // The call was transmitted successfully, but Amazon S3 couldn't process it, so it returned an error response.
             e.printStackTrace();

@@ -90,7 +90,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             // 임시로 생성한 멤버를 리턴 -> Authentication 객체에 담기나, 회원가입 X
             returnMember = Member.builder()
                     .provider(oAuth2UserInfo.getProvider())
-                    .providerId(returnMember.getProviderId())
+                    .providerId(oAuth2UserInfo.getProviderId())
                     .loginId(forOauth2UserLoginId)
                     .username(forOauth2UserUsername)
                     .password("forOauth2UserPassword")

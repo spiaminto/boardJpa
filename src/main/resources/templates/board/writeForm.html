@@ -77,9 +77,8 @@
     <script>
         $(function () {
 
+// CK editor
             let CurrentEditor;
-
-            // CKeditor
             ClassicEditor
                 .create( document.querySelector( '#content' ), {
                     ckfinder: {
@@ -104,7 +103,7 @@
                     console.error( error );
                 } );
 
-            // 현재 페이지의 content 길이, img 갯수 count
+// 현재 페이지의 content 길이, img 갯수 count
             function countContent(editorContent) {
                 let result = new Map();
                 result.set("isExceeded", false);
@@ -118,7 +117,7 @@
                 // console.log("imageCount = " + imgCount);
                 // console.log("textContent = " + textContent);
 
-                if (textContent.length > 300) {
+                if (textContent.length > 1000) {
                     result.set("isExceeded", true).set("option", "length").set("count", textContent.length);
                 } else if (imgCount > 5) {
                     result.set("isExceeded", true).set("option", "img").set("count", imgCount);
@@ -127,7 +126,7 @@
                 return result;
             }
 
-            // 카테고리 기본값
+// 카테고리 기본값
             let originValue = $("#categorySelect").data("origin");
             let criValue = $("#categorySelect").data("cricategory");
 
@@ -140,25 +139,23 @@
                 }
             })
 
-
-            // submit 할때 이미지 uuid 추출 후 submit
+// submit
             $("#submitBt").on("click", function (event) {
 
-
+                // 글자 수 이미지 수 검사
                 let countResult = countContent(CurrentEditor.getData());
                 $("#contentLength").val(countResult.get("contentLength"));
                 if (countResult.get("isExceeded")) {
                     if (countResult.get("option") == "length") {
-                        alert("글자수는 최대 300자 까지 허용합니다. 현재 글자수 : " + countResult.get("count"));
+                        alert("글자수는 최대 1000자 까지 허용합니다. 현재 글자수 : " + countResult.get("count"));
                     } else {
                         alert("이미지는 최대 5장 까지 허용합니다. 현재 이미지 수 : " + countResult.get("count"));
                     }
                     return false;
                 }
 
-                let imageUrl = "";
-
                 // <img> 에서 src 추출
+                let imageUrl = "";
                 // (로컬) /images/local/request/da191b23-ef17-4059-b004-c4c78e125903.jpg"
                 // (아마존) "https://s3.ap-northeast-1.amazonaws.com/elasticbeanstalk-ap-northeast-1-655132712060/upload_image/c013e1c3-9733-4704-bb2d-76791c54a56e.jpg"
                 $(".ck-content img").each(function (index, item) {
@@ -178,8 +175,7 @@
 
                     imageUrl += splittedUrl[1] + ",";
                 })
-                console.log("imageUrl = " + imageUrl)
-
+                // console.log("imageUrl = " + imageUrl)
                 $("#uploadImageUrl").val(imageUrl);
             })
 
@@ -233,7 +229,8 @@
         <div class="invalid-feedback" th:errors="*{writer}"> writer 오류</div>
 
         <div class="input-wrapper">
-            <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="is-invalid"></textarea>
+            <textarea id="content" class="form-control" name="content" th:field="*{content}" th:errorclass="is-invalid"
+                      placeholder="글자는 최대 1000자, 이미지는 최대 5 장 까지 허용합니다."></textarea>
             <div class="invalid-feedback" th:errors="*{content}"> content 오류</div>
             <div id="word-count"></div>
         </div>

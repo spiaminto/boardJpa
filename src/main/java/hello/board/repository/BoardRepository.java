@@ -24,7 +24,6 @@ public class BoardRepository {
         return boardMapper.countTotalBoardWithMemberId(criteria, memberId);
     }
 
-
     public void updateViewCount(long id) {
         boardMapper.updateViewCount(id);
     }

@@ -56,7 +56,7 @@
         <file>${LOG_DIR}/syslog/syslog.log</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                aSYS %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger - %msg%n
+                aSYS %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{1} - %msg%n
             </Pattern>
         </layout>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -70,7 +70,7 @@
         <file>${LOG_DIR}/applog/applog.log</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                aApp %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{5} - %msg%n
+                aApp %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{1} - %msg%n
             </Pattern>
         </layout>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -92,7 +92,7 @@
         <!-- 로그 작성 (encoder)-->
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                aERR %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{5} %n[message] %msg%n
+                aERR %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{1} %n[message] %msg%n
             </Pattern>
         </layout>
         <!-- 새 파일 작성 정책 -->
@@ -107,7 +107,7 @@
         <file>${LOG_DIR}/sqllog/sqllog.log</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>
-                aSQL %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{5} - %msg%n
+                aSQL %-5level %d{yy-MM-dd HH:mm:ss.SSS} [%thread] : %30logger{1} - %msg%n
             </Pattern>
         </layout>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

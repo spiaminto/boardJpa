@@ -31,7 +31,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/static/**", "/css/**",
-                        "https://maxcdn.bootstrapcdn.com/**", "/js/ckeditor5/**");
+                        "https://maxcdn.bootstrapcdn.com/**", "/js/ckeditor5/**", "/static-image/**");
 
         registry.addInterceptor(new TempUserCheckInterceptor())
                 .order(2)

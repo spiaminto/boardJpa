@@ -17,8 +17,6 @@ public class MemberSaveForm {
     @Size(max = 16)
     private String username;
 
-//    size 최소값 주어짐.
-//    @NotBlank
     @Size(min = 4, max = 16)
     private String password;
 

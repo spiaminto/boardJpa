@@ -16,14 +16,7 @@ public class UrlBuilder {
 
     // pathVariable id
     private Long id;
-
-    /*
-    url 패턴 ( {variable}: 변수, [...]: 비 필수 )
-    /board /{action} /{criteria.categoryCode} /[{board.Id}] ? currentPage=0 [ &option=option &keyword=keyword ]
-
-    => uri / [catgegory] / [id] ? queryString
-     */
-
+    
     String url = "";
 
     public UrlBuilder() {}

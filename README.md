@@ -15,6 +15,12 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
 아래의 이미지들은 클릭하면 커집니다.
 <br>
 
+## ERD
+<img width="75%" alt="스크린샷 2023-04-10 184713" src="https://user-images.githubusercontent.com/122969954/230877990-0eb65d6a-a88f-45ee-85ba-5780c0d0c0e7.png">
+
+Board 는 Member 에, Comment 는 Board 에 의존하도록 하였습니다.
+따라서 회원 탈퇴 시에 자신이 쓴 글 과 댓글이 자동으로 삭제됩니다. 
+
 ## 기능 
 
 ### ㅇ 글 조회, 작성, 수정, 삭제

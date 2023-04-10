@@ -8,7 +8,7 @@ __테스트용 ID: sample / PW: sample__
 초기에는 학습 내용을 복습하는 것을 목표로 진행하였고, 이후 상용 커뮤니티 게시판에 필요한 기능은 어떤것들이 있을까 고민하며
 기능들을 하나하나 붙여나갔습니다. 
 
-프론트는 thymeleaf 와 jquery, 백은 spring(boot) 를 이용하여 작성했습니다.
+프론트는 thymeleaf 와 jquery, 백은 spring(boot) 를 이용하여 작성했습니다.  
 RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였습니다.  
 
 아래의 이미지들은 클릭하면 커집니다.
@@ -53,7 +53,8 @@ oauth2-client 라이브러리를 이용한 소셜로그인/가입 기능을 포�
  beanvalidation, 자바스크립트 등을 이용하여 글, 댓글, 회원정보 에 간단한 validation 이 적용되어있습니다.
 
 #### ㅇ 로깅
- @Aspect 등 으로 로그를 찍고, logback 라이브러리를 이용하여 로그 출력을 커스텀 하고, 파일로 작성합니다.
+ @Aspect 등 으로 로그를 찍고, logback 라이브러리를 이용하여 로그 출력을 커스텀 하고, 파일로 작성합니다.  
+ 파일은 전체로그, 에러로그, 요청요약 로그 등으로 세분화 하여 작성 해 보았습니다.
  파일로 작성된 로그를 Amazon cloudwatch 로 실시간 스트리밍 합니다. 아래의 cloudwatch 사용 부분을 참고해 주세요.
   
 ## 이용한 서비스
@@ -80,7 +81,6 @@ taillog, bundlelog 요청 시 기본 로그에 애플리케이션의 logback 에
 
 ### ㅇ Amazon CloudWatch
 <img width="50%" alt="CWLOG" src="https://user-images.githubusercontent.com/122969954/230583259-9e501d97-a926-4b83-bb6a-5f94cd4345f9.png">
-
  배포된 애플리케이션의 로그를 쉽게, 실시간으로 확인하기 위해 사용했습니다.
 
  

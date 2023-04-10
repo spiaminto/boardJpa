@@ -23,7 +23,7 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
 
 ## 기능 
 
-### ㅇ 글 조회, 작성, 수정, 삭제
+### ㅇ 게시글 관리
 
 <img width="47%" alt="APPWRITE" src="https://user-images.githubusercontent.com/122969954/230583252-4d7093e5-9dd6-426e-86b8-c0b1fd91c868.png"> <img width="47%" alt="APPHOME" src="https://user-images.githubusercontent.com/122969954/230583227-345c7165-5e56-453a-b832-200eb4f07bf0.png">
 
@@ -38,14 +38,14 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
  업로드 요청된 이미지 파일을 Amazon S3 클라우드 스토리지에 업로드하고, 업로드한 이미지의 정보를 DB 에 저장합니다.  
  이미지 파일의 용량은 파일당 3MB 로 제한했으며, 5장을 초과하여 업로드 할 수 없도록 하였습니다.
 
-### ㅇ 댓글, 대댓글 작성,수정,삭제
+### ㅇ 댓글 관리
 <img width="47%" alt="APPCOMMENT" src="https://user-images.githubusercontent.com/122969954/230583219-462ba81b-6ccb-48db-9b00-2084885208fd.png"><img width="47%" alt="APPMYCOMMENT" src="https://user-images.githubusercontent.com/122969954/230873920-2fc7b354-955a-48a2-a990-6e90bb4753a7.png">
 
  ajax 를 이용해 댓글, 대댓글(댓글의 댓글) 기능을 구현했습니다.  
  대댓글은 대댓글의 대상이 되는 댓글의 닉네임이 표시되도록 하였습니다.  
  내가 쓴 댓글 목록을 확인 할 수 있으며, 해당 댓글의 글로 바로 이동하고, 댓글을 누를 경우 페이지 이동후 해당 댓글까지 자동으로 스크롤 합니다.
 
-### ㅇ 회원 가입,수정,탈퇴
+### ㅇ 회원 관리
 <img width="47%" alt="APPLOGIN" src="https://user-images.githubusercontent.com/122969954/230583236-749c8fa3-ab50-409e-a802-b0262cff2f7a.png"><img width="47%" alt="APPOAUTHSIGNIN" src="https://user-images.githubusercontent.com/122969954/230873923-aad91c47-bed3-4560-90d8-233842dbb46c.png">
 
  로그인은 spring security 라이브러리를 이용합니다.  

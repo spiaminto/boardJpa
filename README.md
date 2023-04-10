@@ -54,6 +54,8 @@ oauth2-client 라이브러리를 이용한 소셜로그인/가입 기능을 포�
  beanvalidation, 자바스크립트 등을 이용하여 글, 댓글, 회원정보 에 간단한 validation 이 적용되어있습니다.
 
 ### ㅇ 로깅
+<img width="65%" alt="스크린샷 2023-04-10 183227" src="https://user-images.githubusercontent.com/122969954/230875569-12e1815f-c496-4a45-b646-4afc37fa887c.png">
+
  @Aspect 등 으로 로그를 찍고, logback 라이브러리를 이용하여 로그 출력을 커스텀 하고, 파일로 작성합니다.  
  파일은 전체로그, 에러로그, 요청요약 로그 등으로 세분화 하여 작성 해 보았습니다.  
  파일로 작성된 로그를 Amazon cloudwatch 로 실시간 스트리밍 합니다. 아래의 cloudwatch 사용 부분을 참고해 주세요.

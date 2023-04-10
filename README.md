@@ -11,8 +11,8 @@ __테스트용 ID: sample / PW: sample__
 단순히 기능을 붙이는 것을 넘어 어떤식으로 동작해야 효율적일지, 어떤식으로 작성해야 깔끔하고 유지보수하기 좋을지 나름대로 고민하고 개선하려 노력하였습니다.
 
 사용 기술 :  
- Spring(Boot), Gradle, Mybatis, MySql, SpringSecurity 및 Oauth2Client 라이브러리  
- Thymeleaf, JavaScript, Jquery, HTML, CSS, BootStrap  
+ Spring(Boot),  Gradle,  Mybatis,  MySql,  SpringSecurity 및 Oauth2Client 라이브러리  
+ Thymeleaf,  JavaScript,  Jquery,  HTML,  CSS,  BootStrap  
  AWS  
  
 

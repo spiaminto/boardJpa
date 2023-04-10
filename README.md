@@ -18,7 +18,7 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
 ## ERD
 <img width="75%" alt="스크린샷 2023-04-10 184713" src="https://user-images.githubusercontent.com/122969954/230877990-0eb65d6a-a88f-45ee-85ba-5780c0d0c0e7.png">
 
-Board 는 Member 에, Comment 는 Board 에 의존하도록 하였습니다.
+게시글 은 회원 에, 댓글 은 게시글 에 의존하도록 하였습니다.
 따라서 회원 탈퇴 시에 자신이 쓴 글 과 댓글이 자동으로 삭제됩니다. 
 
 ## 기능 

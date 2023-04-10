@@ -1,4 +1,4 @@
-# board
+# 커뮤니티 게시판 프로젝트
 
 __테스트용 ID: sample / PW: sample__
 ### 링크 : [프로젝트 바로가기](http://springboard-env.eba-x3sau5v7.ap-northeast-1.elasticbeanstalk.com/boards)  

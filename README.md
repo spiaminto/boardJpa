@@ -12,14 +12,14 @@ __테스트용 ID: sample / PW: sample__
 프론트는 thymeleaf 와 jquery, 백은 spring(boot) 를 이용하여 작성했습니다.  
 RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였습니다.  
 
+학습하면서 작성한 코드라, 주석이 많이 달려있습니다. 해당 주석은 다른곳에 정리한 뒤, 지워나가도록 하겠습니다. 불편을 드려 죄송합니다.  
+
 아래의 이미지들은 클릭하면 커집니다.
 <br>
 
 ## ERD
 <img width="75%" alt="스크린샷 2023-04-10 184713" src="https://user-images.githubusercontent.com/122969954/230877990-0eb65d6a-a88f-45ee-85ba-5780c0d0c0e7.png">
 
-게시글 은 회원 에, 댓글 은 게시글 에 의존하도록 하였습니다.
-따라서 회원 탈퇴 시에 자신이 쓴 글 과 댓글이 자동으로 삭제됩니다. 
 
 ## 기능 
 

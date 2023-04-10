@@ -26,6 +26,7 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
   
 #### ㅇ 이미지 업로드
 <img width="50%" alt="APPIMAGE" src="https://user-images.githubusercontent.com/122969954/230591439-e8c95f69-3304-4066-9c41-ea92ddc72cb0.png">
+
  ckeditor5 의 이미지 업로드 기능을 이용합니다.
  업로드 요청된 이미지 파일을 Amazon S3 클라우드 스토리지에 업로드하고, 업로드한 이미지의 정보를 DB 에 저장합니다.  
  이미지 파일의 용량은 파일당 3MB 로 제한했으며, 5장을 초과하여 업로드 할 수 없도록 하였습니다.

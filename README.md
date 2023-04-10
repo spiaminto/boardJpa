@@ -3,6 +3,7 @@
 __테스트용 ID: sample / PW: sample__
 ### 링크 : [프로젝트 바로가기](http://springboard-env.eba-x3sau5v7.ap-northeast-1.elasticbeanstalk.com/boards)  
 
+
 공부하면서 배운것, 알게된  것들을 확인하고 사용해보기 위해 만든 프로젝트 입니다. 
 
 초기에는 학습 내용을 복습하는 것을 목표로 진행하였고, 이후 상용 커뮤니티 게시판에 필요한 기능은 어떤것들이 있을까 고민하며
@@ -32,14 +33,14 @@ RDBMS 는 mySql 을 사용하였고, mybatis 를 이용해 sql 을 처리하였�
  이미지 파일의 용량은 파일당 3MB 로 제한했으며, 5장을 초과하여 업로드 할 수 없도록 하였습니다.
 
 #### ㅇ 댓글, 대댓글 작성,수정,삭제
-<img width="50%" alt="APPCOMMENT" src="https://user-images.githubusercontent.com/122969954/230583219-462ba81b-6ccb-48db-9b00-2084885208fd.png">
+<img width="44%" alt="APPCOMMENT" src="https://user-images.githubusercontent.com/122969954/230583219-462ba81b-6ccb-48db-9b00-2084885208fd.png"><img width="44%" alt="APPMYCOMMENT" src="https://user-images.githubusercontent.com/122969954/230873920-2fc7b354-955a-48a2-a990-6e90bb4753a7.png">
 
  ajax 를 이용해 댓글, 대댓글(댓글의 댓글) 기능을 구현했습니다.  
  대댓글은 대댓글의 대상이 되는 댓글의 닉네임이 표시되도록 하였습니다.  
  내가 쓴 댓글 목록을 확인 할 수 있으며, 해당 댓글의 글로 바로 이동하고, 댓글을 누를 경우 페이지 이동후 해당 댓글까지 자동으로 스크롤 합니다.
 
 #### ㅇ 회원 가입,수정,탈퇴
-<img width="50%" alt="APPLOGIN" src="https://user-images.githubusercontent.com/122969954/230583236-749c8fa3-ab50-409e-a802-b0262cff2f7a.png">
+<img width="44%" alt="APPLOGIN" src="https://user-images.githubusercontent.com/122969954/230583236-749c8fa3-ab50-409e-a802-b0262cff2f7a.png"><img width="44%" alt="APPOAUTHSIGNIN" src="https://user-images.githubusercontent.com/122969954/230873923-aad91c47-bed3-4560-90d8-233842dbb46c.png">
 
  로그인은 spring security 라이브러리를 이용합니다.  
 oauth2-client 라이브러리를 이용한 소셜로그인/가입 기능을 포함 합니다.  
@@ -67,7 +68,7 @@ Amazon CloudWatch 에 커스텀 된 로그를 스트리밍 하게 설정했습�
 taillog, bundlelog 요청 시 기본 로그에 애플리케이션의 logback 에서 작성한 로그파일도 같이 보여주도록 설정하였습니다.
 
 #### ㅇ Amazon S3
-<img width="50%" alt="S3HOME" src="https://user-images.githubusercontent.com/122969954/230583309-0973e9e3-e702-470e-a064-b48fa9a42453.png">
+<img width="50%" alt="S3STOREAGE" src="https://user-images.githubusercontent.com/122969954/230873925-d63186ff-fefe-4176-87c1-7643423c8c79.png">
 
  이미지 파일을 클라우드 스토리지에 업로드 하기 위해 사용했습니다.  
  로컬 테스트는 /upload_image_test , 배포된 애플리케이션 에서는 /upload_image 로 이미지 파일을 업로드 합니다.  

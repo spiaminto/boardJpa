@@ -13,10 +13,7 @@ __테스트용 ID: sample / PW: sample__
 사용 기술 :  
  Spring(Boot),  Gradle,  Mybatis,  MySql,  SpringSecurity 및 Oauth2Client 라이브러리  
  Thymeleaf,  JavaScript,  Jquery,  HTML,  CSS,  BootStrap  
- AWS  
- 
-
-학습하면서 작성한 코드라, 주석이 많이 달려있습니다. 해당 주석은 다른곳에 정리한 뒤, 지워나가도록 하겠습니다. 불편을 드려 죄송합니다.  
+ AWS
 
 아래의 이미지들은 클릭하면 커집니다.
 <br>

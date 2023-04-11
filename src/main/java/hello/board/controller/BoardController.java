@@ -28,26 +28,23 @@ import java.util.Map;
 
 @Slf4j
 @Controller
-// final, @NonNull 필드만 받는 생성자
 @RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
     private final ImageService imageService;
 
-
     @RequestMapping("/")
     public String index() {
         return "redirect:/boards";
     }
 
-    @GetMapping("/boards/ex")
+    @GetMapping("/boards/ex") // 에러 테스트용 
     public String errorTest(@RequestParam(required = false) String param) {
         throw new IllegalStateException("Example Exception with Param");
     }
-
-    // for amazon loadBalancer healthCheck
-    @RequestMapping("/boards/healthcheck")
+    
+    @RequestMapping("/boards/healthcheck") // 아마존 로드밸런서 응답용
     @ResponseBody
     public ResponseEntity<String> healthCheck() {
         return new ResponseEntity<>("ok", HttpStatus.OK);
@@ -173,7 +170,7 @@ public class BoardController {
 
         log.info("isNotice {}", form.getIsNotice());
 
-        // edit 의 경우, write 와 다르게 글에서 직접 /edit 로 들어올 수 있어 처리함(닉으로 한번 검사하긴 함)
+        // edit 의 경우, write 와 다르게 글에서 직접 /edit 로 들어올 수 있어 처리(닉으로 한번 검사하긴 함)
         if (form.getIsNotice() && !request.isUserInRole("ROLE_ADMIN")) {
             // 바꾼 카테고리 다시 복원
             form.setCategory(Category.NOTICE);

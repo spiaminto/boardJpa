@@ -73,7 +73,7 @@ public class ImageController {
     }
 
     /**
-     * multipartfile.size() 를 받아 3MB 미만이면 true, 초과면 false
+     * multipartFile.size() 를 받아 3MB 미만이면 true, 초과면 false
      */
     public boolean imageSizeCheck(long size) {
         double sizeMega = Math.round(size / 1048576d * 100) / 100d;

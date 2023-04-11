@@ -29,7 +29,11 @@ class MemberServiceTest {
     @Test
     void syncUserName() {
 
-        // CommentRepository 에 syncTarget() 의 //Test 주석을 풀고 테스트.
+// CommentRepository 에 syncTarget() 에 복사후 주석풀고 테스트
+//        if (memberId == 1L) {
+//            throw new RuntimeException("test exception");
+//        }
+
 //        memberService.syncUserName(1L, "test", "test");
 
         // 처리후 재조회 (롤백여부 확인)
@@ -38,6 +42,11 @@ class MemberServiceTest {
 
     @Test
     void deleteMember() {
+//        MemberRepository.deleteMember()
+//        if (id == 1L) {
+//            throw new RuntimeException("Test Exception");
+//        }
+
         memberService.deleteMember(1L);
 
         // 재조회

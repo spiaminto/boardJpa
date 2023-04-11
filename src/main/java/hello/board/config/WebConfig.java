@@ -7,23 +7,28 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-// WebMvcConfigurer: Spring Interceptor 사용을 위해 구현
-
+/**
+ * WebMvcConfigurer 구현체.
+ * 인터셉터 등록과 리소스 요청경로 수정에 사용됨.
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    // 이미지 요청 url
-    private String resourceRequestUrl = "/local/image/**";
-    // 이미지 로컬 요청 경로
-    private String resourceLocation = "file:///C:/Users/felix/.Study/Spring_Practice/board_exfile/";
+    private String resourceRequestUrl = "/local/image/**"; // 브라우저에서 이미지 요청 url
+    private String resourceLocation = "file:///C:/Users/felix/.Study/Spring_Practice/board_exfile/"; // 이미지 로컬 요청 경로
 
-    // 이미지 업로드 시 요청되는 url 을 로컬 요청으로 변경
+    /**
+     * 브라우저에서 (로컬)이미지 요청시 url 을 로컬 요청으로 변경
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler(resourceRequestUrl)
                 .addResourceLocations(resourceLocation);
     }
 
+    /**
+     * 인터셉터 등록
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 

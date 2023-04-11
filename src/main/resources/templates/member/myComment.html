@@ -81,7 +81,7 @@
     <script>
         $(function () {
 
-            // 내부 네비바 active
+// 내부 네비바 active
             $(".nav-pills .nav-link").on({
                 mouseenter: function () {
                     $(this).addClass("active");
@@ -91,20 +91,18 @@
                 }
             });
 
-            // 카테고리 선택 시 바로전송
-            // 폼 submit 하면 categoryCode 파라미터가 붙으므로, 직접 리디렉션
+// 카테고리 선택 시 바로전송
             $("#myPageCategorySelect").on("change", function () {
                 $("#myPageCategoryForm").submit();
             })
 
-            // 검색
+// 검색
             let searchForm = $("#searchForm");
 
             $("#searchForm>button").on("click", function (event) {
                 event.preventDefault();
 
                 // option 확인 .find("selector")
-                // 0, -0, null, false, NaN, undefined, "" 을 제외한 모든 값은 true 다 (비어있지 않은 객체 포함)
                 if (!searchForm.find("option:selected").val()) {
                     alert("검색종류를 선택하세요");
                     return false;
@@ -119,12 +117,10 @@
                 searchForm.submit();
             })
 
-            // 페이지네이션 액티브를 위한 변수
+// 페이지네이션 액티브
             let currentPage = $("#pageInfo>input:first-child").attr("value");
             let startNum = $(".page-link-number:first-child").attr("data-pagenum");
-            // console.log("curentPage = " + currentPage + " startNum = " + startNum)
 
-            // 페이지네이션 액티브
             if(currentPage != null) {
                 $(".page-item-number").each(function () {
                     if (startNum == currentPage) {
@@ -134,7 +130,7 @@
                 })
             }
 
-            // 페이지네이션 링크 클릭
+// 페이지네이션 링크 클릭
             $(".page-link").on("click", function (event) {
                 event.preventDefault();
 
@@ -214,15 +210,13 @@
             </tr>
             </thead>
             <tbody>
-            <!-- BoardController.pagedList() 에서 Model 객체에 "pageMaker" 바인딩하여 전달됨 -->
-            <!-- 댓글은 검색과 페이징이 readLink 클릭 이후에 유지되지 않는다.-->
+
             <tr th:each="item : ${commentList}"
                 th:with="currentPage=${param.currentPage == null} ? 1 : ${param.currentPage}">
                 <td id="commentNum" th:text="${pageMaker.totalCount - criteria.contentPerPage * (pageMaker.currentPage - 1) - itemStat.index}">id</td>
 
                 <td>
                     <div>
-                        <!-- if(Category == ALL) categoryCode = "" ;-->
                         <span class="category-label" th:if="${pageMaker.categoryCode == 'all'}" th:text="${'[' + item.category.getCategoryName() + ']'}"></span>
                         <a th:text="${boardList.get(itemStat.index).title}"
                            th:href="@{|/board/${item.boardId}|}">
@@ -244,7 +238,6 @@
         </table>
 
 
-        <!-- a 태그들의 th:href 는 검색중이 아닐때만 사용, 검색중일때는 자바스크립트 사용 (if selectOption != none) -->
         <!-- pagination -->
         <div class="container">
             <ul class="pagination col justify-content-center" id="paginationContainer">
@@ -264,13 +257,12 @@
                 </li>
             </ul>
         </div>
+
     </div>
 
     <!-- 검색창 -->
     <div class="row justify-content-center input-group" style="clear:right;width:500px;margin:auto">
-        <!-- th:action 태그는 javascript 를 통해 submit 할떄 적용되지 않는 것으로 보임 -->
-        <!-- method = get 이므로 form 데이터가 queryString 에 붙어나감 -->
-        <form id="searchForm" action="/board/list" method="get"
+        <form id="searchForm" method="get"
               th:action="@{|/member/${memberId}/comments|}" th:object="${criteria}">
             <input type="hidden" name="currentPage" value="1">
             <select th:field="*{option}" name="option" class="form-select" id="searchOption">

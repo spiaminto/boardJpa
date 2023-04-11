@@ -38,17 +38,14 @@ public class CommentRepository {
         return commentMapper.findPagedCommentWithMemberId(criteria, memberId);
     }
 
-    // DB 에 저장되는 commentID 를 전달하기 위해 Comment 리턴 (마이바티스에서 id 자동세팅)
     public Comment save(Comment comment) {
-        int rowNum = commentMapper.save(comment);
-        log.info("save() row = {}", rowNum);
-
+        commentMapper.save(comment);
         return comment;
     }
 
     public int update(Long commentId, Comment updateParam) {
         int rowNum = commentMapper.update(commentId, updateParam);
-        log.info("update() row = {}", rowNum);
+//        log.info("update() row = {}", rowNum);
         return rowNum;
     }
 
@@ -57,14 +54,8 @@ public class CommentRepository {
     }
 
 
-    public int syncTarget(Long memberId, String udpateName) {
-
-//         ForTest
-//        if (memberId == 1L) {
-//            throw new RuntimeException("test exception");
-//        }
-
-        return commentMapper.syncTarget(memberId, udpateName);
+    public int syncTarget(Long memberId, String updateName) {
+        return commentMapper.syncTarget(memberId, updateName);
     }
 
     public int deleteReplyByTargetId(Long targetId) {
@@ -73,13 +64,13 @@ public class CommentRepository {
 
     public int delete(Long commentId) {
         int rowNum = commentMapper.delete(commentId);
-        log.info("delete() row = {}", rowNum);
+//        log.info("delete() row = {}", rowNum);
         return rowNum;
     }
 
     public int deleteReply(Long id) {
         int rowNum = commentMapper.deleteReply(id);
-        log.info("deleteReply() row = {}", rowNum);
+//        log.info("deleteReply() row = {}", rowNum);
         return rowNum;
     }
 

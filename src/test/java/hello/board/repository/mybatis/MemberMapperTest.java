@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.*;
 @Slf4j
 public class MemberMapperTest {
 
-    // 테스트 이외에 @Autowired 사용하지 않도록 한다.
     @Autowired
     MemberMapper memberMapper;
 

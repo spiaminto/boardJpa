@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class CommentSaveForm {
 
     private Long boardId;       // board.id 를 참조하는 fk
-    private Long memberId;      // board.memberId 를 참조, 글쓴이의 id / principal.member.id 사용?
+    private Long memberId;      // 작성자의 Member.id
     private Long targetId;      // 대댓글의 target 의 id (없으면 0)
 
     private String  writer;     // 글쓴이의 member.username
@@ -20,7 +20,6 @@ public class CommentSaveForm {
     @NotBlank
     private String content;
 
-    // 계층 답글
     private Long groupId;       // 모댓글 commentId (자신이 모댓글이면 자신의 commentId)
     private Integer groupOrder;     // 대댓글일때, 대댓글 순서
     private Integer groupDepth;     // 모댓글 0, 대댓글 1

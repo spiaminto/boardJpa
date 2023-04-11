@@ -23,9 +23,9 @@ public class KakaoUserInfo implements OAuth2UserInfo{
         return String.valueOf(attributes.get("id"));
     }
 
-    // kakao 는 name X nickname O
     @Override
     public String getName() {
+        // kakao 는 name X nickname O
         return (String) kakaoProfile.get("nickname");
     }
 

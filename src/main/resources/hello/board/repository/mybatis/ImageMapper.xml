@@ -14,7 +14,7 @@
     </select>
 
     <insert id="saveImage" useGeneratedKeys="true" keyProperty="imageId">
-    <!-- board_id 를 null 로 입력하면 DEFAULT 가 활성화 되지 않는다.-->
+        <!-- board_id 를 null 로 입력하면 DEFAULT 가 활성화 되지 않는다.-->
         insert into image (member_id, store_image_name, upload_image_name, image_address)
         values (#{memberId}, #{storeImageName}, #{uploadImageName}, #{imageAddress})
     </insert>

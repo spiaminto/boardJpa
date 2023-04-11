@@ -32,7 +32,7 @@ public class LogTraceAspect {
 
     @Around("(allController() || allService() || allRepository()) && ignoreHealthCheck()")
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
-        TraceStatus status = null;  // catch 문 사용을 위해 외부에서 선언
+        TraceStatus status = null;
         Object[] params = null;
         try {
             String message = joinPoint.getSignature().toShortString();
@@ -40,7 +40,6 @@ public class LogTraceAspect {
 
             status = logTrace.begin(message);
 
-            // Reflection invoke(Method), returns Method.return
             Object result = joinPoint.proceed();
 
             logTrace.end(status);

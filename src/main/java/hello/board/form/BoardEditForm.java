@@ -17,17 +17,12 @@ public class BoardEditForm {
     @Size(max = 30)
     private String title;
     @NotBlank
-    @Size(max = 2200, message = "Content 제한량 초과")
+    @Size(max = 2200, message = "Content 제한량 초과") // 이미지 5장 기준 약 1000 자 정도 예약사용.
     private String content;
-
     private String contentLength;
     private String writer;
-
-    // DB 에 진짜로 저장할 이미지url
-    private String imageName;
+    private String imageName; // 실제로 등록된 이미지 이름 문자열
     private Boolean isNotice;
-
-    // Criteria.category 와 동시에 바인딩되는듯
     private Category category;
     
 

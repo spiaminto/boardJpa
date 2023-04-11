@@ -57,9 +57,7 @@ public class BoardService {
     }
 
     public int deleteBoard(Long id) {
-
-        // commentRepository.deleteByBoardId() onCascade
-        return boardRepository.delete(id);
+        return boardRepository.delete(id); // comment delete onCascade
     }
 
     /**
@@ -70,8 +68,8 @@ public class BoardService {
      */
     public boolean isSameWriter(Member currentMember, Board findBoard) {
 
-        //관리자
         if (currentMember.getUsername().equals("admin")) {
+            //관리자
             return true;
         }
 

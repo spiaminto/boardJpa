@@ -33,7 +33,9 @@ public enum Category {
 
     Category(String code, String categoryName) {this.code = code; this.categoryName = categoryName;}
 
-    // 해당 of 메서드를 통해 String code 로 Category category 를 리턴한다.
+    /**
+     * String categoryCode 를 받아 Category category 를 리턴
+     */
     public static Category of(String categoryCode) {
         return Category.valueOf(CATEGORY_MAP.get(categoryCode));
     }

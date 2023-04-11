@@ -32,15 +32,13 @@ public class Member {
 
     /**
      * Oauth2 Member 의 username 을 set(변경)
-     * @param username
      */
     public void setOauth2Username(String username) {
         this.username = username;
     }
 
     /**
-     * 암호화된 password set 용. 보완필요
-     * @param password
+     * 암호화된 password set 용.
      */
     public void setPassword(String password) {
         this.password = password;

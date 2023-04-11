@@ -10,13 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-
+//@EnableWebSecurity(debug = true)  // 스프링 시큐리티 로그
 @Configuration
 @EnableWebSecurity // 스프링 시큐리티 필터를 스프링 필터체인에 등록
-//@EnableWebSecurity(debug = true)  // 스프링 시큐리티 로그
-@EnableGlobalMethodSecurity(securedEnabled = true)  // @Secured 어노테이션 사용 및 활성화
 @RequiredArgsConstructor
-// 스프링 시큐리티 필터
 public class SecurityConfig {
 
     private final AuthenticationFailureHandler customFailureHandler;
@@ -37,68 +34,37 @@ public class SecurityConfig {
         // 요청 인증 방식 설정
         http.authorizeRequests()
 
-                // 공지 & 어드민 관련 -> 삭제됨
-
-                // 회원관련 로그인 제외 (우선순위 ↑)
-                .antMatchers("/member/add", "/member/add-oauth").permitAll()
-
-                // 글쓰기
-                .antMatchers("/board/write").authenticated()
-
-                // 글읽기
-                .antMatchers("/board/*").permitAll()
-
-                // 로그인 필수 (컨트롤url 이 있을떄)
-                .antMatchers("/*/*/edit", "/*/*/delete").authenticated()
-
-                // 모두 허용
-                .anyRequest().permitAll()
+                .antMatchers("/member/add", "/member/add-oauth").permitAll() // 회원가입
+                .antMatchers("/board/write").authenticated() // 글쓰기
+                .antMatchers("/board/*").permitAll() // 글조회
+                .antMatchers("/*/*/edit", "/*/*/delete").authenticated() // 정보변경, 삭제
+                .anyRequest().permitAll() // 나머지
 
                 .and()
 
                 .formLogin()
-
-                // input name = loginId
-                .usernameParameter("loginId")
-
-                // GET /login, loginForm 불러오는 요청 커스텀
+                .usernameParameter("loginId") // username 대신 loginId
                 .loginPage("/loginForm")
-
-                // 로그인 처리부 요청 커스텀(loginForm 의 action). 해당url 로그인 요청은 UserDetailsService 로 처리
-                // 기본값은 /login 이라는데, /login POST 요청하면 지원안한다고 에러남;
-                .loginProcessingUrl("/loginProc")
-
-                // 로그인 실패처리
-                .failureHandler(customFailureHandler)
-
+                .loginProcessingUrl("/loginProc") // loginForm.action, POST /login 하면 에러남.
                 .defaultSuccessUrl("/boards")
+                .failureHandler(customFailureHandler)
 
                 .and()
 
-                .logout().permitAll()
-
-                    .deleteCookies("JSESSIONID") // 로그아웃 시 JSESSIONID 제거
-                    .invalidateHttpSession(true) // 로그아웃 시 세션 종료
-                    .clearAuthentication(true) // 로그아웃 시 권한 제거
-
+                .logout()
+                .permitAll()
                 .logoutUrl("/logout")
-
                 .logoutSuccessUrl("/boards")
+                .deleteCookies("JSESSIONID") // 로그아웃 시 JSESSIONID 제거
+                .invalidateHttpSession(true) // 로그아웃 시 세션 종료
+                .clearAuthentication(true) // 로그아웃 시 권한 제거
 
                 .and()
 
                 .oauth2Login()
-
-                // 딱히 의미 업음? (로그인 폼을 provider 가 제공)
                 .loginPage("/loginForm")
-
                 .defaultSuccessUrl("/login/check")
-
-                // code 전송 부분을 자동화 하고, access token + 사용자 프로필 정보를 바로 받는다.
-                .userInfoEndpoint()
-
-                // 이 정보를 통한 후처리는 DefaultOauth2UserService principalOauth2UserService.loadUser() 에서 담당
-                .userService(principalOauth2UserService);
+                .userInfoEndpoint().userService(principalOauth2UserService); // 인증한 사용자 정보 설정 및 처리
 
         return http.build();
     }

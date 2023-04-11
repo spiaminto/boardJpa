@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * Http 요청 로그
+ */
 @Slf4j
 public class HttpLogInterceptor implements HandlerInterceptor {
 
@@ -24,7 +27,6 @@ public class HttpLogInterceptor implements HandlerInterceptor {
             log.info("{} {}?{} session = {}", method, requestURI, queryString, session);
         }
 
-        // 다음 인터셉터 진행
         return true;
     }
 }

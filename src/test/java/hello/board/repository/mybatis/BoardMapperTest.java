@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-// save 를 모든 테스트에서 사용
-
 // 스프링 컨테이너를 이용해 트랜잭션
 @SpringBootTest
 @Transactional
@@ -129,7 +127,6 @@ class BoardMapperTest {
 
     @Test
     public void testDelete() {
-
         int row = boardMapper.delete(10L);
         log.info("effected row = {}", row);
     }

@@ -43,7 +43,6 @@
         where login_id = #{loginId}
     </select>
 
-    <!--굳이 password 까지 찾을 필요 있을까? (암호화함) -->
     <select id="findByUsername" resultType="Member">
         select * from member
         where username = #{username}

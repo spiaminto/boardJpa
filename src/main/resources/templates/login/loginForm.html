@@ -86,21 +86,15 @@
         }
 
     </style>
-    <!-- javascript 에서 thymeleaf 변수 접근하는 script -->
     <script th:inline="javascript">
+        <!-- javascript 에서 thymeleaf 변수 접근 -->
         /*<![CDATA[*/
-
         // model.setAttribute("isCatched", "true")
         const isCatched = [[${isCatched}]];
-        // queryString
-        const redirectURL = [[${param.redirectURL}]];
         const message = [[${msg}]];
-
-        const isValidRequest = [[${session.isValidRequest}]];
         /*]]>*/
 
-        // console.log("message = " + message + " redirectURL = " + redirectURL
-        //     + " isValidRequest = " + isValidRequest + "isCatched = " + isCatched);
+        // console.log("message = " + message + "isCatched = " + isCatched);
 
         // Spring security 에 의해 catch 된 login 요청인지 확인
         if (isCatched == "true") {
@@ -113,13 +107,13 @@
 
         window.addEventListener("load", function () {
 
-            // alert
+// alert
             let alertMessage = document.getElementById("globalAlertMessage").dataset.alertmessage;
             if (alertMessage) {
                 alert(alertMessage);
             }
 
-            // 카카오 이벤트
+// 카카오 이벤트
             document.getElementById("kakaoLoginBt").addEventListener("click", function () {
 
                 // 카카오 계정 confirm, No 시 이벤트 취소
@@ -146,23 +140,17 @@
 
     <form id="loginForm" action="item.html" th:action="@{/loginProc}" th:object="${loginForm}" method="post" class="form">
 
-        <div th:if="${#fields.hasGlobalErrors()}" id="globalError">
-            <p class="field-error" th:each="err : ${#fields.globalErrors()}"
-               th:text="${err}">전체 오류 메시지</p>
-        </div>
         <div class="form-floating mb-3">
             <input type="text" id="loginId" th:field="*{loginId}" th:value="${loginId}"
                    th:errorclass="is-invalid" class="form-control" placeholder="로그인 ID">
             <label for="loginId">로그인 ID</label>
-            <div class="invalid-feedback"> 로그인 ID 를 입력해 주세요(최대 8자)</div>
-            <!--th:errors 에러가 발생할 경우 렌더링 + 메시지 출력 -->
-            <!--<div class="field-error" th:errors="*{loginId}" />-->
+            <div class="invalid-feedback"> 로그인 ID 를 입력해 주세요(최대 16자)</div>
         </div>
         <div class="form-floating mb-3">
             <input type="password" id="password" th:field="*{password}"
                    th:errorclass="is-invalid" class="form-control" placeholder="비밀번호">
             <label for="password">비밀번호</label>
-            <div class="invalid-feedback"> 비밀번호를 입력해 주세요(최소 4 ~ 최대 12자)</div>
+            <div class="invalid-feedback"> 비밀번호를 입력해 주세요(최소 4 ~ 최대 16자)</div>
         </div>
         <div th:if="${springSecurityErrorMessage != null}">
             <p class="field-error" th:text="${springSecurityErrorMessage}">로그인 오류 메시지</p>

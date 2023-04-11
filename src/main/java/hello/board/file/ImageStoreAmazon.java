@@ -40,40 +40,39 @@ public class ImageStoreAmazon implements ImageStore{
         return "amazonS3";
     }
 
-    // 파일 주소 (S3 주소)
+    /**
+     * 이미지 파일의 S3 주소 받아오기
+     */
     public String createImageAddress(String storeImageName) {
         return amazonS3.getUrl(bucketDir, innerBucketDir + storeImageName).toString();
     }
 
-    // 서버에 저장할 파일명 작성
+    /**
+     * 서버에 저장할 파일 이름 생성
+     */
     public String createStoreImageName(String originalImageName) {
         String uuid = UUID.randomUUID().toString();
         String ext = extractExt(originalImageName);
         return uuid + ext;
     }
 
-    // 확장자 추출
+    /**
+     * 확장자 추출
+     */
     public String extractExt(String originalImageName) {
-        // 마지막. 의 index(position)
         int position = originalImageName.lastIndexOf(".");
-        // 해당 position 기준으로 자름. (position 포함)
         String ext = originalImageName.substring(position);
         return ext;
     }
-
-    // 단일 업로드 CKeditor
 
     public Image storeImage(Long memberId, MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) return null;
         String contentType = "";
 
-        // uploadImageName: 업로드 사진 이름
         String uploadImageName = multipartFile.getOriginalFilename();
-        // 서버에 저장할 사진 이름 (uuid + ext)
         String storeImageName = createStoreImageName(uploadImageName);
 
-        //content type을 지정해서 올려주지 않으면 자동으로 "application/octet-stream"으로 고정되어
-        // 링크 클릭시 웹에서 열리는게 아니라 자동 다운이 시작됨.
+        //content type을 지정하지 않으면 자동으로 "application/octet-stream"으로 고정
         switch (extractExt(multipartFile.getOriginalFilename())) {
             case "jpeg":
                 contentType = "image/jpeg";
@@ -88,20 +87,15 @@ public class ImageStoreAmazon implements ImageStore{
                 contentType = "text/csv";
                 break;
         }
-
-
         try {
             ObjectMetadata metadata = new ObjectMetadata();
-            // 아마존 파일 까보니 metadata 를 반드시 지정하라고 적혀있음.
-            metadata.setContentType(contentType);
-            // contentLength 지정안하면 콘솔에 메시지뜸.
-            metadata.setContentLength(multipartFile.getSize());
+            metadata.setContentType(contentType); // 아마존 파일에 metadata 를 반드시 지정하라고 적혀있음.
+            metadata.setContentLength(multipartFile.getSize()); // contentLength 지정안하면 콘솔에 메시지뜸.
 
-            // CannedAccessControlList public 으로 설정해야 모두 접근가능
             amazonS3.putObject(new PutObjectRequest(bucketDir, innerBucketDir + storeImageName, multipartFile.getInputStream(), metadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
             
-            // 아마존 doc 에 있던 예외처리 + IOEx
+        // 아마존 doc 에 있던 예외처리 + IOEx
         } catch (AmazonServiceException e) {
             log.info("storeImage exception = {}, message = {}", e, e.getMessage());
         } catch (SdkClientException e) {
@@ -111,18 +105,16 @@ public class ImageStoreAmazon implements ImageStore{
             e.printStackTrace();
         }
 
-        // amazonS3 에 저장된 이미지의 url, 저장 되고 나서 호출.
         String imageAddress = createImageAddress(storeImageName);
 
-        // DB 에 저장을 위한 Image 객체 (boardId = 0L), 일단 임시로 request url 을 동일하게 설정했음
+        // DB 에 저장용 Image (boardId = 0)
         Image image = Image.builder()
                 .uploadImageName(uploadImageName)
                 .storeImageName(storeImageName)
                 .imageAddress(imageAddress)
-                .imageRequestUrl(imageAddress)
+                .imageRequestUrl(imageAddress) // imageRequestUrl = imageAddress
                 .memberId(memberId).build();
 
-        // 사진 정보 담은 Image 객체 반환
         return image;
     }
 

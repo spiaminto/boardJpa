@@ -104,6 +104,9 @@ commit 24.1
 commit 24.2
     파일정리, readme 작성, 버그수정
 
+commit 24.3
+    주석, 코드, 파일 정리
+
 
 
 

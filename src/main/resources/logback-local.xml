@@ -1,44 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-<!-- logback-local.xml 이면 스프링이 자동인식, properteis 읽음 / logback.xml 은 스프링 띄우기 전이라 properties 못읽음-->
 
-<!--@ TimeBasedRollingPolicy-->
-    <!--
-    @ TimeBasedRollingPolicy
-        %d = dateTime 으로 치환된다.
-        application 동작중 log 를 syslog.log 파일에 쌓다가 자정에 해당 패턴의 파일에 아카이브 된다.
-            maxHistory 30 = 30일까지 보관후, 다음 아카이빙때 가장 오래된 아카이브 삭제
-    -->
-<!--@ Pattern (https://logback.qos.ch/manual/layouts.html#conversionWord)-->
-    <!--
-    @ Pattern (https://logback.qos.ch/manual/layouts.html#conversionWord)
-
-        % FM CW{ OPTION }
-
-        Conversion Word
-            %logger{length} : 로거 (클래스)이름 출력.
-                length == 0 : 클래스 이름만 출력
-                length !=0 : 패키지+클래스 명을 length 길이 까지 출력, 전체 길이가 length 보다 길면 패키지명만 압축.
-            %d{pattern} : 시간, pattern = 시간표시패턴
-            %level : 레벨 / %thread : 스레드 / %n : 개행 / %message, %msg : 메시지
-            %method : 로그 발생시킨 메서드명
-            %r :어플시작 ~ 로그 까지 시간출력
-
-        Format Modifier - 생략가능
-            ( 포맷 기본은 오른쪽정렬, 아래 례의 % 30 logger{5} 의 출력 참고)
-            - : 왼쪽정렬
-            Integer : 최소 필드너비. 예시의 % 30 logger{5} 은 30칸을 기본으로 할당한다. 크기 넘어도 자르지 않음.
-            .Integer : 최대 필드너비. 지정된 크기 이상의 문자열은 자른다. 최소필드와 같이 사용가능
-
-        참고 (https://ckddn9496.tistory.com/86)
-            conversion(%...), formatmodifier (.) 에 \ 이스케이프 사용가능
-            replace 통한 텍스트 대체 가능
-            coloring, highlight 가능
-
-    -->
-
-    <!-- 로그파일 저장 경로. 이상하게도, 첫경로는 \ , 이후경로는 / 로 해야 정상동작 하더라. -->
-    <!-- C:\Users\felix\.Study\Spring_Practice\board 프로젝트 경로가 기본으로 붙음. -->
+    <!-- .../Project/log/logback -->
     <property name="LOG_DIR" value="\log/logback" />
 
     <!-- CONSOLE 콘솔 로그-->
@@ -49,7 +12,6 @@
             </Pattern>
         </layout>
     </appender>
-    <!-- // CONSOLE -->
 
     <!-- SYSLOG 전체 파일 로그-->
     <appender name="SYSLOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -123,12 +85,9 @@
         applog.log      : hello.board
         errorlog.log    : root
         sqllog.log      : jdbc.sqltiming        사용X
-    -->
 
-    <!--
         root.CONSOLE 주석하면 hello.board.CONSOLE, jdbc.sqltiming.CONSOLE 켜줘야 됨. 반대역시 동일
     -->
-
 
     <root level="info">
 <!--        <appender-ref ref="CONSOLE" />-->
@@ -146,7 +105,7 @@
 <!--        <appender-ref ref="SQLLOG" />-->
     </logger>
 
-    <!-- jdbc 관련 로그 다켜짐? 일단 끔 -->
+    <!-- jdbc 관련 로그 다 켜져서 일단 끔 -->
     <logger name="jdbc.sqlonly" level="off"/>
     <logger name="jdbc.audit" level="off" />
     <logger name="jdbc.resultset" level="off" />

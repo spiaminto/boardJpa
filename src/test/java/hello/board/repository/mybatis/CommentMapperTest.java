@@ -19,9 +19,7 @@ import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
 @SpringBootTest
 @Slf4j
 @Transactional
-/**
- * 이 테스트가 제일 나은듯? -> 페이지 검색부터 다시 막씀
- */
+
 class CommentMapperTest {
 
     @Autowired

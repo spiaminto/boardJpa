@@ -28,7 +28,6 @@ public class BoardRepository {
         boardMapper.updateViewCount(id);
     }
 
-
     public Board findById(Long id) {
         return boardMapper.findById(id);
     }
@@ -42,12 +41,10 @@ public class BoardRepository {
         return boardMapper.findPagedBoardWithMemberId(criteria, memberId);
     }
 
-
     public Board save(Board board) {
         boardMapper.save(board);
         return findById(board.getId());
     }
-
 
     public Board update(Long id, Board updateParam) {
         int row = boardMapper.update(id, updateParam);
@@ -55,7 +52,6 @@ public class BoardRepository {
         return findById(id);
     }
 
-    // 필요시 반환
     public int delete(Long id) throws RuntimeException {
         return boardMapper.delete(id);
     }

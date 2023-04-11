@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-// mybatis mapper
 @Mapper
 public interface BoardMapper {
 
@@ -18,18 +17,8 @@ public interface BoardMapper {
 
     Board findById(Long id);
 
-
-    // 검색용으로 사용
-//    List<Board> findAll(BoardSerachCond cond);
-
-    // 검색 + 페이징 된 board 찾기
     List<Board> findPagedBoard(Criteria criteria);
     List<Board> findPagedBoardWithMemberId(@Param("criteria") Criteria criteria, @Param("memberId") Long memberId);
-
-    // 검색 + 페이징 + 카테고리
-    List<Board> findPagedAndCategorizedBoard(Criteria criteria);
-
-//    List<Board> findByWriter(String writer);
 
     int save(Board board);
 

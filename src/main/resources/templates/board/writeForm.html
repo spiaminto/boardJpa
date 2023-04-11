@@ -187,24 +187,13 @@
 
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
-    <!-- 사용자의 입력을 받는 form, action="${action}" 의 url 로 입력을 전달 -->
-    <!-- 입력값은 @ModelAttribute 에 의해 name 속성값과 같은 필드에 바인딩 되어 컨트롤러에 전달됨 -->
-    <!-- id 속성: javascript 에서다룸. 서버로 전달x
-         name 속성: request.getParameterName() , 서버로 전달ㅇ -->
     <form th:action action="read.html" method="POST" id="form"
           th:object="${board}" enctype="multipart/form-data">
-
-        <!-- 글로벌 오류가 있을때 (#fields 유틸리티 객체 사용) 에러메시지 루프로 출력 -->
-        <div th:if="${#fields.hasGlobalErrors()}">
-            <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">
-                글로벌 오류 메시지
-            </p>
-        </div>
 
         <div class="input-group input-wrapper">
             <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="Default select example"
                     th:data-cricategory="${criteria.category}" th:data-origin="${board.category}" required th:errorclass="is-invalid">
-                <!-- option value="" 이면 브라우저 단에서 거름, 숨긴 기본값 -->
+                <!-- option value="" = 숨긴 기본값 -->
                 <option value="" selected hidden>카테고리</option>
                 <option value="FREE">자유</option>
                 <option value="ISSUE">이슈</option>
@@ -212,10 +201,7 @@
                 <option value="CS">문의</option>
                 <option value="NOTICE" sec:authorize="hasRole('ROLE_ADMIN')">공지</option>
             </select>
-            <!-- th:errorclass: 해당필드에 에러가 발생하면 설정된 클래스 추가 -->
-            <!-- th:errors: 해당 필드에 에러가 발생하면 에러 메시지 내용으로 설정 -->
             <span class="input-group-text">제목 </span>
-            <!-- input 태그의 value 는 기본값, textarea 태그는 value 없음. -->
             <input class="form-control" type="text" id="title" name="title" th:field="*{title}" th:errorclass="is-invalid">
             <div class="invalid-feedback title-feedback" th:errors="*{title}"> title 오류</div>
             <div class="invalid-feedback" th:errors="*{category}"> category 오류</div>
@@ -223,7 +209,6 @@
 
         <div class="input-group input-wrapper">
             <span class="input-group-text">작성자</span>
-            <!-- th:field, th:value 동시사용 세션에서 writer 받으려고. <-적용안되서 걍 field 빼버림 어차피 name 있으니까-->
             <input type="text" class="form-control" id="writer" name="writer" th:value="${#authentication.name}" th:errorclass="is-invalid" readonly>
         </div>
         <div class="invalid-feedback" th:errors="*{writer}"> writer 오류</div>

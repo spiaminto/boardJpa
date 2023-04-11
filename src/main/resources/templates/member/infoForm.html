@@ -54,12 +54,13 @@
     <script>
         $(function () {
 
+// alert
             let alertMessage = $("#globalAlertMessage").data("alertmessage");
             if (alertMessage) {
                 alert(alertMessage);
             }
 
-            // 내부 네비바 active
+// 내부 네비바 active
             $(".nav-pills .nav-link").on({
                 mouseenter: function () {
                     $(this).addClass("active");
@@ -69,6 +70,7 @@
                 }
             });
 
+// 페이지 로드시 버튼 처리
             // 모든 info-form 폼의 input, button 비활성화 및 editBt 활성화
             $(".info-form input").attr("disabled", true);
             $(".info-form button").css("display", "none")
@@ -76,7 +78,7 @@
             $(".info-form .delete-btn").css("display", "block");
             $("#password").attr("placeholder", "");
 
-            // 회원 정보 수정 버튼 누름
+// 회원 정보 수정 버튼 누름
             $(".edit-btn").on("click", function () {
                 $(".info-form .editable").attr("disabled", false);
                 $(".info-form button").css("display", "block");
@@ -86,10 +88,7 @@
 
             })
 
-            let loginIdFlag = true;
-            let usernameFlag = true;
-
-            // 변경 체크를 위한 초기값 (origin -> 맨 초기값)
+// 변경 체크를 위한 초기값 (origin -> 페이지로드 초기값)
             let loginIdOrigin = $("#loginId").val();
             let loginId = loginIdOrigin;
 
@@ -101,7 +100,10 @@
             }
             let username = usernameOrigin;
 
-            // loginId 체크
+            let loginIdFlag = true;
+            let usernameFlag = true;
+
+// loginId 체크
             $("#duplicateLoginIdCheckBt").on("click", function () {
                 loginId = $("#loginId").val();
 
@@ -134,7 +136,7 @@
                 })
             })
 
-            // username 체크
+// username 체크
             $(".duplicateUsernameCheckBt").on("click", function () {
 
                 if ($(".isOauth2").val()) {
@@ -172,7 +174,7 @@
                 })
             })
 
-            // 일반 유저 폼 submit
+// 일반 유저 폼 submit
             $("#normalForm").on("submit", function (event) {
                 event.preventDefault();
 
@@ -200,7 +202,7 @@
                 }
             })
 
-            // OAuth2 유저 폼 submit
+// OAuth2 유저 폼 submit
             $("#oauth2Form").on("submit", function (event) {
                 event.preventDefault();
 
@@ -218,7 +220,7 @@
                 }
             })
 
-            // 회원 탈퇴
+// 회원 탈퇴
             $(".delete-btn").on("click", function () {
                 if (confirm("정말로 탈퇴 하시겠습니까?")) {
                     let memberId = $("#userInfo").data("memberid");

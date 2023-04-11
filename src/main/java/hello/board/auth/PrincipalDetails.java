@@ -15,6 +15,10 @@ import java.util.Map;
 @Data
 @Slf4j
 @RequiredArgsConstructor
+/**
+ * SpringSecurity 일반 유저와 OAuth2 유저 정보를 모두 담을수 있는 클래스.
+ * Authentication - PrincipalDetails - Member
+ */
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private final Member member;

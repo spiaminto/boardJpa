@@ -52,15 +52,13 @@
     <script>
         $(function () {
 
+// alert
             let alertMessage = $("#globalAlertMessage").data("alertmessage");
             if (alertMessage) {
                 alert(alertMessage);
             }
 
-            let loginIdFlag = false;
-            let usernameFlag = false;
-
-            // 변경 체크를 위한 초기값
+// 변경 체크를 위한 페이지 로드시 초기값
             let loginId = $("#loginId").val();
             let username;
             if ($(".isOauth2").val()) {
@@ -69,12 +67,16 @@
                 username = $("#username").val();
             }
 
-            // loginId 체크
+            let loginIdFlag = false;
+            let usernameFlag = false;
+
+// loginId 체크 (일반 유저만)
             $("#duplicateLoginIdCheckBt").on("click", function () {
                 loginId = $("#loginId").val();
 
                 if (loginId == "" || loginId.length > 16) {
                     alert("유효한 아이디를 입력해 주세요.");
+                    $("#loginId").removeClass("is-valid");
                     return false;
                 }
 
@@ -97,7 +99,7 @@
                 })
             })
 
-            // username 체크
+// username 체크 (일반 유저 + OAuth2 유저)
             $(".duplicateUsernameCheckBt").on("click", function () {
 
                 if ($(".isOauth2").val()) {
@@ -108,6 +110,7 @@
 
                 if (username == "" || username.length > 16) {
                     alert("유효한 닉네임을 입력해 주세요.");
+                    $(".username").removeClass("is-valid");
                     return false;
                 }
 
@@ -130,13 +133,13 @@
                 })
             })
 
-            // 일반 유저 폼 submit
+// 일반 유저 폼 submit
             $("#form").on("submit", function (event) {
                 event.preventDefault();
 
-                console.log("$(loginId) " + $("#loginId").val() + " loginId " + loginId)
-                console.log("$(username) " + $("#username").val() + " username " + username)
-                console.log("idflag = " + loginIdFlag + " nameflag = " + usernameFlag)
+                // console.log("$(loginId) " + $("#loginId").val() + " loginId " + loginId)
+                // console.log("$(username) " + $("#username").val() + " username " + username)
+                // console.log("idflag = " + loginIdFlag + " nameflag = " + usernameFlag)
 
                 let password = $("#password").val();
 
@@ -157,7 +160,7 @@
                 }
             })
 
-            // OAuth2 유저 폼 submit
+// OAuth2 유저 폼 submit
             $("#oauth2Form").on("submit", function (event) {
                 event.preventDefault();
 
@@ -189,8 +192,7 @@
 
     <hr>
 
-    <!-- 로그인ID 와 닉네임은 중복체크를 위해 클라이언트 단에서 유효성 검사를 하긴 함
-          -> 새로고침 날아감 때문에 패스워드도 그냥 유효성 검사 함 -->
+    <!-- 일반 폼 -->
     <form th:action action="/home" method="POST" th:object="${member}" id="form" class="form addForm"
     th:unless="${isOauth2 == 'true'}">
 
@@ -236,9 +238,9 @@
         <div class="d-flex justify-content-center">
             <button id="submitBt" type="submit" class="btn btn-primary"> 회원가입</button>
         </div>
-
     </form>
 
+    <!-- OAuth2 폼 -->
     <form th:if="${isOauth2 == 'true'}"
           th:action="@{/member/add-oauth}" action="/home" method="POST" th:object="${member}" id="oauth2Form" class="addForm form">
 

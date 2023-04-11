@@ -37,7 +37,6 @@ public class MemberRepository {
         return memberMapper.findByProviderAndProviderId(provider, providerId);
     }
 
-
     public ResultDTO save(Member member) {
         try {
             int rowNum = memberMapper.save(member);
@@ -61,14 +60,7 @@ public class MemberRepository {
         return memberMapper.updateUsername(providerId, username);
     }
 
-
     public int delete(Long id) {
-
-        // For Test
-//        if (id == 1L) {
-//            throw new RuntimeException("Test Exception");
-//        }
-
         return memberMapper.delete(id);
     }
 

@@ -18,17 +18,13 @@ import javax.servlet.http.HttpSession;
 @RequiredArgsConstructor
 public class LoginController {
 
-    // 로그인 로직을 실행할 loginService -> spring security 에서 처리
-//    private final LoginService loginService;
-
     // /login GET, 사용자가 login 버튼 누름
-    // 왜 /loginForm 과 분리? => 사용자의 요청과 스프링 내부요청 구분 및 로그인 피드백. 메모참고 
     @GetMapping("/login")
     public String login(@ModelAttribute("loginForm") LoginForm loginForm) {
         return "login/loginForm";
     }
 
-    // spring security 에서 잡은 로그인(임시)
+    // spring security 에서 잡은 로그인
     @RequestMapping("/loginForm")
     public String loginForm(@ModelAttribute("loginForm") LoginForm loginForm,
                             @RequestParam(value = "error", required = false) String error,

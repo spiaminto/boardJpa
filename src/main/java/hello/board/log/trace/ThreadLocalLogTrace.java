@@ -2,21 +2,6 @@ package hello.board.log.trace;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-
-// 참고)
-/*
-// LogTrace 의 실행 흐름 예시는 대략 이렇다.
-// Client 요청 -> << Proxy 1 >>
-//                  logTrace.begin( sync null... )
-//                  Controller.logic() { Service.logic() }
-//                                          << Proxy2 >>
-//                                            logTrace.begin( sync Yes ... )
-//                                            Service.logic() { Repository.logic() }
-//                                            logTrace.complete( release Prev ... )
-//                  logTrace.complete( release Destroy ... )
- */
-
 @Slf4j
 @Component
 public class ThreadLocalLogTrace implements LogTrace {
@@ -25,12 +10,14 @@ public class ThreadLocalLogTrace implements LogTrace {
     private static final String COMPLETE_PREFIX = "<--";
     private static final String EX_PREFIX = "<X-";
 
-    // 동시성 문제해결을 위한 ThreadLocal
-    private ThreadLocal<TraceId> traceIdHolder = new ThreadLocal<>();
+    private ThreadLocal<TraceId> traceIdHolder = new ThreadLocal<>(); // 동시성 문제해결
 
+    /**
+     * message 를 받아 -> 방향의 로그를 찍는다.
+     * 로그를 찍은 후, TraceStatus(traceId, message) 를 반환한다.
+     */
     @Override
     public TraceStatus begin(String message) {
-        // traceIdHolder 초기화(동기화)
         syncTraceId();
 
         TraceId traceId = traceIdHolder.get();
@@ -43,13 +30,15 @@ public class ThreadLocalLogTrace implements LogTrace {
     public void end(TraceStatus status) {
         complete(status, null, null);
     }
-
     @Override
     public void exception(TraceStatus status, Exception e, Object[] params) {
         complete(status, e, params);
     }
 
-
+    /**
+     * TraceStatus 를 받아 <- 방향의 로그를 찍는다.
+     * 예외 발생 시 해당 메서드에 전달된 파라미터를 같이 출력.
+     */
     private void complete(TraceStatus status, Exception e, Object[] params) {
         TraceId traceId = status.getTraceId();
         if (e == null) {
@@ -66,8 +55,10 @@ public class ThreadLocalLogTrace implements LogTrace {
         releaseTraceId();
     }
 
-    // TraceId 를 동기화. traceIdHolder 에 TraceId 가 있으면 createNextId(), 없으면 새로운 TraceId 생성
-    //  두 작업 모두 완료 후 ThreadLocal<TraceId> (쓰레드 로컬) 에 TraceId 를 set (저장) 한다.
+    /**
+     * TraceId 를 동기화(초기화)
+     * traceIdHolder 에 TraceId 가 있으면 createNextId(), 없으면 new TraceId() 후 set.
+     */
     private void syncTraceId() {
         TraceId traceId = traceIdHolder.get();
         if (traceId == null) {
@@ -77,7 +68,10 @@ public class ThreadLocalLogTrace implements LogTrace {
         }
     }
 
-    // TraceId 를 해제. 깊이가 0 이면 destroy
+    /**
+     * TraceId 를 해제.
+     * traceIdHolder 에 TraceId 의 깊이가 0 이면 remove(), 아니면 createPrevId() 후 set.
+     */
     private void releaseTraceId() {
         TraceId traceId = traceIdHolder.get();
         if (traceId.isFirstLevel()) {
@@ -87,7 +81,9 @@ public class ThreadLocalLogTrace implements LogTrace {
         }
     }
 
-    // 화살표 그리기
+    /**
+     * 화살표 그리기
+     */
     private static String addSpace(String prefix, int level) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < level; i++) {

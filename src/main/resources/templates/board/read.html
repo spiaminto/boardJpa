@@ -145,7 +145,7 @@
             display: none;
         }
 
-        /* 부트스트랩 기본 스타일 수정 (other-commet 어긋남 수정) */
+        /* 부트스트랩 기본 스타일 수정 (other-comment 어긋남 수정) */
         #container .input-group>:not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
             margin-left: 0;
         }
@@ -175,6 +175,7 @@
     <script>
         $(function () {
 
+// alert
             $(window).on("load", function () {
                 let alertMessage = $("#globalAlertMessage").data("alertmessage");
                 if (alertMessage) {
@@ -182,7 +183,7 @@
                 }
             })
 
-            // CKeditor readonly
+// CK editor
             ClassicEditor
                 .create( document.querySelector( '#article' ))
 
@@ -198,10 +199,9 @@
                 console.error( error );
             } );
 
+// myComment 에서 넘어왔을때, comment highlight
             let selectedCommentId = $("#selectedCommentId").data("selectedcommentid");
             // console.log("selectedCommentId = " + selectedCommentId);
-
-            // myComment 에서 넘어왔을때, comment highlight
             if (selectedCommentId) {
                 let $selectedComment = $("#comment" + selectedCommentId).find(".comment-username");
 
@@ -215,7 +215,7 @@
                 })
             }
 
-            // 답글 로드 (reply 속성 적용 및 위치변경)
+// 답글 로드 (reply 속성 적용 및 위치변경)
             $(".other-comment").each(function (index, item) {
                 // 없으면 length = 0 배열, 있으면 있는갯수만큼 length 있는 배열 나옴
                 let isReply = $(item).children(".comment-reply-for").length;
@@ -234,7 +234,6 @@
                     //      이때, 자기자신 (모댓글) 은 선택되지 않으므로 첫번째 답글은 length=0 인 제이쿼리객체배열(?) 나오는듯
                     let targetPosition = $(".comment[data-group='" + afterTargetId + "']").first().nextUntil(".other-comment").last();
 
-                    // jquery 객체배열 인듯?
                     // console.log(targetPosition)
 
                     // 첫번째 답글 -> 모댓글 다음에 부착
@@ -248,7 +247,7 @@
                 }
             })
 
-            // 내부 네비게이션 동작
+// 내부 네비게이션 동작
             $("#read-nav button").on("click", function (event) {
                 event.preventDefault();
 
@@ -279,7 +278,7 @@
                 $("#pageInfo").attr("action", baseUrl).submit();
             })
 
-            // 댓글 등록
+// 댓글 등록
             $(".comment-submit").on("click", function (event) {
                 event.preventDefault();
                 let submitContent = $(this).prev().val();
@@ -348,7 +347,7 @@
                 })
             })
 
-            // 댓글과 답글 수정 검사 및 수정폼 변경
+// 댓글과 답글 수정 검사 및 수정폼 변경
             $(".comment-update").on("click", function (event) {
                 let myMemberId = $("#myComment .comment-memberId").val();
                 let myWriter = $("#myComment .comment-writer").val();
@@ -389,7 +388,7 @@
 
             })
 
-            // 댓글 수정
+// 댓글 수정
             $(".comment-update-submit").on("click", function (event) {
 
                 let commentId = $(event.target).prev().data("id");
@@ -446,7 +445,7 @@
                 })
             })
 
-            // 댓글의 X 버튼 눌럿을때 동작 (댓글/답글삭제, 답글 작성/수정취소)
+// 댓글의 X 버튼 눌럿을때 동작 (댓글/대댓글삭제, 대댓글 작성/수정취소)
             $(".comment-delete").on("click", function (event) {
                 event.preventDefault();
                 let commentMemberId = $(this).siblings(".comment-memberId").val();
@@ -504,17 +503,17 @@
                 })
             })
 
-            // 답글 폼 생성
+            // 대댓글 폼 생성
             $(".other-comment>.comment-username, .other-comment-reply>.comment-username").each(function (index, item) {
                 $(item).on("click", makeReply)
             })
 
-            // 답글 콜백함수
+            // 대댓글 콜백함수
             function makeReply (event) {
                 // event.stopPropagation();
 
                 let isWriting = $("#myCommentReply").length;
-                // 다른 답글을 작성중이면 이벤트 막기
+                // 다른 대댓글을 작성중이면 이벤트 막기
                 if (isWriting != 0) {
                     alert("다른 작업을 완료해주세요")
                     return false;

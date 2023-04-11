@@ -42,12 +42,6 @@
             height: 12em;
         }
 
-        /* 에러 발생시 추가할 클래스 */
-        .field-error {
-            border-color: #dc3545;
-            color: #dc3545;
-        }
-
         #selectFileName>span {
             line-height: 39px;
         }
@@ -182,21 +176,8 @@
     <nav th:replace="fragment/fragment.html :: nav-fragment">
     </nav>
 
-    <!-- th:action : 옵션 생략시 요청 url 그대로 재요청 + method="post" -->
-    <!--            : 옵션 생략시 url 뒤에 파라미터도 그대로 붙여서 재요청함 -->
-    <!-- th:object : 컨트롤러에서 넘어온 커맨드 객체 (/edit GET 처리에서 모델로 넘긴 객체) -->
-    <!--  커맨드객체 : Spring 이 URL 파라미터, POST Form Data 형태의 파라미터를
-                        특정 클래스로 자동으로 바인딩 하고 반환되는 객체 -->
-    <!-- th:field : 는 해당 커맨드 객체의 필드 접근, id name th:value 속성 필드값으로 자동설정 -->
     <form th:action action="read.html" method="POST" id="form"
           th:object="${board}" enctype="multipart/form-data" th:data-boardId="${board.getId()}">
-
-        <!-- 글로벌 오류가 있을때 (#fields 유틸리티 객체 사용) 에러메시지 루프로 출력 -->
-        <div th:if="${#fields.hasGlobalErrors()}">
-            <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">
-                글로벌 오류 메시지
-            </p>
-        </div>
 
         <div class="input-group input-wrapper">
             <select id="categorySelect" th:field="*{category}" class="form-select" aria-label="categorySelect" th:errorclass="is-invalid" th:data-origin="${board.category}" required>
@@ -207,10 +188,7 @@
                 <option value="CS">문의</option>
                 <option value="NOTICE" sec:authorize="hasRole('ROLE_ADMIN')">공지</option>
             </select>
-            <!-- th:errorclass: 해당필드에 에러가 발생하면 설정된 클래스 추가 -->
-            <!-- th:errors: 해당 필드에 에러가 발생하면 에러 메시지 내용으로 설정 -->
             <span class="input-group-text">제목 </span>
-            <!-- input 태그의 value 는 기본값, textarea 태그는 value 없음. -->
             <input class="form-control" type="text" id="title" name="title" th:field="*{title}" th:errorclass="is-invalid">
             <div class="invalid-feedback title-feedback" th:errors="*{title}"> title 오류</div>
             <div class="invalid-feedback" th:errors="*{category}"> category 오류</div>
@@ -218,7 +196,6 @@
 
         <div class="input-group input-wrapper">
             <span class="input-group-text">작성자</span>
-            <!-- th:field, th:value 동시사용 세션에서 writer 받으려고. <-적용안되서 걍 field 빼버림 어차피 name 있으니까-->
             <input type="text" class="form-control" id="writer" name="writer" th:value="${#authentication.name}" readonly>
             <div class="invalid-feedback" th:errors="*{writer}"> writer 오류</div>
         </div>

@@ -74,16 +74,14 @@ public class MemberService {
 
         if (!currentMember.getLoginId().equals(updateParam.getLoginId()) ||
                 !bCryptPasswordEncoder.matches(newRawPassword, currentMember.getPassword())) {
-            // 비밀번호 또는 loginID 중 하나가 수정됨
-            isLogout = true;
+            isLogout = true; // 비밀번호 또는 loginID 중 하나가 수정됨
 
         } else {
-            // 비밀번호, loginId 모두 수정되지 않음
-            isLogout = false;
+            isLogout = false; // 비밀번호, loginId 모두 수정되지 않음
         }
 
-        // oauth2 멤버는 로그아웃 하지 않음
         if (updateParam.getProviderId() != null) {
+            // oauth2 멤버는 로그아웃 하지 않음
             isLogout = false;
         }
 
@@ -100,7 +98,6 @@ public class MemberService {
      * @param updateParam
      * @return 모두 성공하면 true
      */
-    // username 동기화, 성공시 true 반환
     @Transactional
     public boolean processEditAndSync(Member currentMember, Member updateParam) {
         Long memberId = currentMember.getId();
@@ -108,7 +105,6 @@ public class MemberService {
         Criteria criteria = new Criteria();
         String option = "";
         int origin = 0, result = 0;
-        // result 를 사용해서 변한 행 갯수를 받아도, catch 에서는 사용할 수 없다.(정확히는, 받기전에 catch)
 
         // 특정 repository 작업에서 Exception 발생할 경우, 모든 작업을 롤백함.
         try {
@@ -174,7 +170,7 @@ public class MemberService {
             option = "member.deleteMember";
             result = memberRepository.delete(id);
 
-            // board 와 comment 는 on cascade 로 제거됨
+            // board, comment delete onCascade
 
         } catch (DataAccessException e) {
             log.info("option = {}, originalCount = {}, Exception = {}, message = {}", option, origin, e, e.getMessage());

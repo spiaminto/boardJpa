@@ -19,7 +19,8 @@ __테스트용 ID: sample / PW: sample__
 <br>
 
 ## ERD
-<img width="75%" alt="스크린샷 2023-04-10 184713" src="https://user-images.githubusercontent.com/122969954/230877990-0eb65d6a-a88f-45ee-85ba-5780c0d0c0e7.png">
+
+<img width="75%" alt="ERD" src="https://user-images.githubusercontent.com/122969954/231452459-45d5478e-a2d3-46b2-b34d-798e761cfe58.png">
 
 
 ## 기능 

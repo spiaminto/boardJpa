@@ -3,12 +3,9 @@ package hello.board.repository;
 import hello.board.domain.member.Member;
 import hello.board.repository.mybatis.MemberMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository

@@ -15,8 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -24,16 +22,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ImageStoreAmazon implements ImageStore{
 
-    // s3 배포용
     @Value("${cloud.aws.s3.bucket}")
-    private String bucketDir;
-
+    private String bucketDir; // s3 bucket 경로
     @Value("${cloud.aws.s3.bucket.innerDir}")
-    private String innerBucketDir;
-
+    private String innerBucketDir; // s3 bucket 내부 이미지 저장 경로
     private final AmazonS3 amazonS3;
 
-    // String createRequestUrl() -> 일단 생략
 
     @Override
     public String getServiceName() {

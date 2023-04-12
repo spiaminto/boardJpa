@@ -41,6 +41,10 @@
             color: grey;
         }
 
+        #content .comment-count {
+            color: lightgray;
+        }
+
         #content table a{
             text-decoration: none;
             color: black;
@@ -227,9 +231,9 @@
 
                 <td>
                     <span class="category-label" th:if="${pageMaker.categoryCode == 'all'}" th:text="${'[' + item.category.getCategoryName() + ']'}"></span>
-                    <a id="readLink" href="list.html"
-                       th:href="@{|/board/${item.id}|}"
+                    <a id="readLink" href="list.html" th:href="@{|/board/${item.id}|}"
                        th:text="${item.title}">title</a>
+                    <span class="comment-count" th:if="${item.commentCnt > 0}" th:text="${' (' + item.commentCnt + ')'}"> </span>
                 </td>
 
                 <td th:if="${item.isToday(item.regDate)}" th:text="${#temporals.format(item.regDate, 'HH:mm')}">regdate</td>

@@ -82,12 +82,7 @@ class CommentMapperTest {
        // DB 에서 찾은 findComment 와 저장하려고 만든 testComment 가 같은지 확인
        Assertions.assertThat(findComment).isEqualTo(testComment);
 
-       // 문제1. LocalDateTime.now()
-        // LocalDateTime.now() 에서 시간이 소수점(밀리세컨드)까지 밀려나오는 현상 발생
-        // DB 에 저장된 regDate 는 (아마도) 밀리세컨드에서 반올림하여 저장됨
-        // testComment(java.LocalDateTime.now()) 와 findComment(MySQL.DateTime) 이 다르게 나옴.
-        // 따라서 java.LocalDateTime.now().withNano(0) 을 통해 밀리세컨드 절삭.
-        // 다만 실행 속도상 1초 이상 차이나면 에러가 다시 날걸로 예상됨.
+        // LocalDateTime.now().withNano(0) 으로 절삭
     }
 
     @Test

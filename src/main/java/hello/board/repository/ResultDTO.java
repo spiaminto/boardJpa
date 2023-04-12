@@ -1,6 +1,5 @@
 package hello.board.repository;
 
-import hello.board.domain.board.Board;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

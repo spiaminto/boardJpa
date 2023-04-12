@@ -1,7 +1,8 @@
 package hello.board.domain.criteria;
 
 import hello.board.domain.enums.Category;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 /**

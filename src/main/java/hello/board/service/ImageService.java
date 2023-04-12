@@ -5,13 +5,11 @@ import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.image.Image;
 import hello.board.file.ImageStore;
-
 import hello.board.repository.BoardRepository;
 import hello.board.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

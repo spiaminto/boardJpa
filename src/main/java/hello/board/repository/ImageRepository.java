@@ -4,13 +4,11 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import hello.board.domain.image.Image;
 import hello.board.repository.mybatis.ImageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Repository;
 
 import java.io.File;

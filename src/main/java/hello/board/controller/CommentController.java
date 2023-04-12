@@ -2,7 +2,6 @@ package hello.board.controller;
 
 import hello.board.domain.comment.Comment;
 import hello.board.form.CommentSaveForm;
-import hello.board.repository.CommentRepository;
 import hello.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -55,6 +57,7 @@ public class CommentController {
         List<String> list = new ArrayList<>();
         list.add(comment.getWriter());
         list.add(String.valueOf(comment.getBoardId()));
+        list.add(String.valueOf(comment.getMemberId()));
         list.add(String.valueOf(comment.getGroupId()));
         list.add(String.valueOf(comment.getGroupOrder()));
         list.add(String.valueOf(comment.getGroupDepth()));
@@ -77,8 +80,8 @@ public class CommentController {
 
         Map<String, Object> resp = new HashMap<>();
 
-        // 수정성공
         if (updatedComment != null) {
+            // 수정성공
             resp.put("result", "1");
         }
 
@@ -93,12 +96,13 @@ public class CommentController {
     public Map<String,Object> deleteComment(@PathVariable("commentId") Long commentId) {
         
         // 검증해야됨
-        
-        int result = commentService.deleteComment(commentId);
+
+        boolean isSuccess = commentService.deleteComment(commentId);
 
         Map<String, Object> resp = new HashMap<>();
 
-        if (result == 1) {
+        if (isSuccess) {
+            // 삭제 성공
             resp.put("result", "1");
         }
 

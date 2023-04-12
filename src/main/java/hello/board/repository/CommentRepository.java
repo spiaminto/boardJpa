@@ -5,10 +5,8 @@ import hello.board.domain.criteria.Criteria;
 import hello.board.repository.mybatis.CommentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -24,6 +22,10 @@ public class CommentRepository {
 
     public Integer countTotalTargetWithMemberId(Long memberId) {
         return commentMapper.countTotalTargetWithMemberId(memberId);
+    }
+
+    public Integer countTotalCommentWithBoardIdAndGroupId(Long boardId, Long groupId) {
+        return commentMapper.countTotalCommentWithBoardIdAndGroupId(boardId, groupId);
     }
 
     public Comment findByCommentId(Long commentId) {

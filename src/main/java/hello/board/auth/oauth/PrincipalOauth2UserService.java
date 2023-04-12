@@ -1,12 +1,12 @@
 package hello.board.auth.oauth;
 
-import hello.board.domain.member.Member;
-import hello.board.repository.MemberRepository;
 import hello.board.auth.PrincipalDetails;
-import hello.board.auth.oauth.provider.KakaoUserInfo;
 import hello.board.auth.oauth.provider.GoogleUserInfo;
+import hello.board.auth.oauth.provider.KakaoUserInfo;
 import hello.board.auth.oauth.provider.NaverUserInfo;
 import hello.board.auth.oauth.provider.OAuth2UserInfo;
+import hello.board.domain.member.Member;
+import hello.board.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

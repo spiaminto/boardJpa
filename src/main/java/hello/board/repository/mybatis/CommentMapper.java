@@ -4,10 +4,8 @@ import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.security.core.parameters.P;
 
 import java.util.List;
-import java.util.Optional;
 
 @Mapper
 public interface CommentMapper {
@@ -21,6 +19,8 @@ public interface CommentMapper {
     Integer countTotalCommentWithMemberId(@Param("criteria")Criteria criteria, @Param("memberId")Long memberId);
 
     Integer countTotalTargetWithMemberId(Long memberId);
+
+    Integer countTotalCommentWithBoardIdAndGroupId(@Param("boardId") Long boardId, @Param("groupId") Long groupId);
 
     int save(Comment comment);
 

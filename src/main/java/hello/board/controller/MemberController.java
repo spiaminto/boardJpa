@@ -1,14 +1,14 @@
 package hello.board.controller;
 
+import hello.board.auth.PrincipalDetails;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.member.Member;
 import hello.board.domain.paging.PageMaker;
-import hello.board.repository.ResultDTO;
-import hello.board.auth.PrincipalDetails;
 import hello.board.form.MemberEditForm;
 import hello.board.form.MemberSaveForm;
 import hello.board.form.OAuth2MemberEditForm;
 import hello.board.form.OAuth2MemberSaveForm;
+import hello.board.repository.ResultDTO;
 import hello.board.service.ImageService;
 import hello.board.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -221,7 +221,7 @@ public class MemberController {
         Map<String, Object> resultMap = memberService.myPage(criteria, currentMember.getId());
 
         // 페이징 할 정보 설정하기
-        PageMaker pageMaker = new PageMaker(criteria, (Integer) resultMap.get("countTotalContent"));
+        PageMaker pageMaker = new PageMaker(criteria, (int) resultMap.get("countTotalContent"));
 
         // 페이지메이커, 글 목록 모델에 넣기
         model.addAttribute("pageMaker", pageMaker);
@@ -243,7 +243,7 @@ public class MemberController {
         Map<String, Object> resultMap = memberService.myComment(criteria, currentMember.getId());
 
         // 페이징 할 정보 설정하기
-        PageMaker pageMaker = new PageMaker(criteria, (Integer) resultMap.get("countTotalContent"));
+        PageMaker pageMaker = new PageMaker(criteria, (int) resultMap.get("countTotalContent"));
 
         // 페이지메이커, 글 목록 모델에 넣기
         model.addAttribute("pageMaker", pageMaker);

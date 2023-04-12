@@ -14,6 +14,8 @@ public interface BoardMapper {
     Integer countTotalBoardWithMemberId(@Param("criteria") Criteria criteria, @Param("memberId") Long memberId);
 
     void updateViewCount(long id);
+    void addCommentCnt(Long id);
+    void subtractCommentCnt(@Param("id") Long id, @Param("count") int count); // 댓글수 감소는 대댓글을 포함하므로 갯수를 지정
 
     Board findById(Long id);
 

@@ -16,6 +16,13 @@
             </if>
         </where>
     </select>
+
+    <!-- 게시글의 특정 댓글과 그 대댓글의 수를 센다. -->
+    <select id="countTotalCommentWithBoardIdAndGroupId" resultType="Integer">
+        select count(*) from comment
+        where group_id = #{groupId} and board_id = #{boardId}
+    </select>
+
     <!-- countTotalTarget 얘는 sync 용이라 카테고리 등 작업X -->
     <select id="countTotalTargetWithMemberId" resultType="Integer">
         select count(*) from comment

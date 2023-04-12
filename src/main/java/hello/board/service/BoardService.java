@@ -1,12 +1,10 @@
 package hello.board.service;
 
-import hello.board.auth.PrincipalDetails;
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.member.Member;
 import hello.board.repository.BoardRepository;
 import hello.board.repository.CommentRepository;
-import hello.board.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

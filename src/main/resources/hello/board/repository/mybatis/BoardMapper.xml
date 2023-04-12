@@ -16,7 +16,7 @@
         </where>
     </select>
 
-    <!--countTotalBoard-->
+    <!--countTotalBoardWithMemberId-->
     <select id="countTotalBoardWithMemberId" resultType="Integer">
         select count(*) from board
         <where>
@@ -30,10 +30,24 @@
         </where>
     </select>
 
-    <!-- updateViewCount -->
+    <!-- 조회수 증가 -->
     <update id="updateViewCount">
         update board
         set view_count = view_count + 1
+        where id = #{id}
+    </update>
+
+    <!-- 댓글 갯수 증가 -->
+    <update id="addCommentCnt">
+        update board
+        set comment_cnt = comment_cnt + 1
+        where id = #{id}
+    </update>
+
+    <!-- 댓글 갯수 감소 -->
+    <update id="subtractCommentCnt">
+        update board
+        set comment_cnt = comment_cnt - #{count}
         where id = #{id}
     </update>
 

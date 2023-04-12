@@ -37,6 +37,10 @@
             color: grey;
         }
 
+        #content .comment-count {
+            color: grey;
+        }
+
         #content table a{
             text-decoration: none;
             color: black;
@@ -225,6 +229,7 @@
                     <span class="category-label" th:if="${pageMaker.categoryCode == 'all'}" th:text="${'[' + item.category.getCategoryName() + ']'}"></span>
                     <a class="readLink" href="read.html" th:href="@{|/board/${item.id}|}"
                        th:text="${item.title}">title</a>
+                    <span class="comment-count" th:if="${item.commentCnt > 0}" th:text="${' (' + item.commentCnt + ')'}"> </span>
                 </td>
 
                 <td th:text="${item.writer}">writer</td>

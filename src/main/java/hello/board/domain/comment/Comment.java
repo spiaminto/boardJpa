@@ -25,7 +25,7 @@ public class Comment {
     private LocalDateTime updateDate;
 
     // 계층 답글
-    private Long groupId;       // 모댓글 commentId (자신이 모댓글이면 자신의 commentId)
+    private Long groupId;       // 모댓글은 자기자신, 대댓글은 모댓글, 대-대댓글은 모댓글의 commentId
     private Integer groupOrder;     // 대댓글일때, 대댓글 순서
     private Integer groupDepth;     // 모댓글 0, 대댓글 1
 

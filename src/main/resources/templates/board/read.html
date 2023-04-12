@@ -80,10 +80,12 @@
         #commentContainer .comment-delete {
             display: block;
             position: absolute;
-            right: 10px;
-            top: 6px;
+            right: 0px;
+            top: 3px;
             text-decoration: none;
             text-indent: 5px;
+            width: 30px;
+            height: 30px;
         }
 
         #commentContainer .comment-delete:hover {
@@ -215,7 +217,7 @@
                 })
             }
 
-// 답글 로드 (reply 속성 적용 및 위치변경)
+// 대댓글 로드 (reply 속성 적용 및 위치변경)
             $(".other-comment").each(function (index, item) {
                 // 없으면 length = 0 배열, 있으면 있는갯수만큼 length 있는 배열 나옴
                 let isReply = $(item).children(".comment-reply-for").length;
@@ -223,10 +225,10 @@
                 let afterTargetId = $(item).find(".comment-groupId").val();
                 // console.log("afterTarget " + afterTargetId)
 
-                // 답글이면
+                // 대댓글이면
                 if (isReply) {
 
-                    // 답글 클래스로 변경
+                    // 대댓글 클래스로 변경
                     $(item).addClass("other-comment-reply").removeClass("other-comment");
 
                     // data-group 속성 값이 답글 붙일 groupId 와 같은 요소 중 첫번째 (모댓글)
@@ -294,7 +296,7 @@
                 // 쿼리스트링 형식으로 폼 데이터 변환
                 // application/x-www-form-urlencoded => @ModelAttribute 로 받음
                 let params = $(this).parent().parent().serialize();
-                let paramsArray = $("#myCommentForm").serializeArray();
+                // let paramsArray = $("#myCommentForm").serializeArray();
 
                 // console.log("params: " + params);
 
@@ -347,7 +349,7 @@
                 })
             })
 
-// 댓글과 답글 수정 검사 및 수정폼 변경
+// 댓글과 대댓글 수정 검사 및 수정폼 변경
             $(".comment-update").on("click", function (event) {
                 let myMemberId = $("#myComment .comment-memberId").val();
                 let myWriter = $("#myComment .comment-writer").val();
@@ -503,12 +505,12 @@
                 })
             })
 
-            // 대댓글 폼 생성
+// 대댓글 폼 생성
             $(".other-comment>.comment-username, .other-comment-reply>.comment-username").each(function (index, item) {
                 $(item).on("click", makeReply)
             })
 
-            // 대댓글 콜백함수
+// 대댓글 콜백함수
             function makeReply (event) {
                 // event.stopPropagation();
 
@@ -682,7 +684,7 @@
     </div>
 
     <!-- 빈 댓글 -->
-    <div class="empty-container">
+    <div class="empty-container" sec:authorize="isAuthenticated()">
         <div class="other-comment-empty input-group">
             <span class="input-group-text comment-reply-for">@상대방ID</span>
             <input type="hidden" class="comment-writer form-control" name="writer">
@@ -695,7 +697,7 @@
             </div>
             <input type="hidden" name="boardId" value="0" th:value="${boardId}">
             <!-- 로그인 아니면 생성X -->
-            <input type="hidden" class="comment-memberId" name="memberId" value="0" sec:authorize="isAuthenticated()" th:value="${member.id}">
+            <input type="hidden" class="comment-memberId" name="memberId" value="0" th:value="${member.id}">
             <input type="hidden" class="comment-groupId" name="groupId" value="0">
             <input type="hidden" class="comment-order" name="groupOrder" value="0">
             <input type="hidden" class="comment-depth" name="groupDepth" value="0">

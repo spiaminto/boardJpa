@@ -28,6 +28,10 @@ public class BoardRepository {
         boardMapper.updateViewCount(id);
     }
 
+    public void addCommentCnt(Long id) { boardMapper.addCommentCnt(id);}
+
+    public void subtractCommentCnt(Long id, int count) { boardMapper.subtractCommentCnt(id, count);}
+
     public Board findById(Long id) {
         return boardMapper.findById(id);
     }

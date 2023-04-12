@@ -1,10 +1,10 @@
 package hello.board.controller;
 
+import hello.board.auth.PrincipalDetails;
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.enums.Category;
 import hello.board.domain.paging.PageMaker;
-import hello.board.auth.PrincipalDetails;
 import hello.board.form.BoardEditForm;
 import hello.board.form.BoardSaveForm;
 import hello.board.service.BoardService;
@@ -57,7 +57,7 @@ public class BoardController {
         List<Board> pagedBoard = boardService.findPagedBoard(criteria);
 
         // 총 글갯수 가져오기
-        Integer countTotalBoard = boardService.countTotalBoard(criteria);
+        int countTotalBoard = boardService.countTotalBoard(criteria);
 
         // 페이징 할 정보 설정하기
         PageMaker pageMaker = new PageMaker(criteria, countTotalBoard);

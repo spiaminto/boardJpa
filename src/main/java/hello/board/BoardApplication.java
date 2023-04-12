@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class BoardApplication {
 
-	// 아마존 sdk 오류메시지, 출처 https://antdev.tistory.com/93
 	static {
+		// 아마존 sdk 오류메시지 제거
 		System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
 	}
 

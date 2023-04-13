@@ -83,6 +83,7 @@ public class BoardController {
         model.addAttribute("commentList", result.get("commentList"));
 
         if (commentId != null) {
+            // 내 댓글 클릭으로 요청
             model.addAttribute("selectedCommentId", commentId);
         }
 
@@ -96,8 +97,7 @@ public class BoardController {
 
     @GetMapping("/board/write")
     public String writeForm(Model model, @ModelAttribute Criteria criteria) {
-        // 커맨드 객체 용 빈객체
-        model.addAttribute("board", Board.builder().build());
+        model.addAttribute("board", Board.builder().build()); // 커맨드 객체 용 빈객체
         return "board/writeForm";
     }
 
@@ -108,8 +108,8 @@ public class BoardController {
                         @ModelAttribute("criteria") Criteria criteria,
                         RedirectAttributes redirectAttributes) {
 
-        // 검증 오류 발견
         if (bindingResult.hasErrors()) {
+            // 검증 오류 발견
             log.info("/write POST bindingResult.hasErrors {}", bindingResult);
             return "board/writeForm";
         }
@@ -138,7 +138,6 @@ public class BoardController {
 
         redirectAttributes.addFlashAttribute("alertMessage", "게시글이 등록되었습니다.");
 
-        // POST, Post Redirect Get
         return new UrlBuilder("/board")
                 .id(savedBoard.getId()).queryString(request.getQueryString()).buildRedirectUrl();
     }
@@ -150,8 +149,8 @@ public class BoardController {
                            @ModelAttribute Criteria criteria) {
         Board findBoard = boardService.findById(boardId);
 
-        // 현재 로그인한 유저 != 글 작성자
         if (!boardService.isSameWriter(principalDetails.getMember(), findBoard)) {
+            // 현재 로그인한 유저 != 글 작성자
             redirectAttributes.addFlashAttribute("alertMessage", "수정하려는 글과 작성자가 다릅니다.");
 
             return new UrlBuilder("/board")
@@ -170,17 +169,16 @@ public class BoardController {
 
         log.info("isNotice {}", form.getIsNotice());
 
-        // edit 의 경우, write 와 다르게 글에서 직접 /edit 로 들어올 수 있어 처리(닉으로 한번 검사하긴 함)
+        // 공지사항 edit 의 경우, write 와 다르게 글에서 직접 /edit 로 들어올 수 있어 처리('admin' 닉으로 한번 검사하긴 함)
         if (form.getIsNotice() && !request.isUserInRole("ROLE_ADMIN")) {
-            // 바꾼 카테고리 다시 복원
-            form.setCategory(Category.NOTICE);
+            // 공지사항 수정 요청이 ADMIN 권한 없이 들어온 경우
+            form.setCategory(Category.NOTICE); // 카테고리 복원
             model.addAttribute("board", form);
-            // 예외 발생
-            bindingResult.rejectValue("category", "Unauthorized.category");
+            bindingResult.rejectValue("category", "Unauthorized.category"); // 예외 발생
         }
 
-        // 검증 오류 발생
         if (bindingResult.hasErrors()) {
+            // 검증 오류 발생
             log.info("/edit POST bindingResult.hasErrors = {}", bindingResult);
             return "board/editForm";
         }

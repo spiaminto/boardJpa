@@ -18,13 +18,12 @@ public class StoreConfig {
 
     private final AmazonS3 amazonS3;
 
-    // 스프링 active profile
     @Value("${spring.profiles.active}")
-    private String activeProfile;
+    private String activeProfile; // 스프링 active profile
 
     @Bean
     public ImageStore imageStore() {
-        log.info("imageStore()");
+//        log.info("imageStore(), activeProfile={}", activeProfile);
         if (activeProfile.contains("S3")) {
             return new ImageStoreAmazon(amazonS3);
         } else {

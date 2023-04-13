@@ -111,7 +111,7 @@ commit 25
     글목록에서 댓글수 보여주기 추가. Board 에 comment_cnt 추가 및 관련내용 수정
 
 commit 25.1
-    메모
+    메모.
 
 
 

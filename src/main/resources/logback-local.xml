@@ -2,7 +2,7 @@
 <configuration>
 
     <!-- .../Project/log/logback -->
-    <property name="LOG_DIR" value="\log/logback" />
+    <property name="LOG_DIR" value="\customLog/logback" />
 
     <!-- CONSOLE 콘솔 로그-->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">

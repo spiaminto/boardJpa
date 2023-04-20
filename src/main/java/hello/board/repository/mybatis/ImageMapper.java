@@ -21,7 +21,7 @@ public interface ImageMapper {
     //  memberId 로 안거르면, 두명이상이 동시에 글 작성시 문제생김
     int setBoardId(@Param("memberId") Long memberId, @Param("boardId") Long boardId);
 
-    // 임시이미지 삭제용
-    int deleteImageByStoreImageName(@Param("storeImageName") String storeImageName);
+    // imageId 로 이미지 삭제 (다중)
+    int deleteImageByIdList(@Param("imageIdList") List<Long> imageIdList);
 
 }

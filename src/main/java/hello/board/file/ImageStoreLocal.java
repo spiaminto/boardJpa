@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-@Component
 @Slf4j
 public class ImageStoreLocal implements ImageStore{
 

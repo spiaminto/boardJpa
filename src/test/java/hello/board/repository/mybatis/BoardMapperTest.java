@@ -1,8 +1,11 @@
 package hello.board.repository.mybatis;
 
 import hello.board.domain.board.Board;
+import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.enums.Category;
+import hello.board.repository.BoardCommentDTO;
+import hello.board.repository.BoardCommentDTOMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // 스프링 컨테이너를 이용해 트랜잭션
 @SpringBootTest
@@ -22,6 +26,9 @@ class BoardMapperTest {
 
     @Autowired
     BoardMapper boardMapper;
+
+    @Autowired
+    CommentMapper commentMapper;
 
 //    Board board = new Board("testTitle_",
 //            "test",
@@ -163,7 +170,29 @@ class BoardMapperTest {
         idList.add(308L);
         idList.add(309L);
         idList.add(310L);
+    }
 
+    @Test
+    public void findByIdWithComment() {
+//        Long testBoardId = 104L;
+        Long testBoardId = 381L;
+
+        List<BoardCommentDTO> boardCommentDTOList = boardMapper.findByIdWithComment(testBoardId);
+//        boardComment.forEach(item -> log.info("boardComment = {}", item));
+        Board board = boardCommentDTOList.stream().findFirst().get().toBoard();
+        List<Comment> commentList = boardCommentDTOList.stream()
+                .filter(item -> item.getCommentId() != null) // filter 로 거르지 않으면, [null] 이 들어가게 됨
+                .map(item -> item.toComment()).collect(Collectors.toList());
+
+        Board findBoard = boardMapper.findById(testBoardId);
+        List<Comment> findCommentList = commentMapper.findByBoardId(testBoardId);
+
+        log.info("board = {}", board);
+        commentList.forEach(item -> log.info("comment = {}", item));
+        
+        // mapstruct 사용하여 맵핑 테스트 성공여부 확인
+        Assertions.assertThat(board).isEqualTo(findBoard);
+        Assertions.assertThat(commentList).isEqualTo(findCommentList);
 
     }
 }

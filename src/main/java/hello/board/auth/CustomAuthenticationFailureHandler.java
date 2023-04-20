@@ -2,6 +2,7 @@ package hello.board.auth;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -38,6 +39,9 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         } else if (exception instanceof UsernameNotFoundException) {
             // ID 를 찾을 수 없음
             errorMessage = "계정이 존재하지 않습니다. 회원가입 진행 후 로그인 해주세요.";
+        } else if (exception instanceof InternalAuthenticationServiceException) {
+            // 내부 인증 서비스 예외 인데, 아이디가 존재하지 않아도 해당 예외가 터짐.
+            errorMessage = "존재 하지 않는 ID 입니다.";
         } else {
             errorMessage = "로그인에 실패하였습니다 관리자에게 문의하세요.";
         }

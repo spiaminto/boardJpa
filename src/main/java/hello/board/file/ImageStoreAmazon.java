@@ -16,8 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;
-
-@Component
 @Slf4j
 @RequiredArgsConstructor
 public class ImageStoreAmazon implements ImageStore{
@@ -68,17 +66,11 @@ public class ImageStoreAmazon implements ImageStore{
 
         //content type을 지정하지 않으면 자동으로 "application/octet-stream"으로 고정
         switch (extractExt(multipartFile.getOriginalFilename())) {
-            case "jpeg":
+            case "jpeg": case "jpg" :
                 contentType = "image/jpeg";
                 break;
             case "png":
                 contentType = "image/png";
-                break;
-            case "txt":
-                contentType = "text/plain";
-                break;
-            case "csv":
-                contentType = "text/csv";
                 break;
         }
         try {

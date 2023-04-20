@@ -60,6 +60,10 @@ dependencies {
 
 	// log4jdbc , jdbc url 수정 및 application.properties 설정 추가
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+	// mapstruct 라이브러리 (오브젝트 매핑)
+	implementation 'org.mapstruct:mapstruct:1.5.4.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.4.Final'
 }
 
 tasks.named('test') {

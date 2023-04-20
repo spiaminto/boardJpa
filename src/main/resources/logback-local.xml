@@ -90,18 +90,18 @@
     -->
 
     <root level="info">
-<!--        <appender-ref ref="CONSOLE" />-->
+        <appender-ref ref="CONSOLE" />
         <appender-ref ref="SYSLOG" />
         <appender-ref ref="ERRORLOG"/>
     </root>
 
     <logger name="hello.board" level="info">
-        <appender-ref ref="CONSOLE"/>
+<!--        <appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="APPLOG"/>
     </logger>
 
     <logger name="jdbc.sqltiming" level="info">
-        <appender-ref ref="CONSOLE" />
+<!--        <appender-ref ref="CONSOLE" />-->
 <!--        <appender-ref ref="SQLLOG" />-->
     </logger>
 

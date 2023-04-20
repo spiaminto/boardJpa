@@ -4,7 +4,6 @@ import hello.board.domain.image.Image;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-@Component
 public interface ImageStore {
 
     String getServiceName();

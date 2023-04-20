@@ -92,7 +92,6 @@ public class MemberService {
 
     /**
      * username 을 boardRepo 와 commentRepo 에서 동기화
-     *
      * @param currentMember
      * @param updateParam
      * @return 모두 성공하면 true
@@ -150,7 +149,6 @@ public class MemberService {
 
     /**
      * member 와, member.id = comment.memberId, comment.targetId, board.memberId 인 글들 삭제
-     *
      * @param id
      */
     @Transactional

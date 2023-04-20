@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -70,6 +71,7 @@ public class ImageService {
 
     /**
      * member 가 삭제될때, 해당 member 가 작성한 board 의 이미지 삭제
+     * 성공시 true, 실패시 실패한 boardId 를 로그로 남기고 false
      * @param memberId
      */
     public boolean deleteImageByMemberId(Long memberId) {
@@ -90,15 +92,16 @@ public class ImageService {
     }
 
     /**
-     * 삭제할 이미지 리스트를 받아 DB 에서 삭제 (storeImageName 으로)
+     * 삭제할 이미지 리스트를 받아 DB 에서 삭제 (imageIdList로)
      * @param deleteImageList
      * @return 삭제된 행 갯수
      */
     public int deleteImageFromDb(List<Image> deleteImageList) {
         int count = 0;
-        for (Image image : deleteImageList) {
-            count += imageRepository.deleteImageByStoreImageName(image.getStoreImageName());
-        }
+
+        // imageId 만 뽑아서 List 만든 뒤, DB 에서 삭제
+        List<Long> imageIdList = deleteImageList.stream().map(Image::getImageId).collect(Collectors.toList());
+        count = imageRepository.deleteImageByIdList(imageIdList);
 
         log.info("DB {} 개 중 {} 개 제거 완료", deleteImageList.size(), count);
         return count;
@@ -116,11 +119,6 @@ public class ImageService {
         return result;
     }
 
-    // 이미지 동기화
-    // ckeditor 에서 업로드시 image.boardId = 0 으로 업로드. 우선 해당 boardId 를 set.
-    //  이후, 실제로 업로드 된 image 들의 image.storeImageName 을 가져와
-    //   Db 와 로컬(아마존) 에서 대조 후 동기화.
-
     /**
      * ckEditor 를 통해 업로드된 이미지중 실제 업로드된 이미지를 선별한 뒤, DB 와 로컬(아마존)에서 동기화
      * @param boardId
@@ -135,34 +133,27 @@ public class ImageService {
         result = imageRepository.setBoardId(memberId, boardId);
 //        log.info("동기화 처리 전 boardId = 0 인 image 갯수 = {} ", result);
 
-        // DB 에 등록된 이미지
-        List<Image> imageDbList = imageRepository.findByBoardId(boardId);
-//        for (Image image : imageDbList) {log.info("ImageList {}", image);}
+        List<Image> imageDbList = imageRepository.findByBoardId(boardId); // DB 에 등록된 이미지 리스트
+//        imageDbList.forEach(image -> log.info("ImageList {}", image));
 
-        // 실제 업로드된 이미지 리스트
-        List<Image> uploadedImageList = makeUploadedImageList(uploadedImageNames, imageDbList);
-//        for (Image image : uploadedImageList) {log.info("uploadedImageList {}" , image);}
+        List<Image> uploadedImageList = makeUploadedImageList(uploadedImageNames, imageDbList); // 실제 업로드된 이미지 리스트
+//        uploadedImageList.forEach(image -> log.info("uploadedImageList {}", image));
 
-        // 제거될 이미지리스트
-        List<Image> deleteImageList = makeDeleteImageList(imageDbList, uploadedImageList);
-//        for (Image image : deleteImageList) {log.info("deleteImageList= {}" , image);}
+        List<Image> deleteImageList = makeDeleteImageList(imageDbList, uploadedImageList); // 제거될 이미지리스트
+//        deleteImageList.forEach(image -> log.info("deleteImageList= {}", image));
 
-        log.info("임시저장 이미지 개수= {}, 실제 업로드 이미지 개수 = {}, 제거될 이미지 개수 = {}", result, uploadedImageList.size(), deleteImageList.size());
+        log.info("임시저장 이미지 개수= {}, 실제 업로드 이미지 개수 = {}, 제거될 이미지 개수 = {}", result, uploadedImageNames.length, deleteImageList.size());
 
-        // 제거할 이미지가 없음
         if (deleteImageList.isEmpty()) {
+             // 제거할 이미지가 없음
             log.info("syncImage 종료 deleteImageList.isEmpty()");
             return;
         }
 
-        // 파일 제거
-        result = deleteImageFile(deleteImageList);
-
-        // DB에서 제거
-        int dbResult = deleteImageFromDb(deleteImageList);
+        result = deleteImageFile(deleteImageList); // 파일 제거
+        int dbResult = deleteImageFromDb(deleteImageList); // DB 에서 제거
 
         // 둘중에 하나가 실패하면 같이 실패해야함.
-
         log.info("syncImage() {} 개 중 로컬(아마존):{} DB:{} 동기화 성공", deleteImageList.size(), result, dbResult);
     }
 
@@ -176,8 +167,9 @@ public class ImageService {
         List<Image> uploadedImageList = new ArrayList<>();
 
         for (String storeImageName : uploadedImageNames) {
-            // .get() 대신 .orelse(null) => 없으면 null
-            uploadedImageList.add(imageDbList.stream().filter(image -> image.getStoreImageName().equals(storeImageName)).findFirst().orElse(null));
+            uploadedImageList.add(imageDbList.stream()
+                    .filter(image -> image.getStoreImageName().equals(storeImageName))
+                    .findFirst().orElse(null));
         }
         return uploadedImageList;
     }

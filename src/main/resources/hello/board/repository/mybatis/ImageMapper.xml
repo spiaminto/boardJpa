@@ -23,8 +23,11 @@
         delete from image where board_id=#{boardId}
     </delete>
 
-    <delete id="deleteImageByStoreImageName">
-        delete from image where store_image_name = #{storeImageName}
+    <delete id="deleteImageByIdList">
+        delete from image where
+        <foreach collection="imageIdList" item="imageId" open="(" close=")" separator="OR">
+            image_id = #{imageId}
+        </foreach>
     </delete>
 
     <update id="setBoardId">

@@ -12,8 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 
 @Repository
 @Slf4j
@@ -42,8 +44,8 @@ public class ImageRepository {
     }
 
 
-    public int deleteImageByStoreImageName(String storeImageName) {
-        return imageMapper.deleteImageByStoreImageName(storeImageName);
+    public int deleteImageByIdList(List<Long> imageIdList) {
+        return imageMapper.deleteImageByIdList(imageIdList);
     }
 
     /**
@@ -53,10 +55,10 @@ public class ImageRepository {
      */
     public int deleteImageFromLocal(List<Image> deleteImageList) {
         int count = 0;
-        List<File> fileList = new ArrayList<>();
-        for (Image image : deleteImageList) {
-            fileList.add(new File(image.getImageAddress()));
-        }
+
+        List<File> fileList = deleteImageList.stream()
+                .map(Image -> new File(Image.getImageAddress())).collect(Collectors.toList());
+
         for (File file : fileList) {
             boolean isDeleted = file.delete();
             if (isDeleted) count++;
@@ -73,11 +75,10 @@ public class ImageRepository {
      */
     public int deleteImageFromAmazon(List<Image> deleteImageList, String bucketDir, String innerBucketDir) {
 
-        // 아마존에 전달할 파일 정보 리스트
-        List<DeleteObjectsRequest.KeyVersion> keys = new ArrayList<>();
-        for (Image image : deleteImageList) {
-            keys.add(new DeleteObjectsRequest.KeyVersion(innerBucketDir + image.getStoreImageName()));
-        }
+        // 아마존에 전달할 파일 정보 리스트, DeleteObjectRequest.KeyVersion
+        List<KeyVersion> keys = deleteImageList.stream()
+                .map(image -> new KeyVersion(innerBucketDir + image.getStoreImageName()))
+                .collect(Collectors.toList());
 
         DeleteObjectsRequest multipleDeleteObjectsRequest = new DeleteObjectsRequest(bucketDir).withKeys(keys).withQuiet(false);
         DeleteObjectsResult deleteObjectsResult = null;

@@ -147,7 +147,8 @@
                     let imageSrc = $(this).attr("src");
                     let splittedUrl = '';
                     if (imageSrc.indexOf('/local') != -1) {
-                        splittedUrl = imageSrc.split("request/");
+                        splittedUrl = imageSrc.split("/image/");
+                        imageSrc.split
                     }
                     if (imageSrc.indexOf('amazonaws') != -1) {
                         if (imageSrc.indexOf('upload_image_test/') != -1) {

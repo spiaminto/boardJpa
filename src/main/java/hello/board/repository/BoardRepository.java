@@ -36,6 +36,10 @@ public class BoardRepository {
         return boardMapper.findById(id);
     }
 
+    public List<BoardCommentDTO> findByIdWithComment(Long id) {
+        return boardMapper.findByIdWithComment(id);
+    }
+
     // 검색 + 페이징
     public List<Board> findPagedBoard(Criteria criteria) {
         return boardMapper.findPagedBoard(criteria);

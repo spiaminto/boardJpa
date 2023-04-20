@@ -3,15 +3,22 @@ package hello.board.service;
 import hello.board.domain.board.Board;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.member.Member;
+import hello.board.repository.BoardCommentDTO;
 import hello.board.repository.BoardRepository;
 import hello.board.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +46,19 @@ public class BoardService {
      * @return Map<String, Object> board, commentList
      */
     public Map<String, Object> readBoard(Long id) {
-        boardRepository.updateViewCount(id);
         Map result = new HashMap();
-        result.put("board", boardRepository.findById(id));
-        result.put("commentList", commentRepository.findByBoardId(id));
+//        result.put("board", boardRepository.findById(id));
+//        result.put("commentList", commentRepository.findByBoardId(id));
+
+        List<BoardCommentDTO> list = boardRepository.findByIdWithComment(id);
+        if (list.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "board not found"); // board 가 없는 경우
+
+        result.put("board", list.stream().findFirst().get().toBoard());
+        result.put("commentList", list.stream()
+                .filter(item -> item.getCommentId() != null) // comment 가 없는 경우
+                .map(boardCommentDTO -> boardCommentDTO.toComment()).collect(Collectors.toList()));
+
+        boardRepository.updateViewCount(id);
         return result;
     }
 
@@ -65,15 +81,11 @@ public class BoardService {
      * @return id가 같거나, admin 일때 true
      */
     public boolean isSameWriter(Member currentMember, Board findBoard) {
-
         if (currentMember.getUsername().equals("admin")) {
             //관리자
             return true;
         }
-
         return findBoard.getMemberId().equals(currentMember.getId());
     }
-
-
 
 }

@@ -57,6 +57,21 @@
         where id = #{id}
     </select>
 
+    <!-- 글 + 댓글 한꺼번에 조회 -->
+    <select id="findByIdWithComment" resultType="hello.board.repository.BoardCommentDTO">
+        select board.*, comment.comment_id, comment.board_id, comment.target_id,
+               comment.writer AS commentWriter, comment.target,
+               comment.content AS commentContent,
+               comment.reg_date AS commentRegDate, comment.update_date AS commentUpdateDate,
+               comment.group_id, comment.group_order, comment.group_depth,
+               comment.category AS commentCategory
+        from board left join comment
+            on board.id = comment.board_id
+        where board.id = #{id};
+    </select>
+
+    <!-- board.id 를 이용해 board.id 가 일치하는 Board 테이블의 행과, comment.boardid = board.id 인 Comment 테이블의 행-->
+
     <!-- findPagedBoard -->
     <select id="findPagedBoard" resultType="Board">
         select * from board

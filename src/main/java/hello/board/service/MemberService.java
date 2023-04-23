@@ -5,6 +5,8 @@ import hello.board.domain.board.Board;
 import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.member.Member;
+import hello.board.mail.EmailSender;
+import hello.board.mail.EmailDTO;
 import hello.board.repository.BoardRepository;
 import hello.board.repository.CommentRepository;
 import hello.board.repository.MemberRepository;
@@ -12,6 +14,7 @@ import hello.board.repository.ResultDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +25,15 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@EnableAsync
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final EmailSender emailSender;
 
     public Member findById(Long id) {
         return memberRepository.findById(id);
@@ -60,7 +66,14 @@ public class MemberService {
         boolean isLogout;
         boolean isSuccess;
 
-        String encodedPassword = bCryptPasswordEncoder.encode(updateParam.getPassword());
+        // 이메일 인증 변경 확인 (프론트에서 일부 처리하나, 백에서도 확인)
+        if (currentMember.isVerified()) {
+            // 현재 인증된 상태일 경우, 검증
+            updateParam.setVerified(currentMember.getEmail().equals(updateParam.getEmail()));
+        }
+
+        // 새로운 password 암호화
+        String encodedPassword = bCryptPasswordEncoder.encode(newRawPassword);
         updateParam.setPassword(encodedPassword);
 
         // 멤버 변경 @Transactional
@@ -108,6 +121,7 @@ public class MemberService {
         try {
 
             // edit
+            option = "member.update(username)"; origin = 1;
             if (updateParam.getProviderId() == null) {
                 result = memberRepository.update(currentMember.getId(), updateParam);
             } else {
@@ -223,6 +237,31 @@ public class MemberService {
             result = memberRepository.findByLoginId(param);
         }
         return !result.isEmpty();
+    }
+
+    public String verifyEmail(String email) {
+
+        if (memberRepository.findByEmail(email).isPresent()) {
+            // 해당 email 로 '인증'된 멤버가 있음
+            return "duplicate";
+        }
+
+        int verifyCode = new Random().nextInt(900000) + 100000; // 6자리 난수 생성
+
+        EmailDTO emailDTO = EmailDTO.builder().to(email)
+                .subject("Spring_Board 인증번호 입니다.")
+                .content("인증번호는\n" + verifyCode + "\n입니다.").build();
+
+        emailSender.sendGmail(emailDTO); // 이메일 전송
+
+        String encodedVerifyCode = bCryptPasswordEncoder.encode(String.valueOf(verifyCode)); // 인증번호 암호화
+        log.info("encodedVerifyCode = {}", encodedVerifyCode);
+
+        return encodedVerifyCode;
+    }
+
+    public boolean confirmEmail(String verifyCode, String encodedVerifyCode) {
+        return bCryptPasswordEncoder.matches(verifyCode, encodedVerifyCode);
     }
 
 }

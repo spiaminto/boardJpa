@@ -64,6 +64,9 @@ dependencies {
 	// mapstruct 라이브러리 (오브젝트 매핑)
 	implementation 'org.mapstruct:mapstruct:1.5.4.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.4.Final'
+
+	// 메일 보내기
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {

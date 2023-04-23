@@ -85,7 +85,6 @@
                 $(".info-form .edit-btn").css("display", "none");
                 $(".info-form .delete-btn").css("display", "none");
                 $("#password").attr("placeholder", "4 ~ 16자리까지 허용합니다.");
-
             })
 
 // 변경 체크를 위한 초기값 (origin -> 페이지로드 초기값)
@@ -174,6 +173,66 @@
                 })
             })
 
+
+// 이메일 인증 (전송)
+            $("#emailVerifyBox").hide(); // 기본 hide
+            let isEmailVerified = false;
+            $(".verifyEmailBtn").on("click", function () {
+                // 이메일 검사
+                let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
+                let inputEmail = $("#email").val();
+                console.log("input email = " + inputEmail);
+                if (!regex.test(inputEmail)) {
+                    alert("유효한 이메일을 입력해 주세요.")
+                    return false;
+                }
+
+                // 이메일 전송
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: "/member/verify-email",
+                    data: {email: inputEmail},
+                    success: function (data) {
+                        isEmailVerified = false;
+                        if (data == 'true') {
+                            alert("인증 메일이 전송되었습니다.");
+                            $("#emailVerifyBox").show();
+                            $("#email").attr("readonly", true).css("background-color", "lightgrey");
+                        } else if (data == 'duplicate') {
+                            alert("이미 가입된 이메일 입니다.");
+                        } else {
+                            alert("이메일 전송에 실패하였습니다.");
+                        }
+                    }
+                })
+
+            })
+
+// 이메일 인증(확인)
+            $(".confirmEmailBtn").on("click", function () {
+                // 입력한 코드 검사
+                let verifyCode = $("#emailVerifyCode").val();
+
+                // 입력한 코드 전송
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: "/member/confirm-email",
+                    data: {verifyCode: verifyCode},
+                    success: function (isVerified) {
+                        if (isVerified == true) {
+                            alert("인증 되었습니다.")
+                            isEmailVerified = isVerified;
+                            $("#emailVerifyBox").hide();
+                            $(".verifyEmailBtn").hide();
+                        } else {
+                            alert("인증에 실패하였습니다.")
+                        }
+                    }
+                })
+            })
+
 // 일반 유저 폼 submit
             $("#normalForm").on("submit", function (event) {
                 event.preventDefault();
@@ -194,12 +253,18 @@
                 if ($("#loginId").val() != loginId) loginIdFlag = false;
                 if ($("#username").val() != username) usernameFlag = false;
 
-                if (loginIdFlag == true && usernameFlag == true) {
-                    this.submit();
-                } else {
-                    (loginIdFlag == true) ? $("#username").removeClass("is-valid") : $("#loginId").removeClass("is-valid");
+                // 중복 체크 최종 확인
+                if (loginIdFlag == false || usernameFlag == false) {
                     alert((loginIdFlag ? "닉네임 " : "로그인ID ") + "중복 체크 해주세요");
+                    return false;
                 }
+
+                // 이메일 인증 확인
+                if (isEmailVerified.valueOf()) {
+                    $("#isEmailVerified").val("true");
+                }
+
+                this.submit();
             })
 
 // OAuth2 유저 폼 submit
@@ -295,11 +360,26 @@
             <div class="invalid-feedback"> 닉네임을 입력해 주세요 (최대 16 자)</div>
         </div>
 
-        <label for="email">이메일 </label>
+        <label for="email">이메일 </label> <span th:if="*{'true'.equals(emailVerified)}">(인증됨)</span>
         <div class="input-wrapper">
             <input type="text" id="email" th:field="*{email}" th:errorclass="is-invalid"
                    placeholder="최대 30자 까지 허용합니다." class="form-control editable">
+            <button type="button" class="verifyEmailBtn btn btn-secondary" th:unless="*{'true'.equals(emailVerified)}">
+                인증
+            </button>
             <div class="invalid-feedback"> 유효한 이메일을 입력해 주세요 (최대 30자) </div>
+        </div>
+
+        <div id="emailVerifyBox">
+            <label for="emailVerifyCode">이메일 인증번호</label>
+            <div class="input-wrapper">
+                <input type="password" id="emailVerifyCode" name="emailVerifyCode"
+                       placeholder="인증번호" class="form-control editable">
+                <button type="button" class="confirmEmailBtn btn btn-secondary">
+                    인증확인
+                </button>
+                <div class="invalid-feedback"> 인증 번호가 다릅니다. </div>
+            </div>
         </div>
 
         <div class="d-flex justify-content-evenly">
@@ -310,6 +390,7 @@
 
         <!-- Oauth2 유저인지 확인-->
         <input class="isOauth2" type="hidden" name="isOauth2" th:value="${isOauth2}">
+        <input id="isEmailVerified" type="hidden" name="emailVerified" value="false" class="editable">
 
     </form>
 

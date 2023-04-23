@@ -21,7 +21,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @Slf4j
@@ -43,7 +48,7 @@ public class MemberController {
                       BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
-            log.info("/add POST bindingResult.hasError");
+            log.info("/add POST bindingResult.hasError {}", bindingResult);
             return "member/addForm";
         }
 
@@ -52,6 +57,7 @@ public class MemberController {
                 .username(form.getUsername())
                 .password(form.getPassword())
                 .email(form.getEmail())
+                .emailVerified(form.getEmailVerified())
                 .role("ROLE_USER").build();
 
         ResultDTO result = memberService.addMember(member);
@@ -132,7 +138,7 @@ public class MemberController {
                              ) {
         // 검증 오류 발생
         if (bindingResult.hasErrors()) {
-            log.info("/edit POST bindingResult.hasError");
+            log.info("/edit POST bindingResult.hasError {}", bindingResult);
             return "member/infoForm";
         }
         Member currentMember = memberService.findById(memberId);
@@ -142,7 +148,9 @@ public class MemberController {
                 .loginId(memberEditForm.getLoginId())
                 .username(memberEditForm.getUsername())
                 .password(memberEditForm.getPassword())
-                .email(memberEditForm.getEmail()).build();
+                .email(memberEditForm.getEmail())
+                .emailVerified(memberEditForm.getEmailVerified())
+                .build();
 
         // 멤버 수정
         Map<String, Object> resultMap = memberService.editMember(currentMember, updateParam);
@@ -295,5 +303,48 @@ public class MemberController {
         return memberService.duplicateCheck(option, param);
     }
 
+    @ResponseBody
+    @GetMapping("/member/verify-email")
+    public String verifyEmail(@RequestParam(value = "email", defaultValue = "") String email,
+                              HttpServletResponse response) {
+        log.info("verifyEmail(), email = {}", email);
 
+        String encodedVerifyCode = memberService.verifyEmail(email);
+        if ("duplicate".equals(encodedVerifyCode)) {
+            // 해당 email 로 '인증'된 멤버가 있음
+            return "duplicate";
+        }
+
+        Cookie verifyCodeCookie = new Cookie("verifyCode", encodedVerifyCode);
+        verifyCodeCookie.setMaxAge(300); // 유효시간 300초(5분)
+        response.addCookie(verifyCodeCookie);
+
+        return encodedVerifyCode != null ? "true" : "false";
+    }
+
+    @ResponseBody
+    @GetMapping("/member/confirm-email")
+    public boolean confirmEmail(@RequestParam String verifyCode,
+                                HttpServletRequest request) {
+        String encodedVerifyCode = "";
+        boolean isVerified;
+
+        // cookie 에서 (encoded)verifyCode 가져오기
+        Cookie[] cookies = request.getCookies();
+        Optional<Cookie> verifyCodeCookie = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("verifyCode")).findFirst();
+
+        if (verifyCodeCookie.isPresent()) {
+            // verifyCode 쿠키가 존재
+            encodedVerifyCode = verifyCodeCookie.get().getValue();
+
+            // client 에서 받은 verifyCode 와 cookie 에서 가져온 encodedVerifyCode 를 비교
+            isVerified = memberService.confirmEmail(verifyCode, encodedVerifyCode);
+        } else {
+            isVerified = false;
+        }
+
+        log.info("confirmEmail(), verifyCode = {}, encodedVerifyCode = {}", verifyCode, encodedVerifyCode);
+
+        return isVerified;
+    }
 }

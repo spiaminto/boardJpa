@@ -66,17 +66,15 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         return member.getEmail();
     }
 
-    // OAuth2User, user PK
     @Override
     public String getName() {
         return member.getId() + "";
-    }
+    } // OAuth2User, user PK
 
-    // OAuth2User
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
-    }
+    } // OAuth2User
 
     @Override
     public boolean isAccountNonExpired() {

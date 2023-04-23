@@ -13,8 +13,8 @@ public class Member {
     private String username;    // UNIQUE
     private String password;
 
-    // for google oauth2
     private String email;
+    private String emailVerified;   // 'true' or 'false'
     private String role;
 
     private String provider;        // oauth provider 구분
@@ -51,6 +51,16 @@ public class Member {
         this.role = "ROLE_TEMP";
     }
 
+    /**
+     * 현재 Member 의 email 인증 여부를 설정
+     */
+     public void setVerified(boolean isVerified) {
+         this.emailVerified = isVerified ? "true" : "false";
+     }
 
+     // isEmailVerified -> Mybatis Reflect 오류
+     public boolean isVerified() {
+         return "true".equals(this.emailVerified);
+     }
 
 }

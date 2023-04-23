@@ -21,12 +21,10 @@ public interface MemberMapper {
     int delete(Long id);
 
     Member findById(Long id);
-
     Optional<Member> findByLoginId(String loginId);
-
-    // 중복유저 체크할떄 사용
-    Optional<Member> findByUsername(String username);
+    Optional<Member> findByUsername(String username); // 중복유저 체크시 사용
     Optional<Member> findByProviderAndProviderId(@Param("provider")String provider, @Param("providerId") String providerId);
+    Optional<Member> findByEmail(String email); // 이메일 인증시 사용
 
     List<Member> findAll();
 

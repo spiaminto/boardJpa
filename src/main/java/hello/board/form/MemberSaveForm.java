@@ -23,4 +23,7 @@ public class MemberSaveForm {
     @Size(max = 30)
     @Email
     private String email;
+
+    @NotBlank
+    private String EmailVerified; // 이메일 인증여부, 'true' or 'false'
 }

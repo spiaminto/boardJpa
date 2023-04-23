@@ -34,6 +34,10 @@ public class MemberRepository {
         return memberMapper.findByProviderAndProviderId(provider, providerId);
     }
 
+    public Optional<Member> findByEmail(String email) {
+        return memberMapper.findByEmail(email);
+    }
+
     public ResultDTO save(Member member) {
         try {
             int rowNum = memberMapper.save(member);

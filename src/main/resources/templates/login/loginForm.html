@@ -85,6 +85,17 @@
             margin-bottom: 0;
         }
 
+        #forgotBox p {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        #forgotBox a {
+            color: grey;
+            text-decoration: none;
+        }
+
     </style>
     <script th:inline="javascript">
         <!-- javascript 에서 thymeleaf 변수 접근 -->
@@ -154,6 +165,12 @@
         </div>
         <div th:if="${springSecurityErrorMessage != null}">
             <p class="field-error" th:text="${springSecurityErrorMessage}">로그인 오류 메시지</p>
+        </div>
+
+        <div id="forgotBox">
+            <p>
+                <a href="/member/find"> 아이디 / 비밀번호 찾기</a>
+            </p>
         </div>
 
         <div class="d-flex justify-content-center" id="buttonBox">

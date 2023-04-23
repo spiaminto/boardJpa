@@ -1,7 +1,5 @@
 package hello.board.repository;
 
-import hello.board.domain.board.Board;
-import hello.board.domain.comment.Comment;
 import hello.board.domain.enums.Category;
 import lombok.Data;
 
@@ -49,15 +47,5 @@ public class BoardCommentDTO {
     private Category commentCategory;      // 댓글 카테고리 조회를 위한 카테고리
 
     // ==========================================================================
-    // Mapper
-    BoardCommentDTOMapper mapper = BoardCommentDTOMapper.INSTANCE;
-
-    public Board toBoard() {
-        return mapper.toBoard(this);
-    }
-
-    public Comment toComment() {
-        return mapper.toComment(this);
-    }
 
 }

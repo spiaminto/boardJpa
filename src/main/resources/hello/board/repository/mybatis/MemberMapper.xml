@@ -4,8 +4,8 @@
 <mapper namespace="hello.board.repository.mybatis.MemberMapper">
 
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into member(provider, provider_id, login_id, username, password, email, role)
-        VALUES (#{provider}, #{providerId}, #{loginId}, #{username}, #{password},#{email}, #{role})
+        insert into member(provider, provider_id, login_id, username, password, email, email_verified, role)
+        VALUES (#{provider}, #{providerId}, #{loginId}, #{username}, #{password},#{email}, #{emailVerified}, #{role})
     </insert>
 
     <update id="update">
@@ -13,7 +13,8 @@
         set login_id=#{updateParam.loginId},
             username=#{updateParam.username},
             password=#{updateParam.password},
-            email=#{updateParam.email}
+            email=#{updateParam.email},
+            email_verified=#{updateParam.emailVerified}
         where id = #{id}
     </update>
 
@@ -59,6 +60,12 @@
 
     <select id="findByProviderAndProviderId" resultType="Member">
         select * from member where provider = #{provider} and provider_id = #{providerId}
+    </select>
+
+    <!-- 이메일 인증에서 사용-->
+    <select id="findByEmail" resultType="Member">
+        select * from member
+        where email = #{email} and email_verified = 'true'
     </select>
 
 </mapper>

@@ -46,7 +46,7 @@ public class ThreadLocalLogTrace implements LogTrace {
             // exception 발생 시 파라미터를 같이 출력
             StringBuilder sb = new StringBuilder();
             for (Object param : params) {
-                sb.append(param);
+                sb.append(param).append(", ");
             }
             log.info("[{}] {}{} [ex] = {} [params] = {}", traceId.getId(), addSpace(EX_PREFIX, traceId.getLevel()), status.getMessage(), e, sb);
         }

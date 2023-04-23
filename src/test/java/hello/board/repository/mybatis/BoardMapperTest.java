@@ -176,23 +176,24 @@ class BoardMapperTest {
     public void findByIdWithComment() {
 //        Long testBoardId = 104L;
         Long testBoardId = 381L;
+        BoardCommentDTOMapper boardCommentDTOMapper = BoardCommentDTOMapper.INSTANCE;
 
-        List<BoardCommentDTO> boardCommentDTOList = boardMapper.findByIdWithComment(testBoardId);
+        List<BoardCommentDTO> list = boardMapper.findByIdWithComment(testBoardId);
 //        boardComment.forEach(item -> log.info("boardComment = {}", item));
-        Board board = boardCommentDTOList.stream().findFirst().get().toBoard();
-        List<Comment> commentList = boardCommentDTOList.stream()
-                .filter(item -> item.getCommentId() != null) // filter 로 거르지 않으면, [null] 이 들어가게 됨
-                .map(item -> item.toComment()).collect(Collectors.toList());
+        Board testBoard = boardCommentDTOMapper.toBoard(list.stream().findFirst().get());
+        List<Comment> testCommentList = list.stream()
+                .filter(item -> item.getCommentId() != null)    // 댓글이 없는경우 제외
+                .map(c -> boardCommentDTOMapper.toComment(c)).collect(Collectors.toList());
 
         Board findBoard = boardMapper.findById(testBoardId);
         List<Comment> findCommentList = commentMapper.findByBoardId(testBoardId);
 
-        log.info("board = {}", board);
-        commentList.forEach(item -> log.info("comment = {}", item));
+        log.info("board = {}", testBoard);
+        testCommentList.forEach(item -> log.info("comment = {}", item));
         
         // mapstruct 사용하여 맵핑 테스트 성공여부 확인
-        Assertions.assertThat(board).isEqualTo(findBoard);
-        Assertions.assertThat(commentList).isEqualTo(findCommentList);
+        Assertions.assertThat(testBoard).isEqualTo(findBoard);
+        Assertions.assertThat(testCommentList).isEqualTo(findCommentList);
 
     }
 }

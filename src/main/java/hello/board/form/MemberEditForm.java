@@ -25,4 +25,7 @@ public class MemberEditForm {
     @Email
     private String email;
 
+    @NotBlank
+    private String emailVerified; // 이메일 인증여부, 'true' or 'false'
+
 }

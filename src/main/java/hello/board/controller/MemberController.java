@@ -4,10 +4,7 @@ import hello.board.auth.PrincipalDetails;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.member.Member;
 import hello.board.domain.paging.PageMaker;
-import hello.board.form.MemberEditForm;
-import hello.board.form.MemberSaveForm;
-import hello.board.form.OAuth2MemberEditForm;
-import hello.board.form.OAuth2MemberSaveForm;
+import hello.board.form.*;
 import hello.board.repository.ResultDTO;
 import hello.board.service.ImageService;
 import hello.board.service.MemberService;
@@ -217,6 +214,34 @@ public class MemberController {
 
     }
 
+    @GetMapping("/member/find")
+    public String findForm(Model model) {
+        model.addAttribute("findForm", new FindForm());
+        return "member/findForm";
+    }
+
+    @PostMapping("/member/find")
+    public String findMember(@Validated @ModelAttribute("findForm") FindForm findForm,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) {
+        if ("password".equals(findForm.getFindOption())) {
+            // 비밀번호는 민감해서 한번 더 검증함.
+            String newPassword = findForm.getPassword();
+            if (newPassword == null || newPassword.length() < 4 || newPassword.length() > 16) {
+                bindingResult.rejectValue("password", "비밀번호는 4자 이상 16자 이하로 입력해주세요.");
+            }
+        }
+        if (bindingResult.hasErrors()) {
+            log.info("/find POST bindingResult.hasError, bindingResult={}", bindingResult);
+            return "member/findForm";
+        }
+
+        String message= memberService.findMember(findForm);
+
+        redirectAttributes.addFlashAttribute("findMessage", message);
+        return "redirect:/member/find";
+    }
+
     // 내 글
     @GetMapping("/member/{memberId}/boards")
     public String myPage(@ModelAttribute("criteria") Criteria criteria,
@@ -305,14 +330,15 @@ public class MemberController {
 
     @ResponseBody
     @GetMapping("/member/verify-email")
-    public String verifyEmail(@RequestParam(value = "email", defaultValue = "") String email,
+    public String verifyEmail(@RequestParam(value = "email") String email,
+                              @RequestParam(value = "option") String option,
                               HttpServletResponse response) {
         log.info("verifyEmail(), email = {}", email);
 
-        String encodedVerifyCode = memberService.verifyEmail(email);
-        if ("duplicate".equals(encodedVerifyCode)) {
-            // 해당 email 로 '인증'된 멤버가 있음
-            return "duplicate";
+        String encodedVerifyCode = memberService.verifyEmail(email, option);
+        if (encodedVerifyCode.length() != 60) {
+            // verifyCode 생성 실패
+            return encodedVerifyCode;
         }
 
         Cookie verifyCodeCookie = new Cookie("verifyCode", encodedVerifyCode);
@@ -325,26 +351,31 @@ public class MemberController {
     @ResponseBody
     @GetMapping("/member/confirm-email")
     public boolean confirmEmail(@RequestParam String verifyCode,
-                                HttpServletRequest request) {
+                                HttpServletRequest request, HttpServletResponse response) {
         String encodedVerifyCode = "";
-        boolean isVerified;
+        boolean isVerified = false;
 
         // cookie 에서 (encoded)verifyCode 가져오기
         Cookie[] cookies = request.getCookies();
-        Optional<Cookie> verifyCodeCookie = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("verifyCode")).findFirst();
+        Optional<Cookie> verifyCookieOptional = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("verifyCode")).findFirst();
 
-        if (verifyCodeCookie.isPresent()) {
+        if (verifyCookieOptional.isPresent()) {
             // verifyCode 쿠키가 존재
-            encodedVerifyCode = verifyCodeCookie.get().getValue();
+            Cookie verifyCookie = verifyCookieOptional.get();
+            encodedVerifyCode = verifyCookie.getValue();
 
             // client 에서 받은 verifyCode 와 cookie 에서 가져온 encodedVerifyCode 를 비교
             isVerified = memberService.confirmEmail(verifyCode, encodedVerifyCode);
+
+            if (isVerified) {
+                // 인증됨 -> cookie 삭제
+                verifyCookie.setMaxAge(0);
+                response.addCookie(verifyCookie);
+            }
         } else {
             isVerified = false;
         }
-
         log.info("confirmEmail(), verifyCode = {}, encodedVerifyCode = {}", verifyCode, encodedVerifyCode);
-
         return isVerified;
     }
 }

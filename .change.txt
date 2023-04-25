@@ -117,6 +117,12 @@ commit 25.2
     코드 리팩토링(람다, 스트림). Sql 개선 (글 조회 + 댓글 조회, 이미지삭제), 어노테이션 정리
     MapStruct 라이브러리 의존성 추가 및 BoardCommentDTO 와 mapper 작성
 
+commit feature/verify-email 1
+    feature/verify-email branch 분기. 이메일 인증 기능 추가, BoardCommentDTO 수정
+
+commit feature/verify-email 2
+    이메일 인증 기반 loginId, password 찾기 기능 추가.
+
 
 
 

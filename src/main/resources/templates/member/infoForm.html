@@ -54,11 +54,6 @@
     <script>
         $(function () {
 
-// alert
-            let alertMessage = $("#globalAlertMessage").data("alertmessage");
-            if (alertMessage) {
-                alert(alertMessage);
-            }
 
 // 내부 네비바 active
             $(".nav-pills .nav-link").on({
@@ -192,11 +187,11 @@
                     type: "get",
                     async: false,
                     url: "/member/verify-email",
-                    data: {email: inputEmail},
+                    data: {email: inputEmail, option: "add"},
                     success: function (data) {
                         isEmailVerified = false;
                         if (data == 'true') {
-                            alert("인증 메일이 전송되었습니다.");
+                            alert("인증 메일이 전송되었습니다. 인증코드는 5분간 유효합니다.");
                             $("#emailVerifyBox").show();
                             $("#email").attr("readonly", true).css("background-color", "lightgrey");
                         } else if (data == 'duplicate') {
@@ -292,6 +287,12 @@
                     $("#memberDelete").attr("action", "/member/" + memberId + "/delete").submit();
                 }
             })
+
+// alert
+            let alertMessage = $("#globalAlertMessage").data("alertmessage");
+            if (alertMessage) {
+                alert(alertMessage);
+            }
         })
     </script>
 </head>

@@ -52,12 +52,6 @@
     <script>
         $(function () {
 
-// alert
-            let alertMessage = $("#globalAlertMessage").data("alertmessage");
-            if (alertMessage) {
-                alert(alertMessage);
-            }
-
 // 변경 체크를 위한 페이지 로드시 초기값
             let loginId = $("#loginId").val();
             let username;
@@ -151,11 +145,11 @@
                     type: "get",
                     async: false,
                     url: "/member/verify-email",
-                    data: {email: inputEmail},
+                    data: {email: inputEmail, option : "add"},
                     success: function (data) {
                         isEmailVerified = false;
                         if (data == 'true') {
-                            alert("인증 메일이 전송되었습니다.");
+                            alert("인증 메일이 전송되었습니다. 인증코드는 5분간 유효합니다.");
                             $("#emailVerifyBox").show();
                             $("#email").attr("readonly", true).css("background-color", "lightgrey");
                         } else if (data == 'duplicate') {
@@ -241,6 +235,12 @@
                     alert("닉네임 중복 체크 해주세요");
                 }
             })
+
+// alert
+            let alertMessage = $("#globalAlertMessage").data("alertmessage");
+            if (alertMessage) {
+                alert(alertMessage);
+            }
         })
     </script>
 </head>

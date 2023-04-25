@@ -1,0 +1,215 @@
+<!DOCTYPE HTML>
+<!--타임리프 및 스프링 시큐리티 확장 네임스페이스 사용-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+          crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/nav-css.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/global.css}" href="/static/css/global.css">
+    <title>아이디, 비밀번호 찾기</title>
+    <style>
+        #findForm {
+            width: 560px;
+            margin: 30px auto 0;
+        }
+
+        .input-wrapper > * {
+            float: left;
+        }
+
+        .input-wrapper::after {
+            display: block;
+            content: "";
+            clear: both;
+        }
+
+        .input-wrapper > input {
+            width: 83%;
+        }
+
+        .input-wrapper {
+            margin: 10px auto 30px;
+        }
+
+        .input-wrapper > button {
+            margin-left: 5px;
+        }
+
+    </style>
+    <script src="http://code.jquery.com/jquery.min.js"></script>
+    <script>
+        $(function () {
+
+// 옵션에 따른 패스워드 입력 폼 표시 (비활성화)
+            $("#passwordBox").hide();
+            $('input[name="findOption"]').change(function() {
+                if ($(this).val() == "password") {
+                    $("#passwordBox").show();
+                    $("#findSubmitBtn").text("비밀번호 변경");
+                } else {
+                    $("#passwordBox").hide();
+                    $("#findSubmitBtn").text("ID 찾기");
+                }
+            });
+
+// 이메일 인증 (전송)
+            let isEmailVerified = false;
+            $(".verifyEmailBtn").on("click", function () {
+                // 이메일 검사
+                let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
+                let inputEmail = $("#email").val();
+                // console.log("input email = " + inputEmail);
+                if (!regex.test(inputEmail)) {
+                    alert("유효한 이메일을 입력해 주세요.")
+                    return false;
+                }
+
+                // 이메일 전송
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: "/member/verify-email",
+                    data: {email: inputEmail, option: "find"},
+                    success: function (data) {
+                        isEmailVerified = false;
+                        if (passwordSelected()) {
+                            passwordInputActive(false);
+                        }
+                        if (data == 'true') {
+                            alert("인증 메일이 전송되었습니다. 인증코드는 5분간 유효합니다.");
+                            $("#email").attr("readonly", true).css("background-color", "lightgrey");
+                        } else if (data == 'none') {
+                            alert("해당 메일로 인증된 계정이 없습니다.");
+                        } else {
+                            alert("이메일 전송에 실패하였습니다.");
+                        }
+                    }
+                })
+            })
+
+// 이메일 인증(확인)
+            $(".confirmEmailBtn").on("click", function () {
+                // 입력한 코드 검사
+                let verifyCode = $("#emailVerifyCode").val();
+
+                // 입력한 코드 전송
+                $.ajax({
+                    type: "get",
+                    async: false,
+                    url: "/member/confirm-email",
+                    data: {verifyCode: verifyCode},
+                    success: function (isVerified) {
+                        if (isVerified == true) {
+                            alert("인증 되었습니다.")
+                            isEmailVerified = isVerified;
+                            $("#emailVerifyCode").attr("readonly", true).css("background-color", "lightgrey");
+                            $(".confirmEmailBtn, .verifyEmailBtn").attr("disabled", true);
+                            if (passwordSelected()) {
+                                // 패스워드 변경 시
+                                passwordInputActive(true);
+                            }
+                        } else {
+                            alert("인증에 실패하였습니다.")
+                        }
+                    }
+                })
+            })
+            function passwordInputActive(option) {
+                if (option) {
+                    $("#passwordBox #password").attr("disabled", false).attr("placeholder", "비밀번호를 입력해주세요.(4 ~ 16 자)");
+                } else {
+                    $("#passwordBox #password").attr("disabled", true).attr("placeholder", "이메일 인증 후 입력해주세요.");
+                }
+            }
+            function passwordSelected() {
+                return $('input[name="findOption"]:checked').val() == "password";
+            }
+
+// 찾기 폼 전송
+            $("#findForm").on("submit", function () {
+                if (!isEmailVerified) {
+                    alert("이메일 인증을 해주세요.");
+                    return false;
+                }
+                // 폼 전송
+            })
+
+// find 알림 메시지 (alert)
+            let alertMessage = $("#findAlertMessage").data("findalertmessage");
+            if (alertMessage) {
+                alert(alertMessage);
+            }
+
+        })
+    </script>
+</head>
+<body id="body">
+<div id="container" class="container">
+
+    <nav th:replace="fragment/fragment.html :: nav-fragment">
+    </nav>
+
+    <div id="findAlertMessage" th:data-findalertmessage="${findMessage}"></div>
+
+    <h2>ID 찾기, 비밀번호 변경</h2>
+
+    <hr>
+
+    <!-- 이메일로 아이디, 비밀번호 찾기 폼 -->
+    <form th:action="@{/member/find}" method="post" class="form" id="findForm" th:object="${findForm}">
+        <div class="input-wrapper">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="findOption" id="findId" value="id" checked>
+                <label class="form-check-label" for="findId">ID 찾기</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="findOption" id="findPassword" value="password">
+                <label class="form-check-label" for="findPassword">비밀번호 변경</label>
+            </div>
+        </div>
+
+        <label for="email">이메일</label>
+        <div class="input-wrapper">
+            <input type="text" th:field="*{email}" id="email"
+                   placeholder="최대 30자 까지 허용합니다." class="form-control">
+            <button type="button" class="verifyEmailBtn btn btn-secondary">
+                인증
+            </button>
+        </div>
+
+        <div id="emailVerifyBox">
+            <label for="emailVerifyCode">이메일 인증번호</label>
+            <div class="input-wrapper">
+                <input type="password" id="emailVerifyCode" name="emailVerifyCode"
+                       placeholder="인증번호" class="form-control">
+                <button type="button" class="confirmEmailBtn btn btn-secondary">
+                    인증확인
+                </button>
+            </div>
+        </div>
+
+        <div id="passwordBox">
+            <label for="password">새로운 비밀번호 </label>
+            <div class="input-wrapper">
+                <input type="password" id="password" th:field="*{password}" th:errorclass="is-invalid"
+                       placeholder="이메일 인증 후 입력해주세요." class="form-control" disabled required minlength="4" maxlength="16">
+                <div class="invalid-feedback"> 비밀번호를 입력해 주세요 (4 ~ 16 자)</div>
+            </div>
+        </div>
+
+        <input id="isEmailVerified" type="hidden" name="emailVerified" value="false">
+        <div class="d-flex justify-content-center">
+            <button id="findSubmitBtn" type="submit" class="btn btn-primary">ID 찾기</button>
+        </div>
+    </form>
+
+</div> <!-- /container -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+</body>
+</html>

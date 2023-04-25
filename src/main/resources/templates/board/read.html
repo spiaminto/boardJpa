@@ -177,14 +177,6 @@
     <script>
         $(function () {
 
-// alert
-            $(window).on("load", function () {
-                let alertMessage = $("#globalAlertMessage").data("alertmessage");
-                if (alertMessage) {
-                    alert(alertMessage);
-                }
-            })
-
 // CK editor
             ClassicEditor
                 .create( document.querySelector( '#article' ))
@@ -564,6 +556,13 @@
                 return (content == "" || content == null) ? true : false;
             }
 
+// alert
+            $(window).on("load", function () {
+                let alertMessage = $("#globalAlertMessage").data("alertmessage");
+                if (alertMessage) {
+                    alert(alertMessage);
+                }
+            })
         });
     </script>
 </head>

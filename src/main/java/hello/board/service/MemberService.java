@@ -5,8 +5,10 @@ import hello.board.domain.board.Board;
 import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.member.Member;
-import hello.board.mail.EmailSender;
+import hello.board.exception.EditPasswordFailException;
+import hello.board.form.FindForm;
 import hello.board.mail.EmailDTO;
+import hello.board.mail.EmailSender;
 import hello.board.repository.BoardRepository;
 import hello.board.repository.CommentRepository;
 import hello.board.repository.MemberRepository;
@@ -63,7 +65,7 @@ public class MemberService {
     public Map<String, Object> editMember(Member currentMember, Member updateParam) {
 
         String newRawPassword = updateParam.getPassword();
-        boolean isLogout;
+        boolean isLogout = false;
         boolean isSuccess;
 
         // 이메일 인증 변경 확인 (프론트에서 일부 처리하나, 백에서도 확인)
@@ -87,7 +89,6 @@ public class MemberService {
         if (!currentMember.getLoginId().equals(updateParam.getLoginId()) ||
                 !bCryptPasswordEncoder.matches(newRawPassword, currentMember.getPassword())) {
             isLogout = true; // 비밀번호 또는 loginID 중 하나가 수정됨
-
         } else {
             isLogout = false; // 비밀번호, loginId 모두 수정되지 않음
         }
@@ -159,6 +160,47 @@ public class MemberService {
             return false;
         }
         return true;
+    }
+
+    /**
+     * FindForm 을 이용해 member 의 loginId 를 찾거나, password 를 변경
+     * 처리 결과를 담은 message 를 반환
+     */
+    public String findMember(FindForm findForm) {
+        String message = "";
+
+        Member findMember = memberRepository.findByEmail(findForm.getEmail()).get(); // 이메일 인증 완료를 전제
+
+        if ("id".equals(findForm.getFindOption())) {
+            // loginId 찾기
+            String loginId = findMember.getLoginId();
+            message = "회원님의 ID 는 " + loginId + " 입니다.";
+        } else {
+            // password 변경
+            try {
+                editPassword(findMember, findForm.getPassword());
+                message = "비밀번호가 변경되었습니다.";
+            } catch (EditPasswordFailException e) {
+                message = "비밀번호를 변경하는데 실패했습니다.";
+            }
+        }
+        return message;
+    }
+
+    /**
+     * 비밀번호 만 변경, 실패 시 EditPasswordFailException 발생
+     * @Param currentMember
+     * @Param newPassword
+     */
+    private void editPassword(Member currentMember, String newPassword) {
+        Member updateParam = currentMember;
+        updateParam.setPassword(newPassword);
+
+        Map<String, Object> resultMap = editMember(currentMember, updateParam);
+
+        if (resultMap == null) {
+            throw new EditPasswordFailException("MemberService.editPassword() 비밀번호 변경 실패, resultMap = null");
+        }
     }
 
     /**
@@ -239,18 +281,28 @@ public class MemberService {
         return !result.isEmpty();
     }
 
-    public String verifyEmail(String email) {
+    /**
+     * email 과 option ("find", "add") 를 받아 verifyCode 생성후 이메일로 전송
+     * 오류 시 "duplicate", "none" 반환, 정상 전송 시 encodedVerifyCode 반환 (60바이트)
+     */
+    public String verifyEmail(String email, String option) {
 
-        if (memberRepository.findByEmail(email).isPresent()) {
-            // 해당 email 로 '인증'된 멤버가 있음
+        // 보낼 email 검증
+        Optional<Member> findMember = memberRepository.findByEmail(email);
+        if ("add".equals(option) && findMember.isPresent()) {
+            // 신규 인증 && 이메일로 인증된 회원 존재
             return "duplicate";
+        } else if ("find".equals(option) && findMember.isEmpty()) {
+            // 회원 찾기 && 이메일로 인증된 회원 없음 ( + oauth 로 가입된 회원)
+            return "none";
         }
 
         int verifyCode = new Random().nextInt(900000) + 100000; // 6자리 난수 생성
 
         EmailDTO emailDTO = EmailDTO.builder().to(email)
                 .subject("Spring_Board 인증번호 입니다.")
-                .content("인증번호는\n" + verifyCode + "\n입니다.").build();
+                .content("인증번호는\n" + verifyCode + "\n입니다." +
+                        "\n인증번호는 5분간 유효합니다.").build();
 
         emailSender.sendGmail(emailDTO); // 이메일 전송
 

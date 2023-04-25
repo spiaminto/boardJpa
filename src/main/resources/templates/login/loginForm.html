@@ -96,6 +96,10 @@
             text-decoration: none;
         }
 
+        #forgotBox a:hover {
+            text-decoration: underline;
+        }
+
     </style>
     <script th:inline="javascript">
         <!-- javascript 에서 thymeleaf 변수 접근 -->
@@ -118,12 +122,6 @@
 
         window.addEventListener("load", function () {
 
-// alert
-            let alertMessage = document.getElementById("globalAlertMessage").dataset.alertmessage;
-            if (alertMessage) {
-                alert(alertMessage);
-            }
-
 // 카카오 이벤트
             document.getElementById("kakaoLoginBt").addEventListener("click", function () {
 
@@ -135,7 +133,11 @@
                 location.href='/oauth2/authorization/kakao';
             })
 
-
+// alert
+            let alertMessage = document.getElementById("globalAlertMessage").dataset.alertmessage;
+            if (alertMessage) {
+                alert(alertMessage);
+            }
         })
     </script>
 </head>
@@ -169,7 +171,7 @@
 
         <div id="forgotBox">
             <p>
-                <a href="/member/find"> 아이디 / 비밀번호 찾기</a>
+                <a href="/member/find"> ID 찾기 / 비밀번호 변경</a>
             </p>
         </div>
 

@@ -14,7 +14,7 @@ public class Member {
     private String password;
 
     private String email;
-    private String emailVerified;   // 'true' or 'false'
+    private String emailVerified;   // 'true' or 'false', 'true' 인 경우 email 중복 불가. oauth 유저 = false
     private String role;
 
     private String provider;        // oauth provider 구분
@@ -38,7 +38,7 @@ public class Member {
     }
 
     /**
-     * 암호화된 password set 용.
+     *  password set 용.
      */
     public void setPassword(String password) {
         this.password = password;

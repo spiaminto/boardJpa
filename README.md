@@ -45,8 +45,8 @@ ___테스트용 ID: sample / PW: sample___ , 자유롭게 이용 가능합니다
  내가 쓴 댓글 목록을 확인 할 수 있으며, 댓글을 클릭하면 해당 댓글로 바로 이동합니다.
 
 ### ㅇ 회원 관리
-<img width="47%" alt="ADDMEMBER_V26" src="https://user-images.githubusercontent.com/122969954/234501941-9aeef3ad-d735-41ad-88bc-521032a306f1.png">
-<img width="47%" alt="SMTP_GMAIL" src="https://user-images.githubusercontent.com/122969954/234500642-f844f37c-e21a-4e14-b7e2-9db6ffca8449.png">
+<img width="46%" alt="ADDMEMBER_V26" src="https://user-images.githubusercontent.com/122969954/234501941-9aeef3ad-d735-41ad-88bc-521032a306f1.png">
+<img width="46%" alt="SMTP_GMAIL" src="https://user-images.githubusercontent.com/122969954/234500642-f844f37c-e21a-4e14-b7e2-9db6ffca8449.png">
 
 SpringSecurity 라이브러리를 이용해 로그인 인증, 권한 인가 등을 구현합니다.  
 필요한 경우 이메일 인증을 진행할 수 있으며, 구글 SMTP 서버를 이용해 인증 코드를 메일로 전송합니다.  
@@ -54,8 +54,8 @@ SpringSecurity 라이브러리를 이용해 로그인 인증, 권한 인가 등�
 
 * __소셜회원__
 
-<img width="47%" alt="LOGIN_V26" src="https://user-images.githubusercontent.com/122969954/234501949-24f1a707-5b80-4989-bc0e-bb9fabfb1911.png">
-<img width="47%" alt="APPOAUTHSIGNIN" src="https://user-images.githubusercontent.com/122969954/230873923-aad91c47-bed3-4560-90d8-233842dbb46c.png">
+<img width="46%" alt="LOGIN_V26" src="https://user-images.githubusercontent.com/122969954/234501949-24f1a707-5b80-4989-bc0e-bb9fabfb1911.png">
+<img width="46%" alt="APPOAUTHSIGNIN" src="https://user-images.githubusercontent.com/122969954/230873923-aad91c47-bed3-4560-90d8-233842dbb46c.png">
 
 oauth2-client 라이브러리를 이용한 소셜계정 로그인/가입 기능을 포함 합니다.  
 소셜가입은 각 서비스에서 사용정보 동의를 받으면, 해당 정보를 바탕으로 별도의 회원가입 폼으로 이동하여 가입을 진행합니다.
@@ -70,8 +70,8 @@ oauth2-client 라이브러리를 이용한 소셜계정 로그인/가입 기능�
 사용자가 의도하지 않은 데이터를 입력하는 것을 방지하고, 서버에서도 검증을 위해 노력했습니다.
 
 ### ㅇ 로깅
-<img width="47%" alt="LOGGING_LOCAL" src="https://user-images.githubusercontent.com/122969954/234510091-c497c9bb-f37a-47b5-abf5-3745d785eaff.png">
-<img width="47%" alt="스크린샷 2023-04-10 183227" src="https://user-images.githubusercontent.com/122969954/230875569-12e1815f-c496-4a45-b646-4afc37fa887c.png">
+<img width="46%" alt="LOGGING_LOCAL" src="https://user-images.githubusercontent.com/122969954/234510091-c497c9bb-f37a-47b5-abf5-3745d785eaff.png">
+<img width="46%" alt="스크린샷 2023-04-10 183227" src="https://user-images.githubusercontent.com/122969954/230875569-12e1815f-c496-4a45-b646-4afc37fa887c.png">
 
  @Aspect 등 으로 로그를 찍고, logback 라이브러리를 이용하여 로그 출력을 커스텀 하고, 파일로 작성합니다.  
  파일은 전체로그, 에러로그, 요청요약 로그 등으로 세분화 하여 작성 해 보았습니다.  
@@ -96,8 +96,8 @@ tailLog, bundleLog 요청 시 기본 로그에 애플리케이션의 logback 에
  로컬 테스트는 /upload_image_test , 배포된 애플리케이션 에서는 /upload_image 로 이미지 파일을 업로드 합니다.
 
 ### ㅇ Amazon RDS
-<img width="53%" alt="MYSQLWORKBENCH" src="https://user-images.githubusercontent.com/122969954/234514859-a18c9359-a6bc-4a3a-ba6b-e9dba0524a57.png">
-<img width="42%" alt="RDSHOME" src="https://user-images.githubusercontent.com/122969954/230583295-843f4dcf-4ad8-4150-bd3c-2f328f3debad.png">
+<img width="52%" alt="MYSQLWORKBENCH" src="https://user-images.githubusercontent.com/122969954/234514859-a18c9359-a6bc-4a3a-ba6b-e9dba0524a57.png">
+<img width="41%" alt="RDSHOME" src="https://user-images.githubusercontent.com/122969954/230583295-843f4dcf-4ad8-4150-bd3c-2f328f3debad.png">
 
  로컬 DB 와 배포된 애플리케이션의 DB 를 분리하고, 온라인에서 DB 를 이용하기 위해 사용했습니다. MySql WorkBench 를 통해 연결하여 사용했습니다.
 

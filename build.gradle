@@ -100,5 +100,5 @@ task buildAwsEb(type: Zip) {
 	destinationDir file('build/libs')
 }
 
-build.dependsOn bootJar
-build.dependsOn buildAwsEb
+//build.dependsOn bootJar
+//build.dependsOn buildAwsEb

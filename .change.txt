@@ -123,6 +123,9 @@ commit feature/verify-email 1
 commit feature/verify-email 2
     이메일 인증 기반 loginId, password 찾기 기능 추가.
 
+commit feature/verify-email 2.1
+    readme 수정
+
 
 
 

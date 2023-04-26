@@ -126,6 +126,11 @@ commit feature/verify-email 2
 commit feature/verify-email 2.1
     readme 수정
 
+merge feature/verify-email to master
+
+commit master 26.1
+    readme 수정
+
 
 
 

@@ -1,18 +1,24 @@
 # 커뮤니티 게시판 프로젝트
-
+### 개요 
+### [프로젝트 바로가기](http://springboard-env.eba-x3sau5v7.ap-northeast-1.elasticbeanstalk.com/boards)     
 ___테스트용 ID: sample / PW: sample___ , 자유롭게 이용 가능합니다.
-### 링크 : [프로젝트 바로가기](http://springboard-env.eba-x3sau5v7.ap-northeast-1.elasticbeanstalk.com/boards)  
 
 학습과 병행하며 진행한 프로젝트입니다.
 단순한 이론 학습 대신, 실제 커뮤니티 게시판의 기능을 직접 구현해봄으로써 더 깊은 학습에 대한 동기를 부여하고자 하였습니다.
 기능을 작성할때는 사용자가 납득할 수 있는 동작을 만들어 내는것에 대해 고민했고, 작성 후에는 검증, 성능, 확장성 등을 고려하여 리팩토링도 진행해 보았습니다.
 
-사용 기술 :  
- Spring(Boot), Mybatis,  MySql   
- Thymeleaf, HTML, CSS, JavaScript(Jquery), BootStrap  
- Gradle, AWS
+### 사용 기술 
 
-아래의 이미지들은 클릭하면 커집니다.
+* Spring(Boot), Gradle
+* Mybatis
+* MySql
+* Thymeleaf
+* HTML, CSS(BootStrap), JavaScript(Jquery)
+* AWS ElasticBeanstalk, RDS, S3, CloudWatch
+
+<br>
+
+ __아래의 이미지들은 클릭하면 커집니다.__
 <br>
 
 ## ERD

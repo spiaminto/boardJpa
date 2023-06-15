@@ -27,7 +27,7 @@ class ImageRepositoryTest {
 
     //    Image image = new Image(9999L, "uploadName", UUID.randomUUID().toString() + ".jpg", "server/test/");
     Image image = Image.builder().uploadImageName("uploadName").storeImageName(UUID.randomUUID() + "jpg")
-        .imageAddress("/server/test/").build();
+        .imageAddress("/server/test/").memberId(9999L).build();
     Image image2 = Image.builder().uploadImageName("uploadName2").storeImageName(UUID.randomUUID() + "jpg")
             .imageAddress("/server/test/").build();
     Image image3 = Image.builder().uploadImageName("uploadName3").storeImageName(UUID.randomUUID() + "jpg")

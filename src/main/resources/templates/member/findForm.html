@@ -155,7 +155,9 @@
 
     <div id="findAlertMessage" th:data-findalertmessage="${findMessage}"></div>
 
-    <h2>ID 찾기, 비밀번호 변경</h2>
+    <div>
+        <h2 id="headerText">ID 찾기, 비밀번호 변경</h2>
+    </div>
 
     <hr>
 
@@ -176,7 +178,7 @@
         <div class="input-wrapper">
             <input type="text" th:field="*{email}" id="email"
                    placeholder="최대 30자 까지 허용합니다." class="form-control">
-            <button type="button" class="verifyEmailBtn btn btn-secondary">
+            <button type="button" class="verifyEmailBtn btn btn-outline-secondary">
                 인증
             </button>
         </div>
@@ -186,7 +188,7 @@
             <div class="input-wrapper">
                 <input type="password" id="emailVerifyCode" name="emailVerifyCode"
                        placeholder="인증번호" class="form-control">
-                <button type="button" class="confirmEmailBtn btn btn-secondary">
+                <button type="button" class="confirmEmailBtn btn btn-outline-primary">
                     인증확인
                 </button>
             </div>
@@ -203,7 +205,7 @@
 
         <input id="isEmailVerified" type="hidden" name="emailVerified" value="false">
         <div class="d-flex justify-content-center">
-            <button id="findSubmitBtn" type="submit" class="btn btn-primary">ID 찾기</button>
+            <button id="findSubmitBtn" type="submit" class="btn btn-outline-primary">ID 찾기</button>
         </div>
     </form>
 

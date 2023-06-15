@@ -33,7 +33,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
      */
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
+        log.info("PrincipalOAuth2UserService.loadUser() userRequest={}", userRequest);
         OAuth2User oAuth2User = super.loadUser(userRequest);
 //        log.info("OAuth2User.loadUser() oAuth2User={}", oAuth2User);
 
@@ -98,7 +98,9 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .username(forOauth2UserUsername)
                     .password("forOauth2UserPassword")
                     .email(oAuth2UserInfo.getEmail())
-                    .role("ROLE_TEMP").build();
+                    .role("ROLE_TEMP")
+                    .emailVerified("false")
+                    .build();
         }
         return new PrincipalDetails(returnMember, oAuth2User.getAttributes());
     }

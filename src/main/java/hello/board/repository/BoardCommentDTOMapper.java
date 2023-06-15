@@ -14,6 +14,7 @@ public interface BoardCommentDTOMapper {
     Board toBoard(BoardCommentDTO boardCommentDTO);
 
     @Mapping(target = "writer", source = "commentWriter")
+    @Mapping(target = "memberId", source = "commentWriterId")
     @Mapping(target = "content", source = "commentContent")
     @Mapping(target = "regDate", source = "commentRegDate")
     @Mapping(target = "updateDate", source = "commentUpdateDate")

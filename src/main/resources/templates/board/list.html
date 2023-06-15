@@ -87,6 +87,25 @@
     <script>
         $(function () {
 
+// alert (+ 홈화면 추가동작) 최우선동작.
+            let alertMessage = $("#globalAlertMessage").data("alertmessage");
+            let isLogout = $("#globalAlertMessage > #isLogout").data("islogout");
+            // console.log("alertMessage = " + alertMessage + " isLogout = " + isLogout);
+            if (alertMessage) {
+                if (alertMessage == "oauth2_add") {
+                    if (confirm("해당 소셜 계정으로 가입된 회원이 없습니다. 가입 하시겠습니까?")) {
+                        location.replace("/member/add-oauth");
+                    } else {
+                        location.replace("/logout");
+                    }
+                    return false;
+                }
+                alert(alertMessage);
+                if (isLogout) {
+                    location.replace("/logout");
+                }
+            }
+
 // 검색 클릭 (submit)
             let searchForm = $("#searchForm");
             $("#searchForm>button").on("click", function (event) {
@@ -148,31 +167,6 @@
                     location.href = $(this).attr("href");
                 }
             })
-
-// alert (+ 홈화면 추가동작)
-            $(window).on("load", function () {
-                let alertMessage = $("#globalAlertMessage").data("alertmessage");
-                let isLogout = $("#globalAlertMessage > #isLogout").data("islogout");
-
-                // console.log("alertMessage = " + alertMessage + " isLogout = " + isLogout);
-
-                if (alertMessage) {
-                    if (alertMessage == "oauth2_add") {
-                        if (confirm("해당 소셜 계정으로 가입된 회원이 없습니다. 가입 하시겠습니까?")) {
-                            location.replace("/member/add-oauth");
-                        } else {
-                            location.replace("/logout");
-                        }
-                        return false;
-                    }
-
-                    alert(alertMessage);
-                    if (isLogout) {
-                        location.replace("/logout");
-                    }
-                }
-            })
-
         })
     </script>
 </head>
@@ -270,9 +264,9 @@
 
     <!-- 글쓰기 버튼 -->
     <div class="float-right" id="write">
-        <button type="button" class="btn btn-primary" th:if="${criteria.categoryCode.equals('notice')}" sec:authorize="hasRole('ROLE_ADMIN')"
+        <button type="button" class="btn btn-outline-primary" th:if="${criteria.categoryCode.equals('notice')}" sec:authorize="hasRole('ROLE_ADMIN')"
                 th:onclick="|location.href='@{/board/write(categoryCode=${criteria.getCategoryCode})}'|">글쓰기</button>
-        <button type="button" class="btn btn-primary" th:unless="${criteria.categoryCode.equals('notice')}"
+        <button type="button" class="btn btn-outline-primary" th:unless="${criteria.categoryCode.equals('notice')}"
                 th:onclick="|location.href='@{/board/write(categoryCode=${criteria.getCategoryCode})}'|">글쓰기</button>
     </div>
 
@@ -288,7 +282,7 @@
             </select>
             <input id="searchKeyword" type="text" th:field="*{keyword}" name="keyword" class="form-control"/>
             <input type="hidden" th:name="categoryCode" th:value="${criteria.categoryCode}">
-            <button class="btn btn-primary btn-sm">검색</button>
+            <button class="btn btn-outline-primary btn-sm">검색</button>
         </form>
     </div>
 

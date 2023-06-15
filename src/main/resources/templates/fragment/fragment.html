@@ -40,7 +40,7 @@
                 <ul class="navbar-nav me-auto justify-content-end" id="navRightBox">
                     <li class="nav-item" sec:authorize="!isAuthenticated()">
                         <form class="container-fluid loginBtBox">
-                            <button class="btn btn-sm btn-light me-2" type="button"
+                            <button class="btn btn-sm btn-outline-light me-2" type="button"
                                     onclick="location.href='loginForm.html'"
                                     th:onclick="|location.href='@{/login}'|">로그인 / 회원가입</button>
                         </form>
@@ -52,9 +52,9 @@
                     </li>
                     <li class="nav-item" sec:authorize="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')">
                         <form class="container-fluid loginBtBox">
-                            <button class="btn btn-sm btn-light me-2" type="button"
+                            <button class="btn btn-sm btn-outline-light me-2" type="button"
                                     th:onclick="|location.href='@{/member/{memberId}/boards(memberId=${#authentication.principal.member.id})}'|" id="memberEditBt">마이 페이지</button>
-                            <button class="btn btn-sm btn-light" type="button"
+                            <button class="btn btn-sm btn-outline-light" type="button"
                                     onclick="location.href='list.html'" id="logoutBt"
                                     th:onclick="|location.href='@{/logout}'|">로그아웃</button>
                         </form>

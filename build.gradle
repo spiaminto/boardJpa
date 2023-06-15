@@ -29,7 +29,7 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-devtools'
 
-	//MyBatis 추가 (spring 이 버전관리 안해주므로 버전 기입)
+	//MyBatis 추가
 	// 추가로 application.properties 에서 mybatis 설정 해줘야 된다.
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
 

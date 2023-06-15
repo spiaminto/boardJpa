@@ -20,7 +20,7 @@ public class BoardCommentDTO {
     private long viewCount;             // Default = 0
     private Integer commentCnt;         // Default = 0
 
-    private Long memberId;              // username 갱신 시 필요
+    private Long memberId;              // username 갱신 시 필요, board.memberId
     private Category category;
 
     // ==========================================================================
@@ -32,6 +32,7 @@ public class BoardCommentDTO {
     private Long targetId;      // 대댓글의 target 의 id (없으면 0)
 
     private String commentWriter;     // 글쓴이의 member.username
+    private Long commentWriterId;     // 글쓴이의 member.id
     private String target;      // 대댓글의 target 의 member.username (없으면 null)
 
     private String commentContent;

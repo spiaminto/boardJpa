@@ -611,18 +611,18 @@
         <div id="read-nav">
             <!-- 공지 수정/삭제 -->
             <div th:if="${board.category.name().equals('NOTICE')}">
-                <button type="button" class="btn btn-primary" th:data-url="'/boards'">목록</button>
-                <button type="button" class="btn btn-primary" th:data-url="'/board/' + ${board.id} + '/edit'"
+                <button type="button" class="btn btn-outline-primary" th:data-url="'/boards'">목록</button>
+                <button type="button" class="btn btn-outline-primary" th:data-url="'/board/' + ${board.id} + '/edit'"
                         sec:authorize="hasRole('ROLE_ADMIN')">수정</button>
-                <button type="button" class="btn btn-primary delete" th:data-url="'/board/' + ${board.id} + '/delete'"
+                <button type="button" class="btn btn-outline-primary delete" th:data-url="'/board/' + ${board.id} + '/delete'"
                         sec:authorize="hasRole('ROLE_ADMIN')">삭제</button>
             </div>
             <!-- 일반 수정/삭제 -->
             <div th:unless="${board.category.name().equals('NOTICE')}">
-                <button type="button" class="btn btn-primary" th:data-url="'/boards'">목록</button>
-                <button type="button" class="btn btn-primary" th:data-url="'/board/' + ${board.id} + '/edit'"
+                <button type="button" class="btn btn-outline-primary" th:data-url="'/boards'">목록</button>
+                <button type="button" class="btn btn-outline-primary" th:data-url="'/board/' + ${board.id} + '/edit'"
                         sec:authorize="authenticated">수정</button>
-                <button type="button" class="btn btn-primary delete" th:data-url="'/board/' + ${board.id} + '/delete'"
+                <button type="button" class="btn btn-outline-primary delete" th:data-url="'/board/' + ${board.id} + '/delete'"
                         sec:authorize="authenticated">삭제</button>
             </div>
         </div>

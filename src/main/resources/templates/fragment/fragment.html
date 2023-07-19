@@ -18,7 +18,7 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse navbar-wrapper" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
                     <a href="/boards?categoryCode=free" class="nav-link">자유</a>
@@ -36,7 +36,7 @@
                     <a href="/boards?categoryCode=notice" class="nav-link">공지</a>
                 </li>
             </ul>
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-end navbar-wrapper">
                 <ul class="navbar-nav me-auto justify-content-end" id="navRightBox">
                     <li class="nav-item" sec:authorize="!isAuthenticated()">
                         <form class="container-fluid loginBtBox">
@@ -45,10 +45,13 @@
                                     th:onclick="|location.href='@{/login}'|">로그인 / 회원가입</button>
                         </form>
                     </li>
-                    <li id="loginMessage" class="nav-item" sec:authorize="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')">
-                            <span class="navbar-text" th:text="|${#authentication.name}님 로그인 되었습니다.|">
-                                login message
-                            </span>
+                    <li id="loginMessageBox" class="nav-item justify-content-center" sec:authorize="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')">
+                        <div th:id="loginMessageUsernameBox">
+                            <span class="navbar-text" th:text="${#authentication.name}">login nickname</span>
+                        </div>
+                        <div>
+                            <span class="navbar-text">님 로그인</span>
+                        </div>
                     </li>
                     <li class="nav-item" sec:authorize="hasAnyRole('ROLE_USER', 'ROLE_ADMIN')">
                         <form class="container-fluid loginBtBox">

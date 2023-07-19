@@ -8,12 +8,40 @@
     }
 }
 
+@media (min-width: 769px) {
+    .navbar-wrapper {
+        height: 40px;
+        line-height: 40px;
+    }
+}
+
 #navBarContainer {
     max-width: 1200px;
 }
 
-#loginMessage {
+#navbarSupportedContent {
+    min-width: 800px;
+}
+
+#loginMessageBox {
     margin-right: 20px;
+    vertical-align: bottom;
+}
+
+#loginMessageBox::after {
+    content: ""; display: block; clear: both;
+}
+
+#loginMessageBox div {
+    float: left;
+}
+
+#loginMessageUsernameBox {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.55);
 }
 
 #navHeader {

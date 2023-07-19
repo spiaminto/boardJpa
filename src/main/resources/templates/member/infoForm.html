@@ -334,7 +334,7 @@
         <label for="loginId" class="col">로그인 ID </label>
         <div class="input-wrapper">
             <input type="text" th:field="*{loginId}" id="loginId" th:errorclass="is-invalid"
-                   placeholder="최대 8자 까지 허용합니다." class="form-control col-6 editable">
+                   placeholder="최대 16자 까지 허용합니다." class="form-control col-6 editable">
             <button id="duplicateLoginIdCheckBt" type="button" class="btn btn-outline-primary col">
                 중복확인
             </button>
@@ -353,7 +353,7 @@
         <label for="username">닉네임 </label>
         <div class="input-wrapper">
             <input type="text" th:field="*{username}" id="username" th:errorclass="is-invalid"
-                   placeholder="최대 20자 까지 허용합니다." class="form-control username editable">
+                   placeholder="최대 16자 까지 허용합니다." class="form-control username editable">
             <button class="duplicateUsernameCheckBt btn btn-outline-primary" type="button">
                 중복확인
             </button>
@@ -417,7 +417,7 @@
         <label for="username">닉네임 </label>
         <div class="input-wrapper">
             <input type="text" th:field="*{username}" id="oauth2Username" th:errorclass="is-invalid"
-                   placeholder="최대 20자 까지 허용합니다." class="form-control username editable">
+                   placeholder="최대 16자 까지 허용합니다." class="form-control username editable">
             <button class="duplicateUsernameCheckBt btn btn-outline-primary" type="button">
                 중복확인
             </button>

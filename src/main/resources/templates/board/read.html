@@ -27,12 +27,27 @@
 
         #info > li {
             float: left;
-            width: 23%;
             line-height: 40px;
+            padding-left: 10px;
+        }
+
+        #info .board-writer {
+            max-width: 40%;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
         }
 
         #info > li:first-child {
             width: 8%;
+        }
+
+        #info > li:nth-child(2) {
+            width: 15%;
+        }
+
+        #info .board-label {
+            color: grey;
         }
 
         .dropdown {
@@ -582,23 +597,25 @@
 
         <ul id="info">
             <li th:data-boardId="${board.id}">
+                <span class="board-label">ID:</span>
+                <span th:text="${board.id}"></span>
             </li>
             <li>
-                <span>카테고리: </span>
+                <span class="board-label">카테고리: </span>
                 <span id="categoryCode" th:data-categoryCode="${criteria.getCategoryCode()}"></span>
                 <span id="infoCategory" th:text="${board.category.getCategoryName()}" th:data-category="${board.category.getCode()}">카테고리</span>
             </li>
-            <li>
-                <span>작성자: </span>
+            <li class="board-writer">
+                <span class="board-label">작성자: </span>
                 <span th:text="${board.writer}">작성자</span>
             </li>
             <li>
-                <span>작성: </span>
-                <span th:text="${#temporals.format(board.regDate, 'yyyy-MM-dd HH:mm')}">작성시간</span>
+                <span class="board-label">작성: </span>
+                <span th:text="${#temporals.format(board.regDate, 'yy-MM-dd HH:mm')}">작성시간</span>
             </li>
             <li>
-                <span>수정:</span>
-                <span th:text="${#temporals.format(board.updateDate, 'yyyy-MM-dd HH:mm')}" >수정시간</span>
+                <span class="board-label">수정:</span>
+                <span th:text="${#temporals.format(board.updateDate, 'yy-MM-dd HH:mm')}" >수정시간</span>
             </li>
         </ul>
         <hr>

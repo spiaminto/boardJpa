@@ -27,6 +27,25 @@
             padding: 30px;
         }
 
+        #boardTable {
+            table-layout: fixed;
+            width: 100%;
+            text-align: center;
+        }
+
+        .board-title {
+            text-align: left;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+            overflow:hidden;
+        }
+
+        .board-presentation-row .board-writer {
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+        }
+
         #write::after {display: block; content: none; clear: both}
 
         #write > button {
@@ -194,18 +213,18 @@
     </div>
 
     <div id="content" th:if="${!boardList.isEmpty()}">
-        <table id="listTable" class="table">
+        <table id="boardTable" class="table">
             <colgroup>
-                <col width="7%">
-                <col width="41%">
-                <col width="15%">
-                <col width="15%">
-                <col width="15%">
-                <col width="7%">
+                <col style="width: 7%;">
+                <col style="width: 47%;">
+                <col style="width: 15%;">
+                <col style="width: 12%;">
+                <col style="width: 12%;">
+                <col style="width: 7%;">
             </colgroup>
 
             <thead>
-            <tr>
+            <tr id="boardTableHeader">
                 <th>번호</th>
                 <th>제목</th>
                 <th>작성자</th>
@@ -214,20 +233,20 @@
                 <th>조회</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody class="board-presentation-row">
             <tr th:each="item : ${boardList}"
                 th:with="currentPage=${param.currentPage == null} ? 1 : ${param.currentPage}">
                 <!-- totalCount - cri.contentPerPage * (currentPage - 1) - i -->
                 <td id="boardNum" th:text="${pageMaker.totalCount - criteria.contentPerPage * (pageMaker.currentPage - 1) - itemStat.index}">id</td>
 
-                <td>
+                <td class="board-title">
                     <span class="category-label" th:if="${pageMaker.categoryCode == 'all'}" th:text="${'[' + item.category.getCategoryName() + ']'}"></span>
                     <a class="readLink" href="read.html" th:href="@{|/board/${item.id}|}"
                        th:text="${item.title}">title</a>
                     <span class="comment-count" th:if="${item.commentCnt > 0}" th:text="${' (' + item.commentCnt + ')'}"> </span>
                 </td>
 
-                <td th:text="${item.writer}">writer</td>
+                <td th:text="${item.writer}" class="board-writer">writer</td>
 
                 <td th:if="${item.isToday(item.regDate)}" th:text="${#temporals.format(item.regDate, 'HH:mm')}">regdate</td>
                 <td th:if="${!item.isToday(item.regDate)}" th:text="${#temporals.format(item.regDate, 'yy-MM-dd')}">regdate</td>
@@ -235,7 +254,7 @@
                 <td th:if="${item.isToday(item.updateDate)}" th:text="${#temporals.format(item.updateDate, 'HH:mm')}">updateDAte</td>
                 <td th:if="${!item.isToday(item.updateDate)}" th:text="${#temporals.format(item.updateDate, 'yy-MM-dd')}">updateDate</td>
 
-                <td th:text="${item.viewCount}"> 조회수</td>
+                <td id="boardViewCount" th:text="${item.viewCount}"> 조회수</td>
             </tr>
             </tbody>
         </table>

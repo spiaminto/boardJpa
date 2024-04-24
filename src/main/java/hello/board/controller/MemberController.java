@@ -134,10 +134,19 @@ public class MemberController {
                              @PathVariable Long memberId
                              ) {
         // 검증 오류 발생
+        Long currentSessionMemberId = principalDetails.getMember().getId();
         if (bindingResult.hasErrors()) {
             log.info("/edit POST bindingResult.hasError {}", bindingResult);
             return "member/infoForm";
         }
+
+        // 타인 정보 수정요청시
+        if (currentSessionMemberId != memberId) {
+            log.info("/member/edit POST memberId Validation Error memberId = {}, currentSessionMemberId = {}", memberId, currentSessionMemberId);
+            redirectAttributes.addFlashAttribute("alertMessage", "타인의 정보를 수정할 수 없습니다.");
+            return new UrlBuilder().redirectHome();
+        }
+
         Member currentMember = memberService.findById(memberId);
 
         // MemberEditForm -> Member
@@ -168,7 +177,7 @@ public class MemberController {
         }
 
         Member updatedMember = (Member) resultMap.get("updatedMember");
-        // 시큐리티 세션 갱신 (보안상? 맞는진? 모르겠음)
+        // 시큐리티 세션 갱신
         principalDetails.editMember(updatedMember.getUsername());
 
         //alert

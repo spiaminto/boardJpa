@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class ImageStoreLocal implements ImageStore{
@@ -72,6 +74,7 @@ public class ImageStoreLocal implements ImageStore{
 
         // DB 에 저장용 Image (boardId = 0L)
         Image image = Image.builder()
+                .boardId(0L)
                 .uploadImageName(uploadImageName)
                 .storeImageName(storeImageName)
                 .imageAddress(imageAddress)
@@ -79,6 +82,26 @@ public class ImageStoreLocal implements ImageStore{
                 .memberId(memberId).build();
 
         return image;
+    }
+
+    /**
+     * 삭제할 이미지 리스트를 받아 로컬에서 파일을 삭제
+     * @param deleteImageList
+     * @return 삭제한 이미지 파일 갯수
+     */
+    public int deleteImageFiles(List<Image> deleteImageList) {
+        int count = 0;
+
+        List<File> fileList = deleteImageList.stream()
+                .map(Image -> new File(Image.getImageAddress())).collect(Collectors.toList());
+
+        for (File file : fileList) {
+            boolean isDeleted = file.delete();
+            if (isDeleted) count++;
+        }
+
+//        log.info("로컬에서 삭제된 파일 = {}", count);
+        return count;
     }
 
 }

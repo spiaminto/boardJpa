@@ -57,7 +57,7 @@ public class BoardController {
         List<Board> pagedBoard = boardService.findPagedBoard(criteria);
 
         // 총 글갯수 가져오기
-        int countTotalBoard = boardService.countTotalBoard(criteria);
+        long countTotalBoard = boardService.countTotalBoard(criteria);
 
         // 페이징 할 정보 설정하기
         PageMaker pageMaker = new PageMaker(criteria, countTotalBoard);
@@ -120,7 +120,7 @@ public class BoardController {
                 .writer(form.getWriter())
                 .content(form.getContent())
                 .category(form.getCategory())
-                .memberId(principalDetails.getMember().getId())
+                .member(principalDetails.getMember())
                 .regDate(LocalDateTime.now()).updateDate(LocalDateTime.now())
                 .build();
 
@@ -134,7 +134,7 @@ public class BoardController {
 //        }
 
         // 이미지 동기화
-        imageService.syncImage(savedBoard.getMemberId(), savedBoard.getId(), splittedImageName);
+        imageService.syncImage(savedBoard.getMember().getId(), savedBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("alertMessage", "게시글이 등록되었습니다.");
 
@@ -161,6 +161,7 @@ public class BoardController {
         return "board/editForm";
     }
 
+    // boardId 를 바꾸어 POST 할 수있음
     @PostMapping("/board/{boardId}/edit")
     public String editBoard(@PathVariable Long boardId,@Validated @ModelAttribute("board") BoardEditForm form,
                        BindingResult bindingResult, HttpServletRequest request, Model model,
@@ -191,18 +192,20 @@ public class BoardController {
                 .content(form.getContent())
                 .category(form.getCategory())
                 .updateDate(LocalDateTime.now()).build();
-       
+
+
         // 업데이트
         Board updateBoard = boardService.updateBoard(boardId, updateParam);
 
         // 들어온 이미지 확인
         String[] splittedImageName = form.getImageName().split(",");
+        
 //        for (String imageName : splittedImageName) {
 //            log.info("/edit imageName input by form = "+ imageName);
 //        }
 
         // 이미지 동기화
-        imageService.syncImage(updateBoard.getMemberId(), updateBoard.getId(), splittedImageName);
+        imageService.syncImage(updateBoard.getMember().getId(), updateBoard.getId(), splittedImageName);
 
         redirectAttributes.addFlashAttribute("alertMessage", "게시글이 수정되었습니다.");
 
@@ -218,6 +221,7 @@ public class BoardController {
                          @ModelAttribute Criteria criteria) {
         Board findBoard = boardService.findById(boardId);
 
+        // 삭제 전 동일인물인지 검증
         if (!boardService.isSameWriter(principalDetails.getMember(), findBoard)) {
             redirectAttributes.addFlashAttribute("alertMessage", "삭제하려는 글과 작성자가 다릅니다.");
             return new UrlBuilder("/board")
@@ -226,22 +230,12 @@ public class BoardController {
         }
 
         // board 삭제
-        int result = boardService.deleteBoard(boardId);
-        log.info("삭제된 글 {}개, id = {}", result, boardId);
-        
-        // 이미지 삭제 ( if result == 1 )
-        boolean isSuccess = imageService.deleteImageByBoardId(boardId);
-        log.info("이미지 삭제 isSuccess = {}", isSuccess);
-
-//        log.info(request.getQueryString());
+        boardService.deleteBoard(boardId);
 
         redirectAttributes.addFlashAttribute("alertMessage", "글이 삭제 되었습니다.");
 
         return new UrlBuilder().uri("/boards").queryString(request.getQueryString()).buildRedirectUrl();
+
     }
-
-
-
-
 
 }

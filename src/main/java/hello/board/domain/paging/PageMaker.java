@@ -12,9 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 public class PageMaker{
 
-    private int currentPage;        // 현재 페이지 ( = Criteria.currentPage )
-    private int contentPerPage;     // 페이지당 content 갯수 ( = Criteria.contentPerPage)
-    private int totalCount;     // 조회된 전체 Content 갯수
+    private long currentPage;        // 현재 페이지 ( = Criteria.currentPage )
+    private long contentPerPage;     // 페이지당 content 갯수 ( = Criteria.contentPerPage)
+    private long totalCount;     // 조회된 전체 Content 갯수
 
     private String categoryCode;    // url 파라미터로 사용
 
@@ -25,7 +25,7 @@ public class PageMaker{
     private boolean isNextBt;
     private boolean isPrevBt;
 
-    public PageMaker(Criteria criteria, int totalCount) {
+    public PageMaker(Criteria criteria, long totalCount) {
         this.totalCount = totalCount;
         this.currentPage = criteria.getCurrentPage();
         this.contentPerPage = criteria.getContentPerPage();

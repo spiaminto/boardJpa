@@ -1,5 +1,6 @@
 package hello.board.controller;
 
+import hello.board.domain.board.Board;
 import hello.board.domain.comment.Comment;
 import hello.board.form.CommentSaveForm;
 import hello.board.service.CommentService;
@@ -27,8 +28,11 @@ public class CommentController {
     public Map<String, Object> writeComment(@ModelAttribute("comment") CommentSaveForm form) {
 
         // CommentSaveForm -> Comment
+        /**
+         * boardId 대신 board 로 치환해야함
+         */
         Comment comment = Comment.builder()
-                .boardId(form.getBoardId())
+                .board(Board.builder().id(form.getBoardId()).build()) // id만 채운 빈객체
                 .memberId(form.getMemberId())
                 .targetId(form.getTargetId())
                 .target(form.getTarget())
@@ -49,14 +53,14 @@ public class CommentController {
             resp.put("result", "1");
         }
 
-        resp.put("commentId", String.valueOf(comment.getCommentId()));
+        resp.put("commentId", String.valueOf(comment.getId()));
         resp.put("writer", comment.getWriter());
         resp.put("content", comment.getContent());
 
         // input 요소들로 만든 list (댓글 hidden input 들)
         List<String> list = new ArrayList<>();
         list.add(comment.getWriter());
-        list.add(String.valueOf(comment.getBoardId()));
+        list.add(String.valueOf(comment.getBoard().getId()));
         list.add(String.valueOf(comment.getMemberId()));
         list.add(String.valueOf(comment.getGroupId()));
         list.add(String.valueOf(comment.getGroupOrder()));
@@ -85,7 +89,7 @@ public class CommentController {
             resp.put("result", "1");
         }
 
-        resp.put("commentId", String.valueOf(updatedComment.getCommentId()));
+        resp.put("commentId", String.valueOf(updatedComment.getId()));
         resp.put("content", updatedComment.getContent());
 
         return resp;

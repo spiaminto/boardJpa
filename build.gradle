@@ -1,7 +1,14 @@
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
 
 plugins {
 	id 'org.springframework.boot' version '2.7.3'
 	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+	//querydsl 추가
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 	id 'java'
 }
 
@@ -23,15 +30,24 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	//querydsl 추가
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	implementation 'org.springframework.boot:spring-boot-devtools'
 
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+
 	//MyBatis 추가
 	// 추가로 application.properties 에서 mybatis 설정 해줘야 된다.
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
+//	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
 
 	// mysql
 	runtimeOnly 'mysql:mysql-connector-java'
@@ -62,16 +78,35 @@ dependencies {
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 
 	// mapstruct 라이브러리 (오브젝트 매핑)
-	implementation 'org.mapstruct:mapstruct:1.5.4.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.4.Final'
+//	implementation 'org.mapstruct:mapstruct:1.5.4.Final'
+//	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.4.Final'
 
 	// 메일 보내기
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+//querydsl 추가 시작
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main.java.srcDir querydslDir
+}
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
+}
+//querydsl 추가
 
 // plain 제거
 jar {
@@ -86,7 +121,7 @@ jar {
 //}
 
 
-// chatGPT3 로 생성한 build =============================================================
+// chatGPT3 로 생성한 EB 배포용 build =============================================================
 
 task buildAwsEb(type: Zip) {
 	from bootJar.outputs.files

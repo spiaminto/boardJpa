@@ -1,18 +1,30 @@
 package hello.board.domain.comment;
 
+import hello.board.domain.board.Board;
 import hello.board.domain.enums.Category;
 import lombok.*;
 
+import javax.persistence.*;
+import javax.persistence.FetchType;
 import java.time.LocalDateTime;
 
-@Getter @ToString @EqualsAndHashCode
+@Getter @ToString @EqualsAndHashCode(of = {"writer", "regDate"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
+@Entity
 public class Comment {
 
-    private Long commentId;
-    private Long boardId;       // board.id 를 참조하는 fk
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "comment_id")
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    @ToString.Exclude // toString 순환참조 방지
+    private Board board;       // board.id 를 참조하는 fk
+//    private Long boardId;
+
     private Long memberId;      // board.memberId 를 참조, 글쓴이의 id
     private Long targetId;      // 대댓글의 target 의 id (없으면 0)
 
@@ -29,6 +41,7 @@ public class Comment {
     private Integer groupOrder;     // 대댓글일때, 대댓글 순서
     private Integer groupDepth;     // 모댓글 0, 대댓글 1
 
+    @Enumerated(EnumType.STRING)
     private Category category;      // 댓글 카테고리 조회를 위한 카테고리
 
 
@@ -41,7 +54,7 @@ public class Comment {
 
     // 얜 왜안돼지?
     public void setComment_id(Long id) {
-        this.commentId = id;
+        this.id = id;
     }
 
     /**
@@ -50,6 +63,11 @@ public class Comment {
      */
     public void setGroupId(Long commentId) {
         this.groupId = commentId;
+    }
+
+    public void updateComment(Comment param) {
+        this.content = param.getContent(); // 빈칸가능
+        this.updateDate = param.getUpdateDate();
     }
 
 

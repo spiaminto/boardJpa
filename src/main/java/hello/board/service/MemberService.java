@@ -9,10 +9,12 @@ import hello.board.exception.EditPasswordFailException;
 import hello.board.form.FindForm;
 import hello.board.mail.EmailDTO;
 import hello.board.mail.EmailSender;
-import hello.board.repository.BoardRepository;
-import hello.board.repository.CommentRepository;
-import hello.board.repository.MemberRepository;
 import hello.board.repository.ResultDTO;
+import hello.board.repository.jpa.BoardJpaRepository;
+import hello.board.repository.jpa.CommentJpaRepository;
+import hello.board.repository.jpa.MemberJpaRepository;
+import hello.board.repository.query.BoardQueryRepository;
+import hello.board.repository.query.CommentQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -22,37 +24,48 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @EnableAsync
+@Transactional(readOnly = true)
 public class MemberService {
 
-    private final MemberRepository memberRepository;
-    private final BoardRepository boardRepository;
-    private final CommentRepository commentRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final MemberJpaRepository memberRepository;
 
+    private final BoardJpaRepository boardRepository;
+    private final BoardQueryRepository boardQueryRepository;
+
+    private final CommentJpaRepository commentRepository;
+    private final CommentQueryRepository commentQueryRepository;
+
+    private final ImageService imageService;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailSender emailSender;
 
     public Member findById(Long id) {
-        return memberRepository.findById(id);
+        return memberRepository.findById(id).orElse(null);
     }
 
     /**
      * member 를 받아서 비밀번호를 암호화 하고 db 에 저장
      * @param member
-     * @return 저장된 member
+     * @return 저장된 membere
      */
+    @Transactional
     public ResultDTO addMember(Member member) {
 
-        // oauth2 가입 유저도 패스워드를 암호화 하게 됨(의미는 없음)
+        // oauth2 가입 유저도 패스워드를 암호화 하게 됨(스프링시큐리티)
         String encodedPassword = bCryptPasswordEncoder.encode(member.getPassword());
         member.setPassword(encodedPassword);
 
-        return memberRepository.save(member);
+        memberRepository.save(member);
+
+        return new ResultDTO(true); // 아직 검증X, Exeption 발생
     }
 
     /**
@@ -62,6 +75,7 @@ public class MemberService {
      * @param updateParam
      * @return Map (member, isLogout)
      */
+    @Transactional
     public Map<String, Object> editMember(Member currentMember, Member updateParam) {
 
         String newRawPassword = updateParam.getPassword();
@@ -99,7 +113,7 @@ public class MemberService {
         }
 
         return new HashMap<>(Map.of(
-                "updatedMember", memberRepository.findById(currentMember.getId()),
+                "updatedMember", memberRepository.findById(currentMember.getId()).get(), // 위험함
                 "isLogout", isLogout
         ));
     }
@@ -113,50 +127,46 @@ public class MemberService {
     @Transactional
     public boolean processEditAndSync(Member currentMember, Member updateParam) {
         Long memberId = currentMember.getId();
+        // 영속 멤버 가져옴(나중에 이름수정)
+        Member member = memberRepository.findById(memberId).orElse(null);
         String updateUsername = updateParam.getUsername();
         Criteria criteria = new Criteria();
-        String option = "";
-        int origin = 0, result = 0;
+
+        long originCount = 0; // 수정전 count
+        long resultCount = 0; // 수정된 count
 
         // 특정 repository 작업에서 Exception 발생할 경우, 모든 작업을 롤백함.
         try {
-
-            // edit
-            option = "member.update(username)"; origin = 1;
+            // member 변경
             if (updateParam.getProviderId() == null) {
-                result = memberRepository.update(currentMember.getId(), updateParam);
+                member.updateMember(updateParam);
             } else {
-                result = memberRepository.updateUsername(updateParam.getProviderId(), updateParam.getUsername());
-            }
-            log.info("member.update, result = {}", result);
-
-            if (result != 1) {
-                return false;
+                member.setOauth2Username(updateUsername);
             }
 
             // sync username
             if (!currentMember.getUsername().equals(updateParam.getUsername())) {
-                option = "board.syncWriter";
-                origin = boardRepository.countTotalBoardWithMemberId(criteria, memberId);
-                result = boardRepository.syncWriter(memberId, updateUsername);
-                log.info("option = {}, originalCount = {}, modifiedCount = {}", option, origin, result);
+                // 글 작성자 수정
+                originCount = boardQueryRepository.countTotalBoardWithMemberId(criteria, memberId);
+                resultCount = boardRepository.updateBoardWriterByMemberId(memberId, updateUsername);
+                log.info("===updateBoardWriterByMemberId=== originalCount = {}, modifiedCount = {}", originCount, resultCount);
 
-                option = "comment.syncCommentWriter";
-                origin = commentRepository.countTotalCommentWithMemberId(criteria, memberId);
-                result = commentRepository.syncWriter(memberId, updateUsername);
-                log.info("option = {}, originalCount = {}, modifiedCount = {}", option, origin, result);
+                // 댓글 작성자 수정
+                originCount = commentRepository.countByMemberIdEquals(memberId);
+                resultCount = commentRepository.updateCommentWriterByMemberId(memberId, updateUsername);
+                log.info("===updateCommentWriterByMemberId=== originalCount = {}, modifiedCount = {}", originCount, resultCount);
 
-                option = "comment.syncCommentTarget";
-                origin = commentRepository.countTotalTargetWithMemberId(memberId);
-                result = commentRepository.syncTarget(memberId, updateUsername);
-                log.info("option = {}, originalCount = {}, modifiedCount = {}", option, origin, result);
+                // 대댓글 타겟 수정
+                originCount = commentRepository.countByTargetIdEquals(memberId);
+                resultCount = commentRepository.updateTargetByMemberId(memberId, updateUsername);
+                log.info("===updateCommentTargetByMemberId=== originalCount = {}, modifiedCount = {}", originCount, resultCount);
             }
 
         } catch (DataAccessException e) {
-            log.info("option = {}, originalCount = {}, Exception = {}, message = {}", option, origin, e, e.getMessage());
+            log.info("Exception = {}, message = {}", e, e.getMessage());
             return false;
         } catch (Exception e) {
-            log.info("option = {}, originalCount = {}, Exception = {}, message = {}", option, origin, e, e.getMessage());
+            log.info("Exception = {}, message = {}", e, e.getMessage());
             return false;
         }
         return true;
@@ -205,33 +215,35 @@ public class MemberService {
 
     /**
      * member 와, member.id = comment.memberId, comment.targetId, board.memberId 인 글들 삭제
-     * @param id
+     * @param memberId
      */
     @Transactional
-    public boolean deleteMember(Long id) {
-        String option = "";
-        long origin = 0, result = 0;
-
+    public boolean deleteMember(Long memberId) {
         try {
-            // member.id = targetId 인 comment 삭제
-            option = "comment.deleteTargetById";
-            origin = commentRepository.countTotalTargetWithMemberId(id);
-            result = commentRepository.deleteReplyByTargetId(id);
-            log.info("option = {}, originalCount = {}, modifiedCount = {}", option, origin, result);
+            // member.id = targetId 인 comment 삭제 (count != 0 인경우)
+            long originCount = commentRepository.countByTargetIdEquals(memberId);
+            long resultCount = 0;
+            if (originCount != 0 ) resultCount = commentRepository.deleteByTargetId(memberId);
+            log.info("originalCount = {}, modifiedCount = {}", originCount, resultCount);
 
-            result = 0;
-            option = "member.deleteMember";
-            result = memberRepository.delete(id);
+            // member 삭제
+            Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저"));
+            memberRepository.delete(member);
+
+            // image 삭제, image 의 경우 FK 조건을 통한 delete onCascade 를 걸지않아 직접 삭제해야힌다.
+            imageService.deleteImageByMemberId(memberId);
 
             // board, comment delete onCascade
 
         } catch (DataAccessException e) {
-            log.info("option = {}, originalCount = {}, Exception = {}, message = {}", option, origin, e, e.getMessage());
+            log.info("Exception = {}, message = {}",e, e.getMessage());
+            return false;
         } catch (Exception e) {
-            log.info("option = {}, originalCount = {}, Exception = {}, message = {}", option, origin, e, e.getMessage());
+            log.info("Exception = {}, message = {}",e, e.getMessage());
+            return false;
         }
 
-        return result == 1;
+        return true;
     }
 
     /**
@@ -242,8 +254,8 @@ public class MemberService {
      */
     public Map<String, Object> myPage(Criteria criteria, Long memberId) {
         return new HashMap<>(Map.of(
-                "countTotalContent", boardRepository.countTotalBoardWithMemberId(criteria, memberId),
-                "boardList", boardRepository.findPagedBoardWithMemberId(criteria, memberId)
+                "countTotalContent", boardQueryRepository.countTotalBoardWithMemberId(criteria, memberId),
+                "boardList", boardQueryRepository.findPagedBoardWithMemberId(criteria, memberId)
         ));
     }
 
@@ -254,12 +266,13 @@ public class MemberService {
      * @return Map(countTotalContent, commentList, boardList)
      */
     public Map<String, Object> myComment(Criteria criteria, Long memberId) {
-        List<Comment> commentList = commentRepository.findPagedCommentWithMemberId(criteria, memberId);
-        List<Board> boardList = new ArrayList<>();
-        commentList.forEach(comment -> boardList.add(boardRepository.findById(comment.getBoardId())));
+        List<Comment> commentList = commentQueryRepository.findPagedCommentWithMemberId(criteria, memberId);
+
+        List<Long> boardIds = commentList.stream().map(comment -> comment.getBoard().getId()).collect(Collectors.toList());
+        List<Board> boardList = boardRepository.findAllById(boardIds);
 
         return new HashMap<>(Map.of(
-                "countTotalContent", commentRepository.countTotalCommentWithMemberId(criteria, memberId),
+                "countTotalContent", commentQueryRepository.countTotalCommentWithMemberId(criteria, memberId),
                 "commentList", commentList,
                 "boardList", boardList)
         );

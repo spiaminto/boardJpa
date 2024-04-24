@@ -254,7 +254,7 @@ public class MemberController {
         Map<String, Object> resultMap = memberService.myPage(criteria, currentMember.getId());
 
         // 페이징 할 정보 설정하기
-        PageMaker pageMaker = new PageMaker(criteria, (int) resultMap.get("countTotalContent"));
+        PageMaker pageMaker = new PageMaker(criteria, (long) resultMap.get("countTotalContent"));
 
         // 페이지메이커, 글 목록 모델에 넣기
         model.addAttribute("pageMaker", pageMaker);
@@ -276,7 +276,7 @@ public class MemberController {
         Map<String, Object> resultMap = memberService.myComment(criteria, currentMember.getId());
 
         // 페이징 할 정보 설정하기
-        PageMaker pageMaker = new PageMaker(criteria, (int) resultMap.get("countTotalContent"));
+        PageMaker pageMaker = new PageMaker(criteria, (long) resultMap.get("countTotalContent"));
 
         // 페이지메이커, 글 목록 모델에 넣기
         model.addAttribute("pageMaker", pageMaker);
@@ -298,13 +298,7 @@ public class MemberController {
         // 이미지삭제 -> 멤버삭제 : 멤버삭제에서 오류나면, 이미지가 없는 멤버글만 잔뜩 남게됨.
 
         // 멤버 삭제
-        boolean isMemberDeleted = memberService.deleteMember(currentId);
-
-        if (isMemberDeleted) {
-            // 이미지 삭제
-            boolean isImageDeleted = imageService.deleteImageByMemberId(currentId);
-            log.info("MemberController.deleteMember() isImageDeleted = {}", isImageDeleted);
-        }
+        memberService.deleteMember(currentId);
 
         // 보험
         principalDetails.getMember().setTempMember();

@@ -6,7 +6,7 @@ import hello.board.auth.oauth.provider.KakaoUserInfo;
 import hello.board.auth.oauth.provider.NaverUserInfo;
 import hello.board.auth.oauth.provider.OAuth2UserInfo;
 import hello.board.domain.member.Member;
-import hello.board.repository.MemberRepository;
+import hello.board.repository.jpa.MemberJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -25,7 +25,7 @@ import java.util.Optional;
  * OAuth2 유저 인증 처리 클래스
  */
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
-    private final MemberRepository memberRepository;
+    private final MemberJpaRepository memberJpaRepository;
 
     /**
      * OAuth2UserRequest 를 가공한 뒤 Authentication 객체에 저장할 멤버 정보를 담은 OAuth2User 반환
@@ -71,7 +71,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         // DB 에 OAuth2 유저 존재여부 조회
         Optional<Member> findMember =
-                memberRepository.findByProviderAndProviderId(oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
+                memberJpaRepository.findByProviderAndProviderId(oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
 
         String forOauth2UserLoginId = oAuth2UserInfo.getProvider() + "_" + oAuth2UserInfo.getProviderId();
         String forOauth2UserUsername = oAuth2UserInfo.getEmail().substring(0, oAuth2UserInfo.getEmail().indexOf('@')); //email 에서 @gmail.com 제외한 나머지
@@ -80,11 +80,10 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             log.info("OAuth2 유저 로그인 {} - {} ", oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
             returnMember = findMember.get();
 
-            // 이메일 바뀌면 갱신후 재조회
+            // 이메일 바뀌면 갱신
             if (!oAuth2UserInfo.getEmail().equals(findMember.get().getEmail())) {
                 log.info("OAuth2 유저 이메일 변경 {} - {} ", oAuth2UserInfo.getProvider(), oAuth2UserInfo.getProviderId());
-                memberRepository.updateEmail(oAuth2UserInfo.getProviderId(), oAuth2UserInfo.getEmail());
-                returnMember = memberRepository.findByLoginId(returnMember.getLoginId()).get();
+                returnMember.updateOauth2MemberEmail(oAuth2UserInfo.getEmail());
             }
             
         } else {
@@ -101,6 +100,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                     .role("ROLE_TEMP")
                     .emailVerified("false")
                     .build();
+
+
         }
         return new PrincipalDetails(returnMember, oAuth2User.getAttributes());
     }

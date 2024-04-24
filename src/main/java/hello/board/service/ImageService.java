@@ -1,16 +1,18 @@
 package hello.board.service;
 
 
-import hello.board.domain.board.Board;
-import hello.board.domain.criteria.Criteria;
+
 import hello.board.domain.image.Image;
 import hello.board.file.ImageStore;
-import hello.board.repository.BoardRepository;
-import hello.board.repository.ImageRepository;
+import hello.board.repository.jpa.BoardJpaRepository;
+import hello.board.repository.jpa.ImageJpaRepository;
+
+import hello.board.repository.query.BoardQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -21,8 +23,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class ImageService {
-    private final ImageRepository imageRepository;
-    private final BoardRepository boardRepository;
+
+    private final ImageJpaRepository imageRepository;
     private final ImageStore imageStore;
 
     // amazon s3 접속 주소
@@ -41,13 +43,33 @@ public class ImageService {
         Image storedImage = imageStore.storeImage(id, multipartFile);
         Image savedImage = saveImageToDb(storedImage);
 
-        log.info("[temp] store 된 이미지 {}, DB.save 된 이미지 {}", storedImage.getImageId(), savedImage.getImageId());
+        log.info("[temp] store 된 이미지 {}, DB.save 된 이미지 {}", storedImage.getId(), savedImage.getId());
 
         return savedImage;
     }
 
     public Image saveImageToDb(Image image) {
-        return imageRepository.saveImage(image);
+        return imageRepository.save(image);
+    }
+
+    /**
+     * member 가 삭제될때, 해당 member 가 작성한 board 의 이미지 삭제
+     * 성공시 true, 실패시 롤백 false
+     * @param memberId
+     */
+    @Transactional
+    public boolean deleteImageByMemberId(Long memberId) {
+        List<Image> deleteImageList = imageRepository.findByMemberId(memberId);
+
+        if (deleteImageList.isEmpty()) {
+            log.info("deleteImageByMemberId, deleteImageList.size = {}", deleteImageList.size());
+            return true;
+        }
+
+        int fileResult = deleteImageFile(deleteImageList);
+        int dbResult = deleteImageFromDb(deleteImageList);
+
+        return fileResult == dbResult ? true : false;
     }
 
     /**
@@ -55,6 +77,7 @@ public class ImageService {
      * @param boardId
      * @return 로컬(아마존) 과 DB 모두 삭제되고, 그 갯수가 같으면 true
      */
+    @Transactional
     public boolean deleteImageByBoardId(Long boardId) {
         List<Image> deleteImageList = imageRepository.findByBoardId(boardId);
 
@@ -70,28 +93,6 @@ public class ImageService {
     }
 
     /**
-     * member 가 삭제될때, 해당 member 가 작성한 board 의 이미지 삭제
-     * 성공시 true, 실패시 실패한 boardId 를 로그로 남기고 false
-     * @param memberId
-     */
-    public boolean deleteImageByMemberId(Long memberId) {
-        Criteria criteria = new Criteria();
-        
-        // 글 갯수가 9999개 이상이면 전부 삭제되지 않음
-        criteria.setContentPerPage(9999);
-
-        List<Board> boardList = boardRepository.findPagedBoardWithMemberId(criteria, memberId);
-
-        for (Board board : boardList) {
-            if (!deleteImageByBoardId(board.getId())) {
-                log.info("ImageServ.deleteImageByBoardId break at {}", board.getId());
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * 삭제할 이미지 리스트를 받아 DB 에서 삭제 (imageIdList로)
      * @param deleteImageList
      * @return 삭제된 행 갯수
@@ -100,23 +101,15 @@ public class ImageService {
         int count = 0;
 
         // imageId 만 뽑아서 List 만든 뒤, DB 에서 삭제
-        List<Long> imageIdList = deleteImageList.stream().map(Image::getImageId).collect(Collectors.toList());
-        count = imageRepository.deleteImageByIdList(imageIdList);
+        List<Long> imageIdList = deleteImageList.stream().map(Image::getId).collect(Collectors.toList());
+        count = imageRepository.deleteByIdList(imageIdList);
 
-        log.info("DB {} 개 중 {} 개 제거 완료", deleteImageList.size(), count);
         return count;
     }
 
+    // 메서드 삭제예정
     public int deleteImageFile(List<Image> deleteImageList) {
-        int result = 0;
-
-        // 구현체를 전부 불러 빈 네임으로 필터링 할수도.
-        if (imageStore.getServiceName().equals("amazonS3")) {
-            result = imageRepository.deleteImageFromAmazon(deleteImageList, bucketDir, innerBucketDir);
-        } else {
-            result = imageRepository.deleteImageFromLocal(deleteImageList);
-        }
-        return result;
+        return imageStore.deleteImageFiles(deleteImageList);
     }
 
     /**
@@ -124,13 +117,14 @@ public class ImageService {
      * @param boardId
      * @param uploadedImageNames
      */
+    @Transactional
     public void syncImage(Long memberId, Long boardId, String[] uploadedImageNames) {
         int result;
 
 //        for (String uploadedImageName : uploadedImageNames) {log.info("uploadedImageName {}", uploadedImageName);}
 
-        // boardId = 0 인 db 이미지에 boardId 부여
-        result = imageRepository.setBoardId(memberId, boardId);
+        // memberIdEq, boardId = 0 인 db 이미지에 boardId 부여
+        result = imageRepository.setBoardIdAtRawImage(boardId, memberId);
 //        log.info("동기화 처리 전 boardId = 0 인 image 갯수 = {} ", result);
 
         List<Image> imageDbList = imageRepository.findByBoardId(boardId); // DB 에 등록된 이미지 리스트

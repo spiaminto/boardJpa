@@ -1,7 +1,8 @@
 package hello.board.auth;
 
 import hello.board.domain.member.Member;
-import hello.board.repository.MemberRepository;
+import hello.board.repository.jpa.MemberJpaRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,16 +13,13 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 /**
  * SpringSecurity 일반 유저 인증 처리 클래스
  */
 public class PrincipalDetailsService implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
-
-    public PrincipalDetailsService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
+    private final MemberJpaRepository memberRepository;
 
     /**
      * Member.loginId 를 통해 인증 후 UserDetails 반환

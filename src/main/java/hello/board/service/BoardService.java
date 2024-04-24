@@ -1,41 +1,41 @@
 package hello.board.service;
 
 import hello.board.domain.board.Board;
-import hello.board.domain.comment.Comment;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.member.Member;
-import hello.board.repository.BoardCommentDTO;
-import hello.board.repository.BoardCommentDTOMapper;
-import hello.board.repository.BoardRepository;
+import hello.board.repository.jpa.BoardJpaRepository;
+import hello.board.repository.query.BoardQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class BoardService {
 
-    private final BoardRepository boardRepository;
-    private final BoardCommentDTOMapper boardCommentDTOMapper = BoardCommentDTOMapper.INSTANCE;
+    private final BoardJpaRepository boardRepository;
+    private final BoardQueryRepository boardQueryRepository;
+    private final ImageService imageService;
 
-    public int countTotalBoard(Criteria criteria) {
-        return boardRepository.countTotalBoard(criteria);
+    public long countTotalBoard(Criteria criteria) {
+        return boardQueryRepository.countTotalBoard(criteria);
     }
 
     public Board findById(Long id) {
-        return boardRepository.findById(id);
+        return boardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글 입니다."));
     }
 
     public List<Board> findPagedBoard(Criteria criteria) {
-        return boardRepository.findPagedBoard(criteria);
+        return boardQueryRepository.findPagedBoard(criteria);
     }
 
     /**
@@ -43,35 +43,40 @@ public class BoardService {
      * @param id
      * @return Map<String, Object> board, commentList
      */
+    @Transactional
     public Map<String, Object> readBoard(Long id) {
         Map result = new HashMap();
 
-        List<BoardCommentDTO> list = boardRepository.findByIdWithComment(id);
-        if (list.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "board not found"); // board 가 없는 경우
-
-        // BoardCommentDTO -> Board, Comment 맵핑
-        Board findBoard = boardCommentDTOMapper.toBoard(list.stream().findFirst().get());
-        List<Comment> findCommentList = list.stream()
-                .filter(item -> item.getCommentId() != null)    // 댓글이 없는경우 제외
-                .map(c -> boardCommentDTOMapper.toComment(c)).collect(Collectors.toList());
-
-        result.put("board", findBoard);
-        result.put("commentList", findCommentList);
-
+        Board boardWithComment = boardQueryRepository.findByIdWithComment(id);
+        result.put("board", boardWithComment);
+        result.put("commentList", boardWithComment.getCommentList());
+        if (boardWithComment == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "board not found"); // board 가 없는 경우
         boardRepository.updateViewCount(id);
         return result;
     }
 
+    @Transactional
     public Board saveBoard(Board board) {
         return boardRepository.save(board);
     }
 
+    @Transactional
     public Board updateBoard(Long id, Board updateParam) {
-        return boardRepository.update(id, updateParam);
+        Board board = boardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+        board.updateBoard(updateParam);
+
+        return board; // 변경감지 후 수정된 엔티티 반환
     }
 
-    public int deleteBoard(Long id) {
-        return boardRepository.delete(id); // comment delete onCascade
+    @Transactional
+    public void deleteBoard(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+        // 글 삭제
+        boardRepository.delete(board);
+        // 이미지삭제
+        boolean isSuccess = imageService.deleteImageByBoardId(id);
+        log.info("이미지 삭제 isSuccess = {}", isSuccess);
+        // 댓글 삭제 comment delete onCascade (mysql)
     }
 
     /**
@@ -85,7 +90,7 @@ public class BoardService {
             //관리자
             return true;
         }
-        return findBoard.getMemberId().equals(currentMember.getId());
+        return findBoard.getMember().getId().equals(currentMember.getId());
     }
 
 }

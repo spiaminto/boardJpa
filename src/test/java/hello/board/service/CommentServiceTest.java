@@ -1,12 +1,11 @@
 package hello.board.service;
 
+import hello.board.domain.board.Board;
 import hello.board.domain.comment.Comment;
 import hello.board.domain.enums.Category;
-import hello.board.form.CommentSaveForm;
-import hello.board.repository.BoardRepository;
+import hello.board.repository.legacy.BoardLegacyRepository;
 import hello.board.repository.CommentRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 @Slf4j
 class CommentServiceTest {
@@ -25,11 +22,12 @@ class CommentServiceTest {
     @Autowired
     CommentService commentService;
     @Autowired
-    BoardRepository boardRepository;
+    BoardLegacyRepository boardLegacyRepository;
     @Autowired
     CommentRepository commentRepository;
 
     Comment testComment;
+    Board testBoard;
 
     /**
      * 테스트용
@@ -39,10 +37,11 @@ class CommentServiceTest {
 
     @BeforeEach
     public void setup() {
+        testBoard = Board.builder().id(1L).build();
         testComment = Comment.builder()
                 .writer("testname").content("test")
                 .regDate(LocalDateTime.now())
-                .boardId(1L).memberId(1L)
+                .board(testBoard).memberId(1L)
                 .category(Category.FREE)
                 .groupId(0L).groupOrder(0).groupDepth(0).build();
     }
@@ -51,7 +50,7 @@ class CommentServiceTest {
     @Transactional
     void saveComment() {
         commentService.saveComment(testComment);
-        log.info("comment_cnt = {}", boardRepository.findById(testComment.getBoardId()).getCommentCnt());
+        log.info("comment_cnt = {}", boardLegacyRepository.findById(testComment.getBoard().getId()).getCommentCnt());
     }
 
     @Test
@@ -62,20 +61,20 @@ class CommentServiceTest {
         Comment testReply = Comment.builder()
                 .writer("testname").content("test")
                 .regDate(LocalDateTime.now())
-                .boardId(1L).memberId(1L)
+                .board(testBoard).memberId(1L)
                 .category(Category.FREE)
-                .groupId(comment.getCommentId()).groupOrder(0).groupDepth(1).build();
+                .groupId(comment.getId()).groupOrder(0).groupDepth(1).build();
 
         Comment reply = commentService.saveComment(testComment);
 
         try {
-            commentService.deleteComment(testReply.getCommentId());
+            commentService.deleteComment(testReply.getId());
         } catch(IllegalStateException e) {
             // 롤백 확인
-            log.info("comment = {}", commentRepository.findByCommentId(comment.getCommentId()));
-            log.info("reply = {}", commentRepository.findByCommentId(reply.getCommentId()));
+            log.info("comment = {}", commentRepository.findByCommentId(comment.getId()));
+            log.info("reply = {}", commentRepository.findByCommentId(reply.getId()));
         } finally {
-            log.info("comment_cnt = {}", boardRepository.findById(testComment.getBoardId()).getCommentCnt());
+            log.info("comment_cnt = {}", boardLegacyRepository.findById(testComment.getBoard().getId()).getCommentCnt());
         }
 
     }
@@ -84,6 +83,6 @@ class CommentServiceTest {
     @Test
     void clear() {
         List<Comment> commentList = commentRepository.findByBoardId(1L);
-        commentList.forEach(comment -> commentService.deleteComment(comment.getCommentId()));
+        commentList.forEach(comment -> commentService.deleteComment(comment.getId()));
     }
 }

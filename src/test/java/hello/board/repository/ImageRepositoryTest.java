@@ -58,7 +58,7 @@ class ImageRepositoryTest {
     @Test
     void findById() {
         imageRepository.saveImage(image);
-        Image findImage = imageRepository.findById(image.getImageId());
+        Image findImage = imageRepository.findById(image.getId());
         assertThat(findImage.equals(image));
     }
 

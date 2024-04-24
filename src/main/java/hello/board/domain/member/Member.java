@@ -1,14 +1,23 @@
 package hello.board.domain.member;
 
 import lombok.*;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.*;
+
+import static org.springframework.util.StringUtils.*;
 
 @Getter @ToString
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
+@Entity
 public class Member {
 
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
+
     private String loginId;     // UNIQUE
     private String username;    // UNIQUE
     private String password;
@@ -21,6 +30,18 @@ public class Member {
     private String providerId;       // provider Pk (google = 최대 255자의 대소문자 구분 ASCII 문자 길이)
 
     private String picture;     // 일단 사용X
+
+    public void updateMember(Member updateParam) {
+        this.username = hasText(updateParam.getUsername()) ? updateParam.getUsername() : username;
+        this.loginId = hasText(updateParam.getLoginId()) ? updateParam.getLoginId() : loginId;
+        this.password = hasText(updateParam.getPassword()) ? updateParam.getPassword() : password;
+        this.email = hasText(updateParam.getEmail()) ? updateParam.getEmail() : email;
+        this.emailVerified = hasText(updateParam.getEmailVerified()) ? updateParam.getEmailVerified() : emailVerified;
+    }
+
+    public void updateOauth2MemberEmail(String email) {
+        this.email = email;
+    }
 
     /**
      * Oauth2 Temp Member 를 정식 가입용 Member 로 교체

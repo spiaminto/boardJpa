@@ -219,20 +219,20 @@
                     <div>
                         <span class="category-label" th:if="${pageMaker.categoryCode == 'all'}" th:text="${'[' + item.category.getCategoryName() + ']'}"></span>
                         <a th:text="${boardList.get(itemStat.index).title}"
-                           th:href="@{|/board/${item.boardId}|}">
+                           th:href="@{|/board/${item.board.id}|}">
                             board.title
                         </a>
                     </div>
                     <div>
                         <span>&nbsp; &nbsp; ⤷ &nbsp; &nbsp; </span>
                         <a id="readLink" href="list.html"
-                            th:href="@{|/board/${item.boardId}?selected=${item.commentId}|}"
+                            th:href="@{|/board/${item.board.id}?selected=${item.id}|}"
                             th:text="${item.content}">comment.content</a>
                     </div>
                 </td>
 
                 <td th:text="${#temporals.format(item.regDate, 'yyMMdd HH:mm')}">regdate</td>
-                <td th:text="${#temporals.format(item.updateDate, 'yyMMdd HH:mm')}">updateDAte</td>
+                <td th:text="${#temporals.format(item.updateDate, 'yyMMdd HH:mm')}">updateDate</td>
             </tr>
             </tbody>
         </table>

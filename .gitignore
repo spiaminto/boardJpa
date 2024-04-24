@@ -41,3 +41,4 @@ application-*.properties
 /src/main/java/hello/z_comment
 z.memo
 customLog
+,Memo

@@ -4,9 +4,7 @@ package hello.board.file;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import hello.board.domain.image.Image;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +13,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Slf4j
 @RequiredArgsConstructor
 public class ImageStoreAmazon implements ImageStore{
@@ -95,6 +96,7 @@ public class ImageStoreAmazon implements ImageStore{
 
         // DB 에 저장용 Image (boardId = 0)
         Image image = Image.builder()
+                .boardId(0L)
                 .uploadImageName(uploadImageName)
                 .storeImageName(storeImageName)
                 .imageAddress(imageAddress)
@@ -102,6 +104,35 @@ public class ImageStoreAmazon implements ImageStore{
                 .memberId(memberId).build();
 
         return image;
+    }
+
+    /**
+     * 삭제할 이미지 리스트를 통해 아마존 S3 에서 이미지를 삭제.
+     * @param deleteImageList
+     * @return 삭제된 이미지 갯수
+     */
+    public int deleteImageFiles(List<Image> deleteImageList) {
+
+        // 아마존에 전달할 파일 정보 리스트, DeleteObjectRequest.KeyVersion
+        List<DeleteObjectsRequest.KeyVersion> keys = deleteImageList.stream()
+                .map(image -> new DeleteObjectsRequest.KeyVersion(innerBucketDir + image.getStoreImageName()))
+                .collect(Collectors.toList());
+
+        DeleteObjectsRequest multipleDeleteObjectsRequest = new DeleteObjectsRequest(bucketDir).withKeys(keys).withQuiet(false);
+        DeleteObjectsResult deleteObjectsResult = null;
+
+        try {
+            deleteObjectsResult = amazonS3.deleteObjects(multipleDeleteObjectsRequest);
+            log.info("AMAZON S3 {} 개 중 {} 개 제거 완료", deleteImageList.size(), deleteObjectsResult.getDeletedObjects().size());
+        } catch (AmazonServiceException e) {
+            // Docs) The call was transmitted successfully, but Amazon S3 couldn't process it, so it returned an error response.
+            log.info("deleteImageFromAmazon() e={}", e);
+        } catch (SdkClientException e) {
+            // Docs) Amazon S3 couldn't be contacted for a response, or the client couldn't parse the response from Amazon S3.
+            log.info("deleteImageFromAmazon() e={}", e);
+        }
+
+        return deleteObjectsResult.getDeletedObjects().size();
     }
 
 }

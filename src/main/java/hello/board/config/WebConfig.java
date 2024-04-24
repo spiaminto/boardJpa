@@ -5,6 +5,7 @@ import hello.board.interceptor.TempUserCheckInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -46,5 +47,11 @@ public class WebConfig implements WebMvcConfigurer {
                 //                      체크하고     홈보내고       추가함
                 .excludePathPatterns("/login/check", "/boards", "/member/add-oauth", "/member/duplicate-check");
     }
+
+    // JavaMailSender 등록
+//    @Bean
+//    public JavaMailSender javaMailSender() {
+//        return new JavaMailSenderImpl();
+//    }
 
 }

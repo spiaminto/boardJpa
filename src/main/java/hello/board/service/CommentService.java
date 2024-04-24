@@ -1,8 +1,9 @@
 package hello.board.service;
 
 import hello.board.domain.comment.Comment;
-import hello.board.repository.BoardRepository;
-import hello.board.repository.CommentRepository;
+import hello.board.repository.jpa.BoardJpaRepository;
+import hello.board.repository.jpa.CommentJpaRepository;
+import hello.board.repository.query.CommentQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,28 +12,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class CommentService {
 
-    private final CommentRepository commentRepository;
-    private final BoardRepository boardRepository;
+    private final CommentJpaRepository commentRepository;
+    private final CommentQueryRepository commentQueryRepository;
+    private final BoardJpaRepository boardRepository;
 
     /**
      * comment 받아서 save 하고 모댓글이면 groupId 설정 후 comment 반환
      * @param comment
      * @return 저장한 comment
      */
-    @Transactional
     public Comment saveComment(Comment comment) {
+
+        // 댓글저장
         Comment savedComment = commentRepository.save(comment);
 
         // 모댓글이면, groupId = commentId 설정
-        if (savedComment.getGroupDepth() == 0) {
-            savedComment.setGroupId(comment.getCommentId());
-            commentRepository.setGroupId(comment.getCommentId(), comment.getGroupId());
+        if (comment.getGroupDepth() == 0) {
+            comment.setGroupId(comment.getId()); // 변경감지
         }
 
         // 댓글 수 증가
-        boardRepository.addCommentCnt(comment.getBoardId());
+        boardRepository.addCommentCount(comment.getBoard().getId());
 
         return savedComment;
     }
@@ -44,8 +47,9 @@ public class CommentService {
      * @return db에서 수정한 열이 1개면 comment 반환, 아니면 null
      */
     public Comment updateComment(Long id, Comment updateParam) {
-        int result = commentRepository.update(id, updateParam);
-        return result == 1 ? commentRepository.findByCommentId(id) : null;
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글"));
+        comment.updateComment(updateParam);
+        return comment;
     }
 
     /**
@@ -55,24 +59,25 @@ public class CommentService {
      */
     @Transactional
     public boolean deleteComment(Long id) {
-        Comment findComment = commentRepository.findByCommentId(id);
-        int originCommentCount = 0;
-        int deletedReplyCount = 0;
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글"));
+        long originCommentCount = 0; long deletedCommentCount = 0; // 검증용 카운트
 
-        if (findComment.getGroupDepth() == 0) {
+        if (comment.getGroupDepth() == 0) {
             // 모댓글 이면 답글 포함 카운트
-            originCommentCount = commentRepository.countTotalCommentWithBoardIdAndGroupId(findComment.getBoardId(), findComment.getCommentId());
-            deletedReplyCount = commentRepository.deleteReply(id); // 답글삭제
+            originCommentCount = commentQueryRepository.countTotalCommentWithBoardIdAndMEmberId(comment.getBoard().getId(), comment.getId());
+            deletedCommentCount = commentRepository.deleteByGroupId(id); // 댓글 + 대댓글삭제
         } else {
-            // 대댓글 이면 카운트 = 1
+            // 대댓글 이면 본인만 삭제
             originCommentCount = 1;
+            commentRepository.deleteById(id); // 댓글 삭제
+            deletedCommentCount = 1;
         }
 
-        int deletedCommentCount = commentRepository.delete(id); // 댓글 삭제
-        boardRepository.subtractCommentCnt(findComment.getBoardId(), deletedCommentCount + deletedReplyCount); // 댓글 수 감소
 
-//        log.info("deleteComment() groupDepth = {}, origin={}, deletedComment={}, deletedReply={}", findComment.getGroupDepth(), originCommentCount, deletedCommentCount, deletedReplyCount);
-        return originCommentCount == deletedCommentCount + deletedReplyCount;
+        boardRepository.subtractCommentCount(comment.getBoard().getId(), (int) deletedCommentCount); // 댓글 수 감소, count 의 자료형이 int 여야 됨
+
+        log.info("deleteComment() groupDepth = {}, origin={}, deletedComment={}", comment.getGroupDepth(), originCommentCount, deletedCommentCount);
+        return originCommentCount == deletedCommentCount;
     }
 
 }

@@ -653,7 +653,7 @@
         </div>
         <div id="otherCommentContainer">
             <!-- other-comment 와 other-comment-reply 를 묶기위해 comment 클래스 임시로 넣음 -->
-            <div class="other-comment input-group comment" th:each="comment, commentState : ${commentList}" th:id="'comment'+ ${comment.getCommentId()}"
+            <div class="other-comment input-group comment" th:each="comment, commentState : ${commentList}" th:id="'comment'+ ${comment.getId()}"
                 th:data-group="${comment.groupId}">
                 <!-- 나중에 jquery 에서 얘가 있으면 .parent().addClass(other-comment-reply).removeClass...-->
                 <span th:if="${comment.getTarget() != null && comment.getTarget() != ''}" class="input-group-text comment-reply-for"
@@ -662,11 +662,11 @@
                 <input type="hidden" class="comment-writer form-control" th:value="${comment.writer}" name="writer">
                 <!-- th text comment.username -->
                 <span class="input-group-text comment-username flex-fill" th:text="${comment.writer}">writer</span>
-                <a class="comment-delete" th:href="@{/comment/delete/{commentId}(commentId=${comment.getCommentId()})}"
-                    th:data-id="${comment.getCommentId()}">✖</a>
+                <a class="comment-delete" th:href="@{/comment/delete/{commentId}(commentId=${comment.getId()})}"
+                    th:data-id="${comment.getId()}">✖</a>
                 <div class="input-group">
                     <textarea class="comment-content form-control form-control-sm" name="content" th:placeholder="${comment.content}" disabled maxlength="50"></textarea>
-                    <button class="btn btn-outline-secondary comment-update" type="button" th:data-id="${comment.commentId}"
+                    <button class="btn btn-outline-secondary comment-update" type="button" th:data-id="${comment.id}"
                             >수정</button>
                     <button class="btn btn-outline-secondary comment-update-submit" type="button">등록</button>
                 </div>

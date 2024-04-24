@@ -73,7 +73,6 @@ public class CommentService {
             deletedCommentCount = 1;
         }
 
-
         boardRepository.subtractCommentCount(comment.getBoard().getId(), (int) deletedCommentCount); // 댓글 수 감소, count 의 자료형이 int 여야 됨
 
         log.info("deleteComment() groupDepth = {}, origin={}, deletedComment={}", comment.getGroupDepth(), originCommentCount, deletedCommentCount);

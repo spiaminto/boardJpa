@@ -1,16 +1,15 @@
 # 커뮤니티 게시판 프로젝트
 ### 개요 
-### [프로젝트 바로가기](http://springboard-env.eba-x3sau5v7.ap-northeast-1.elasticbeanstalk.com/boards)     
+### [프로젝트 바로가기](http://spiaboard.ap-northeast-2.elasticbeanstalk.com/boards)     
 ___테스트용 ID: sample / PW: sample123___ , 자유롭게 이용 가능합니다.
 
-학습과 병행하며 진행한 프로젝트입니다.
-단순한 이론 학습 대신, 실제 커뮤니티 게시판의 기능을 직접 구현해봄으로써 더 깊은 학습에 대한 동기를 부여하고자 하였습니다.
-기능을 작성할때는 사용자가 납득할 수 있는 동작을 만들어 내는것에 대해 고민했고, 작성 후에는 검증, 성능, 확장성 등을 고려하여 리팩토링도 진행해 보았습니다.
+이전 작성한 [커뮤니티 게시판 프로젝트](https://github.com/spiamint/board) 의 DB 접근 기술을 mybatis 에서 SpringDataJpa 로 변경한 프로젝트 입니다.  
+JPA 공부 후 실제 적용을 위해 시작 한 프로젝트이며, JPA 변경 후에도 쿼리 횟수가 mybatis 와 비슷하거나 더 적을 수 있도록 신경써서 작성했습니다.
 
 ### 사용 기술 
 
-* Spring(Boot), Gradle
-* Mybatis
+* SpringBoot, Gradle
+* SpringDataJpa, QueryDsl
 * MySql
 * Thymeleaf
 * HTML, CSS(BootStrap), JavaScript(Jquery)

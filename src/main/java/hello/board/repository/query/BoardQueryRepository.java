@@ -7,6 +7,7 @@ import hello.board.domain.comment.QComment;
 import hello.board.domain.criteria.Criteria;
 import hello.board.domain.enums.Category;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -17,6 +18,7 @@ import static hello.board.domain.comment.QComment.*;
 import static hello.board.domain.member.QMember.member;
 
 @Repository
+@Slf4j
 @RequiredArgsConstructor
 public class BoardQueryRepository {
 
@@ -41,14 +43,14 @@ public class BoardQueryRepository {
                 ).fetchFirst();
     }
 
-    // board 와 comment 를 페치조인으로 한번에 끌어오기
+    // board 와 comment 를 페치조인으로 한번에 끌어오기 (distinct() 사용가능)
     public Board findByIdWithComment(Long id) {
         return queryFactory.select(board)
                 .from(board)
                 .leftJoin(board.commentList, comment).fetchJoin()
                 .where(board.id.eq(id))
-                .fetchOne(); // 인메모리 패치조인 방지
-    }
+                .fetchOne();// 인메모리 패치조인 방지
+        }
 
     public List<Board> findPagedBoard(Criteria criteria) {
         return queryFactory.select(board)

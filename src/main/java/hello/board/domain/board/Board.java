@@ -42,9 +42,6 @@ public class Board {
     @JoinColumn(name = "member_id")
     private Member member; // username 갱신 시 필요
 
-//    @Transient
-//    private Long memberId;
-
     @Enumerated(EnumType.STRING)
     private Category category;
 

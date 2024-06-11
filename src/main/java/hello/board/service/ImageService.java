@@ -39,6 +39,7 @@ public class ImageService {
      * @param multipartFile
      * @return 업로드한 이미지 파일로 구성한 Image
      */
+    @Transactional
     public Image saveImage(Long id, MultipartFile multipartFile) {
         Image storedImage = imageStore.storeImage(id, multipartFile);
         Image savedImage = saveImageToDb(storedImage);
@@ -48,7 +49,7 @@ public class ImageService {
         return savedImage;
     }
 
-    public Image saveImageToDb(Image image) {
+    protected Image saveImageToDb(Image image) {
         return imageRepository.save(image);
     }
 
@@ -97,7 +98,7 @@ public class ImageService {
      * @param deleteImageList
      * @return 삭제된 행 갯수
      */
-    public int deleteImageFromDb(List<Image> deleteImageList) {
+    protected int deleteImageFromDb(List<Image> deleteImageList) {
         int count = 0;
 
         // imageId 만 뽑아서 List 만든 뒤, DB 에서 삭제
@@ -108,7 +109,7 @@ public class ImageService {
     }
 
     // 메서드 삭제예정
-    public int deleteImageFile(List<Image> deleteImageList) {
+    protected int deleteImageFile(List<Image> deleteImageList) {
         return imageStore.deleteImageFiles(deleteImageList);
     }
 
@@ -157,7 +158,7 @@ public class ImageService {
      * @param imageDbList
      * @return 실제로 업로드 된 이미지리스트
      */
-    public List<Image> makeUploadedImageList (String[] uploadedImageNames, List<Image> imageDbList) {
+    protected List<Image> makeUploadedImageList (String[] uploadedImageNames, List<Image> imageDbList) {
         List<Image> uploadedImageList = new ArrayList<>();
 
         for (String storeImageName : uploadedImageNames) {
@@ -174,7 +175,7 @@ public class ImageService {
      * @param uploadedImageList
      * @return 삭제할 리스트
      */
-    public List<Image> makeDeleteImageList(List<Image> imageDbList, List<Image> uploadedImageList) {
+    protected List<Image> makeDeleteImageList(List<Image> imageDbList, List<Image> uploadedImageList) {
         imageDbList.removeAll(uploadedImageList);       // equals()
         return imageDbList;
     }

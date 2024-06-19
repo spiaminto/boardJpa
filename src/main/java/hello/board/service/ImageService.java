@@ -27,13 +27,6 @@ public class ImageService {
     private final ImageJpaRepository imageRepository;
     private final ImageStore imageStore;
 
-    // amazon s3 접속 주소
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketDir;
-
-    @Value("${cloud.aws.s3.bucket.innerDir}")
-    private String innerBucketDir;
-
     /**
      * ckEditor 에서 이미지 파일을 업로드 할때 로컬(아마존) 과 DB 에 이미지를 임시저장
      * @param multipartFile

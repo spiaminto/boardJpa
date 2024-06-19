@@ -24,7 +24,7 @@ public class StoreConfig {
     @Bean
     public ImageStore imageStore() {
 //        log.info("imageStore(), activeProfile={}", activeProfile);
-        if (activeProfile.contains("S3")) {
+        if (activeProfile.contains("prod")) {
             return new ImageStoreAmazon(amazonS3);
         } else {
             return new ImageStoreLocal();

@@ -1,6 +1,6 @@
 # 커뮤니티 게시판 프로젝트
 ### 개요 
-### [프로젝트 바로가기](http://spiaboard.ap-northeast-2.elasticbeanstalk.com/boards)     
+### [프로젝트 바로가기](http://spiaminto.ap-northeast-2.elasticbeanstalk.com/spiaboard/boards)     
 ___테스트용 ID: sample / PW: sample123___ , 자유롭게 이용 가능합니다.
 
 이전 작성한 [커뮤니티 게시판 프로젝트](https://github.com/spiamint/board) 의 DB 접근 기술을 mybatis 에서 SpringDataJpa 로 변경한 프로젝트 입니다.  
